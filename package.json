@@ -9,10 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.22"
+    "@vant/icons": "^3.0.2",
+    "@vant/touch-emulator": "^1.4.0",
+    "dayjs": "^1.11.19",
+    "lodash-es": "^4.17.21",
+    "pinia": "^3.0.4",
+    "vant": "^4.9.21",
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
     "vite": "^7.1.7"
   }
 }
