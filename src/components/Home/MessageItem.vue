@@ -1,81 +1,58 @@
 <template>
-  <div
-    class="message-item"
-    :class="{
-      'message-user': message.role === 'user',
-      'message-assistant': message.role === 'assistant',
-      'message-streaming': message.streaming
-    }"
-  >
+    <div
+      class="group flex gap-3 p-4 my-2 transition-colors rounded-xl hover:bg-surface"
+    >
     <!-- 头像 -->
-    <div class="message-avatar">
+    <div class="flex-shrink-0">
       <div
-        class="avatar-circle"
-        :class="{
-          'avatar-user': message.role === 'user',
-          'avatar-assistant': message.role === 'assistant'
-        }"
+        class="w-10 h-10 rounded-full flex items-center justify-center text-white transition-all"
+        :class="message.role === 'user' ? 'bg-gradient-to-br from-indigo-500 to-purple-600' : 'bg-gradient-to-br from-blue-600 to-blue-400'"
       >
-        <var-icon
-          :name="message.role === 'user' ? 'account' : 'robot'"
-          :size="24"
-        />
+        <var-icon :name="message.role === 'user' ? 'account' : 'robot'" :size="24" />
       </div>
     </div>
 
     <!-- 内容区 -->
-    <div class="message-content-wrapper">
-      <!-- 角色名 -->
-      <div class="message-header">
-        <span class="message-role">
-          {{ message.role === 'user' ? '你' : 'AI 助手' }}
-        </span>
-        <span class="message-time">
-          {{ formatTime(message.timestamp) }}
-        </span>
+    <div class="flex-1 min-w-0">
+      <!-- 头部 -->
+      <div class="flex items-center gap-3 mb-2">
+        <span class="font-semibold text-sm text-text-primary">{{ message.role === 'user' ? '你' : 'AI 助手' }}</span>
+        <span class="text-xs text-text-secondary">{{ formatTime(message.timestamp) }}</span>
       </div>
 
-      <!-- 消息内容 -->
-      <div class="message-content">
-        <!-- 用户消息：纯文本 -->
-        <div v-if="message.role === 'user'" class="user-message-text">
+      <!-- 内容 -->
+      <div class="relative leading-relaxed break-words">
+        <div
+          v-if="message.role === 'user'"
+          class="px-4 py-3 bg-surface rounded-xl shadow-card-soft text-text-primary text-[15px] whitespace-pre-wrap transition-colors"
+        >
           {{ message.content }}
         </div>
-
-        <!-- 助手消息：Markdown 渲染 -->
         <MarkdownRenderer
           v-else
           :content="message.content"
           :message-id="message.id"
-          :streaming="message.streaming"
+            :streaming="message.streaming"
           :tool-calls="message.toolCalls || []"
           :generate-image="generateImage"
         />
-
-        <!-- 流式输出光标 -->
-        <span v-if="message.streaming" class="streaming-cursor"></span>
+        <span v-if="message.streaming" class="inline-block w-[2px] h-[1.2em] bg-primary ml-[2px] align-bottom animate-blink"></span>
       </div>
 
       <!-- 操作按钮 -->
-      <div class="message-actions" v-if="!message.streaming">
-        <!-- 复制 -->
-        <var-button
-          text
-          round
-          size="small"
-          class="action-btn"
-          @click="handleCopy"
-        >
+      <div
+        v-if="!message.streaming"
+        class="flex gap-1 mt-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+      >
+        <var-button text round size="small" class="text-text-secondary hover:text-primary hover:bg-surface" @click="handleCopy">
           <var-icon name="content-copy" :size="16" />
         </var-button>
-
-        <!-- 导出到知识库 -->
         <var-button
           v-if="message.role === 'assistant'"
           text
           round
           size="small"
-          class="action-btn"
+          class="text-text-secondary hover:text-primary hover:bg-surface"
           @click="handleExport"
         >
           <var-icon name="book-plus" :size="16" />
@@ -86,7 +63,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import MarkdownRenderer from './MarkdownRenderer/MarkdownRenderer.vue'
 import { Snackbar } from '@varlet/ui'
 
@@ -153,138 +129,4 @@ async function generateImage(prompt) {
 </script>
 
 <style scoped>
-.message-item {
-  display: flex;
-  gap: 12px;
-  padding: 16px;
-  margin: 8px 0;
-  transition: background-color 0.2s;
-}
-
-.message-item:hover {
-  background: var(--color-surface);
-  border-radius: 12px;
-}
-
-.message-avatar {
-  flex-shrink: 0;
-}
-
-.avatar-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.avatar-user {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.avatar-assistant {
-  background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
-  color: white;
-}
-
-.message-content-wrapper {
-  flex: 1;
-  min-width: 0;
-}
-
-.message-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.message-role {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-text-primary);
-}
-
-.message-time {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-}
-
-.message-content {
-  position: relative;
-  line-height: 1.6;
-  word-wrap: break-word;
-}
-
-.user-message-text {
-  padding: 12px 16px;
-  background: var(--color-surface);
-  border-radius: 12px;
-  border-left: 3px solid var(--color-primary);
-  color: var(--color-text-primary);
-  font-size: 15px;
-  white-space: pre-wrap;
-}
-
-.streaming-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 1.2em;
-  background: var(--color-primary);
-  margin-left: 2px;
-  animation: blink 1s infinite;
-  vertical-align: text-bottom;
-}
-
-@keyframes blink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
-  }
-}
-
-.message-actions {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.message-item:hover .message-actions {
-  opacity: 1;
-}
-
-.action-btn {
-  color: var(--color-text-secondary);
-  transition: all 0.2s;
-}
-
-.action-btn:hover {
-  color: var(--color-primary);
-  background: var(--color-surface);
-}
-
-/* 响应式 */
-@media (max-width: 640px) {
-  .message-item {
-    padding: 12px;
-  }
-
-  .avatar-circle {
-    width: 36px;
-    height: 36px;
-  }
-
-  .message-actions {
-    opacity: 1;
-  }
-}
 </style>

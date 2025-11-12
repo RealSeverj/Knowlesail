@@ -115,12 +115,15 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   background: var(--color-body);
+  position: relative;
 }
 
 .messages-container {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
   scroll-behavior: smooth;
 }

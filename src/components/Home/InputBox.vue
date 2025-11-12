@@ -1,6 +1,6 @@
 <template>
   <div class="input-box-container">
-    <!-- 输入框 -->
+    <!-- 输入框区域 -->
     <div class="input-wrapper">
       <var-input
         v-model="inputText"
@@ -8,23 +8,22 @@
         textarea
         :rows="inputRows"
         :maxlength="2000"
-        class="message-input"
+        class="input-field"
         @keydown.enter.exact="handleEnter"
         @input="handleInput"
       />
 
       <!-- 操作按钮组 -->
-      <div class="action-buttons">
+      <div class="button-group">
         <!-- 语音输入按钮 -->
         <var-button
-          type="primary"
           text
           round
-          class="action-btn"
+          class="action-btn icon-btn"
           @click="handleVoiceInput"
           :disabled="isStreaming"
         >
-          <var-icon name="microphone" :size="20" />
+          <var-icon name="plus-circle" :size="20" />
         </var-button>
 
         <!-- 停止生成按钮 -->
@@ -32,11 +31,11 @@
           v-if="isStreaming"
           type="danger"
           round
-          class="action-btn stop-btn"
+          class="action-btn send-btn"
           @click="handleStop"
         >
-          <var-icon name="stop-circle-outline" :size="20" />
-          <span class="ml-1">停止</span>
+          <var-icon name="window-close" :size="20" />
+          <span class="btn-text">停止</span>
         </var-button>
 
         <!-- 发送按钮 -->
@@ -48,17 +47,10 @@
           @click="handleSend"
           :disabled="!canSend || isStreaming"
         >
-          <var-icon name="send" :size="20" />
-          <span class="ml-1">发送</span>
+          <var-icon name="chevron-right" :size="20" />
+          <span class="btn-text">发送</span>
         </var-button>
       </div>
-    </div>
-
-    <!-- 字数统计 -->
-    <div class="input-footer" v-if="inputText.length > 0">
-      <span class="text-xs text-gray-500">
-        {{ inputText.length }} / 2000
-      </span>
     </div>
   </div>
 </template>
@@ -117,23 +109,35 @@ function handleVoiceInput() {
 </script>
 
 <style scoped>
+/* 输入框容器 - 固定在底部,在底部导航之上 */
 .input-box-container {
-  padding: 12px 16px;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: var(--color-body);
   border-top: 1px solid var(--color-border);
+  padding: 12px 16px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* 输入区域包装器 */
 .input-wrapper {
   display: flex;
   align-items: flex-end;
   gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.message-input {
+/* 输入框 */
+.input-field {
   flex: 1;
+  min-width: 0;
 }
 
-.message-input :deep(.var-input__textarea) {
+:deep(.var-input__textarea) {
   border-radius: 12px;
   background: var(--color-surface);
   padding: 12px 16px;
@@ -141,84 +145,96 @@ function handleVoiceInput() {
   line-height: 1.5;
   resize: none;
   border: 1px solid var(--color-border);
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.2s ease-in-out;
 }
 
-.message-input :deep(.var-input__textarea:focus) {
+:deep(.var-input__textarea:focus) {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
-.action-buttons {
+/* 按钮组 */
+.button-group {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
 }
 
+/* 按钮基础样式 - 防止被拉伸 */
 .action-btn {
-  min-width: auto;
-  height: 40px;
-  padding: 0 16px;
+  flex-shrink: 0;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap;
 }
 
+/* 图标按钮 */
+.icon-btn {
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 0 !important;
+}
+
+/* 发送/停止按钮 */
 .send-btn {
-  background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+  padding: 0 16px !important;
+  min-width: auto !important;
 }
 
-.send-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+.btn-text {
+  margin-left: 4px;
+  font-size: 14px;
+  line-height: 1;
 }
 
-.send-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.stop-btn {
-  background: linear-gradient(135deg, #ea4335 0%, #ff6b6b 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(234, 67, 53, 0.3);
-  animation: pulse-stop 1.5s infinite;
-}
-
-.input-footer {
+/* 字数统计 */
+.char-count {
   display: flex;
   justify-content: flex-end;
   margin-top: 8px;
   padding: 0 4px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-@keyframes pulse-stop {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
+.char-count span {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 /* 响应式 */
 @media (max-width: 640px) {
   .input-box-container {
-    padding: 8px 12px;
+    padding: 10px 12px;
   }
 
-  .input-wrapper {
-    gap: 8px;
-  }
-
-  .action-btn {
-    padding: 0 12px;
-    height: 36px;
-  }
-
-  .action-btn span {
+  .btn-text {
     display: none;
   }
+
+  .send-btn {
+    width: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+  }
+}
+
+/* 强制覆盖 Varlet UI 的默认样式 */
+:deep(.var-button) {
+  flex-shrink: 0 !important;
+}
+
+:deep(.var-button__content) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
 }
 </style>

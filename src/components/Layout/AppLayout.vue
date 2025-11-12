@@ -23,7 +23,6 @@ const needsPadding = computed(() => {
     <main 
       class="main-content"
       :class="{
-        'pb-16': !hideBottomNav,
         'p-4': needsPadding
       }"
     >
@@ -47,6 +46,8 @@ const needsPadding = computed(() => {
 
 .main-content {
   min-height: 100vh;
+  /* 预留底部导航高度 + 安全区，防止输入框被遮挡 */
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
 /* 页面切换动画 */

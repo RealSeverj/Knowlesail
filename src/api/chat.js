@@ -1,19 +1,12 @@
-/**
- * 聊天 API 服务层
- * 负责与后端 MCP API 的通信
- */
+import { apiBaseURL } from './axios-config'
 
-const API_BASE_URL = 'http://118.196.24.221:20001/mcp/api/v1'
-
-/**
- * 发送消息并接收流式响应
- * @param {string} message - 用户消息
- * @param {Function} onChunk - 接收文本片段的回调
- * @param {Function} onToolCall - 接收工具调用的回调
- * @param {Function} onToolResult - 接收工具结果的回调
- * @param {AbortSignal} signal - 用于取消请求的信号
- * @returns {Promise<string>} 完整的响应文本
- */
+// 发送消息并接收流式响应
+// message: 用户消息
+// onChunk: 每次增量文本回调 (chunk, accumulated)
+// onToolCall: 工具调用发生回调 (toolNames[])
+// onToolResult: 工具返回结果回调 (resultStr, accumulated)
+// signal: AbortSignal 用于取消
+// 返回: Promise<string> 最终累计文本
 export async function sendMessageStream(
   message,
   { onChunk, onToolCall, onToolResult, signal } = {}
@@ -22,7 +15,7 @@ export async function sendMessageStream(
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/chat/sse?message=${encodeURIComponent(message)}`,
+      `${apiBaseURL}/mcp/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
       {
         method: 'GET',
         headers: {
@@ -106,9 +99,7 @@ export async function sendMessageStream(
   }
 }
 
-/**
- * 将形如 "\n" 的转义序列还原为实际换行/制表符
- */
+// 将形如 "\n" 的转义序列还原为实际换行/制表符
 function decodeEscapedNewlines(str) {
   if (typeof str !== 'string') return str
   if (str.indexOf('\\') === -1) return str

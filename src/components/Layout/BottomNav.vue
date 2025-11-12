@@ -78,7 +78,8 @@ const activeTab = computed({
 .bottom-nav {
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  z-index: 1000;
+  /* 确保底部导航在最底层,输入框在其之上 */
+  z-index: 50 !important;
 }
 
 :deep(.var-bottom-navigation-item) {
