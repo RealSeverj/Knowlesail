@@ -51,6 +51,7 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import MessageItem from './MessageItem.vue'
 import InputBox from './InputBox.vue'
+import { throttle } from '@/utils/common'
 
 const chatStore = useChatStore()
 
@@ -98,15 +99,19 @@ watch(
 // 监听最后一条消息内容变化（流式输出）
 watch(
   () => messages.value[messages.value.length - 1]?.content,
-  () => {
-    scrollToBottom()
-  }
+  throttle(()=>{
+    nextTick(()=>{
+      scrollToBottom()
+    })
+  })
 )
 
 // 初始化
 onMounted(() => {
   chatStore.loadConversations()
-  scrollToBottom()
+  nextTick(()=>{
+    scrollToBottom()
+  })
 })
 </script>
 
