@@ -1,3 +1,7 @@
+<script setup>
+// 社区知识库页面
+</script>
+
 <template>
   <div class="community-page">
     <div class="text-center py-12">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 社区知识库页面
-</script>
 
 <style scoped>
 .community-page {

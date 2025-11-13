@@ -1,3 +1,7 @@
+<script setup>
+// 注册页面
+</script>
+
 <template>
   <div class="register-page min-h-screen bg-background flex items-center justify-center p-6">
     <div class="text-center max-w-md w-full">
@@ -8,10 +12,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 注册页面
-</script>
 
 <style scoped>
 .register-page {

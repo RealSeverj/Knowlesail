@@ -28,7 +28,8 @@ http.interceptors.response.use(
 
 // 轻量 apiClient：仅做最简封装，url 使用相对路径（例如 /mcp/api/v1/xxx）
 export const apiClient = {
-  get: (url, options) => http.get(url, options?.params ? { params: options.params, ...options } : options),
+  get: (url, options) =>
+    http.get(url, options?.params ? { params: options.params, ...options } : options),
   post: (url, options) => http.post(url, options?.body, options),
   put: (url, options) => http.put(url, options?.body, options),
   patch: (url, options) => http.patch(url, options?.body, options),

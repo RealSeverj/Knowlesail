@@ -100,8 +100,7 @@ export const useChatStore = defineStore('chat', () => {
 
     // 自动更新会话标题（使用第一条用户消息）
     if (currentConversation.value.messages.length === 1 && role === 'user') {
-      currentConversation.value.title =
-        content.slice(0, 30) + (content.length > 30 ? '...' : '')
+      currentConversation.value.title = content.slice(0, 30) + (content.length > 30 ? '...' : '')
     }
 
     autoSave()
@@ -114,9 +113,7 @@ export const useChatStore = defineStore('chat', () => {
   function updateMessage(messageId, content) {
     if (!currentConversation.value) return
 
-    const message = currentConversation.value.messages.find(
-      (m) => m.id === messageId
-    )
+    const message = currentConversation.value.messages.find((m) => m.id === messageId)
     if (message) {
       message.content = content
       message.timestamp = new Date().toISOString()
@@ -129,9 +126,7 @@ export const useChatStore = defineStore('chat', () => {
   function updateToolCalls(messageId, toolCalls) {
     if (!currentConversation.value) return
 
-    const message = currentConversation.value.messages.find(
-      (m) => m.id === messageId
-    )
+    const message = currentConversation.value.messages.find((m) => m.id === messageId)
     if (message) {
       message.toolCalls = Array.isArray(toolCalls) ? [...toolCalls] : []
       message.timestamp = new Date().toISOString()
@@ -144,9 +139,7 @@ export const useChatStore = defineStore('chat', () => {
   function finishStreaming(messageId) {
     if (!currentConversation.value) return
 
-    const message = currentConversation.value.messages.find(
-      (m) => m.id === messageId
-    )
+    const message = currentConversation.value.messages.find((m) => m.id === messageId)
     if (message) {
       message.streaming = false
     }
@@ -196,10 +189,7 @@ export const useChatStore = defineStore('chat', () => {
       if (error.name === 'AbortError') {
         finishStreaming(assistantMessage.id)
       } else {
-        updateMessage(
-          assistantMessage.id,
-          '抱歉，发送消息时出现错误。请稍后重试。'
-        )
+        updateMessage(assistantMessage.id, '抱歉，发送消息时出现错误。请稍后重试。')
         finishStreaming(assistantMessage.id)
         throw error
       }

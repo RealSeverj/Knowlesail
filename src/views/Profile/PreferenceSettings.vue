@@ -1,3 +1,7 @@
+<script setup>
+// 偏好设置页面
+</script>
+
 <template>
   <div class="preference-settings-page min-h-screen bg-background p-4">
     <div class="text-center py-12">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 偏好设置页面
-</script>
 
 <style scoped>
 .preference-settings-page {

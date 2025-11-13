@@ -1,3 +1,7 @@
+<script setup>
+// 课程表页面
+</script>
+
 <template>
   <div class="curriculum-view min-h-screen bg-background flex items-center justify-center p-6">
     <div class="text-center">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 课程表页面
-</script>
 
 <style scoped>
 .curriculum-view {

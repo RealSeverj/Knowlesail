@@ -1,12 +1,12 @@
+<script setup>
+import ChatInterface from '@/components/Home/ChatInterface.vue'
+</script>
+
 <template>
   <div class="home-view">
     <ChatInterface />
   </div>
 </template>
-
-<script setup>
-import ChatInterface from '@/components/Home/ChatInterface.vue'
-</script>
 
 <style scoped>
 .home-view {

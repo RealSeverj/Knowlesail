@@ -48,7 +48,7 @@ const activeTab = computed({
     return route.name
   },
   set(val) {
-    const target = navItems.find(n => n.name === val)
+    const target = navItems.find((n) => n.name === val)
     if (!target) return
     if (route.path !== target.path) {
       router.push(target.path)
@@ -58,12 +58,7 @@ const activeTab = computed({
 </script>
 
 <template>
-  <var-bottom-navigation
-    v-model:active="activeTab"
-    fixed
-    safe-area
-    class="bottom-nav"
-  >
+  <var-bottom-navigation v-model:active="activeTab" fixed safe-area class="bottom-nav">
     <var-bottom-navigation-item
       v-for="item in navItems"
       :key="item.name"

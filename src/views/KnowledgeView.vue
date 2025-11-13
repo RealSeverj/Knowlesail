@@ -1,3 +1,32 @@
+<script setup>
+import { ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+const activeTab = ref(2) // 默认显示我的笔记
+
+// 根据当前路由设置激活标签
+watch(
+  () => route.name,
+  (newName) => {
+    if (newName === 'OfficialKnowledge') activeTab.value = 0
+    else if (newName === 'CommunityKnowledge') activeTab.value = 1
+    else if (newName === 'MyNotes') activeTab.value = 2
+  },
+  { immediate: true }
+)
+
+// 监听标签切换
+watch(activeTab, (newTab) => {
+  const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
+  const targetRoute = routes[newTab]
+  if (route.name !== targetRoute) {
+    router.push({ name: targetRoute })
+  }
+})
+</script>
+
 <template>
   <div class="knowledge-view min-h-screen bg-background">
     <!-- 顶部标签导航 -->
@@ -13,31 +42,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-
-const router = useRouter()
-const route = useRoute()
-const activeTab = ref(2) // 默认显示我的笔记
-
-// 根据当前路由设置激活标签
-watch(() => route.name, (newName) => {
-  if (newName === 'OfficialKnowledge') activeTab.value = 0
-  else if (newName === 'CommunityKnowledge') activeTab.value = 1
-  else if (newName === 'MyNotes') activeTab.value = 2
-}, { immediate: true })
-
-// 监听标签切换
-watch(activeTab, (newTab) => {
-  const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
-  const targetRoute = routes[newTab]
-  if (route.name !== targetRoute) {
-    router.push({ name: targetRoute })
-  }
-})
-</script>
 
 <style scoped>
 .knowledge-view {

@@ -1,62 +1,5 @@
-<template>
-  <div class="input-box-container">
-    <!-- 输入框区域 -->
-    <div class="input-wrapper">
-      <var-input
-        v-model="inputText"
-        placeholder="输入消息..."
-        textarea
-        :rows="inputRows"
-        :maxlength="2000"
-        class="input-field"
-        @keydown.enter.exact="handleEnter"
-        @input="handleInput"
-      />
-
-      <!-- 操作按钮组 -->
-      <div class="button-group">
-        <!-- 语音输入按钮 -->
-        <var-button
-          text
-          round
-          class="action-btn icon-btn"
-          @click="handleVoiceInput"
-          :disabled="isStreaming"
-        >
-          <var-icon name="plus-circle" :size="20" />
-        </var-button>
-
-        <!-- 停止生成按钮 -->
-        <var-button
-          v-if="isStreaming"
-          type="danger"
-          round
-          class="action-btn send-btn"
-          @click="handleStop"
-        >
-          <var-icon name="window-close" :size="20" />
-          <span class="btn-text">停止</span>
-        </var-button>
-
-        <!-- 发送按钮 -->
-        <var-button
-          v-else
-          type="primary"
-          round
-          class="action-btn send-btn"
-          @click="handleSend"
-          :disabled="!canSend || isStreaming"
-        >
-          <var-icon name="chevron-right" :size="20" />
-          <span class="btn-text">发送</span>
-        </var-button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useChatStore } from '@/stores/chat'
 
 const chatStore = useChatStore()
@@ -108,6 +51,63 @@ function handleVoiceInput() {
 }
 </script>
 
+<template>
+  <div class="input-box-container">
+    <!-- 输入框区域 -->
+    <div class="input-wrapper">
+      <var-input
+        v-model="inputText"
+        placeholder="输入消息..."
+        textarea
+        :rows="inputRows"
+        :maxlength="2000"
+        class="input-field"
+        @keydown.enter.exact="handleEnter"
+        @input="handleInput"
+      />
+
+      <!-- 操作按钮组 -->
+      <div class="button-group">
+        <!-- 语音输入按钮 -->
+        <var-button
+          text
+          round
+          class="action-btn icon-btn"
+          :disabled="isStreaming"
+          @click="handleVoiceInput"
+        >
+          <var-icon name="plus-circle" :size="20" />
+        </var-button>
+
+        <!-- 停止生成按钮 -->
+        <var-button
+          v-if="isStreaming"
+          type="danger"
+          round
+          class="action-btn send-btn"
+          @click="handleStop"
+        >
+          <var-icon name="window-close" :size="20" />
+          <span class="btn-text">停止</span>
+        </var-button>
+
+        <!-- 发送按钮 -->
+        <var-button
+          v-else
+          type="primary"
+          round
+          class="action-btn send-btn"
+          :disabled="!canSend || isStreaming"
+          @click="handleSend"
+        >
+          <var-icon name="chevron-right" :size="20" />
+          <span class="btn-text">发送</span>
+        </var-button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 /* 输入框容器 - 固定在底部,在底部导航之上 */
 .input-box-container {
@@ -145,7 +145,9 @@ function handleVoiceInput() {
   line-height: 1.5;
   resize: none;
   border: 1px solid var(--color-border);
-  transition: border-color 0.3s, box-shadow 0.2s ease-in-out;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.2s ease-in-out;
 }
 
 :deep(.var-input__textarea:focus) {

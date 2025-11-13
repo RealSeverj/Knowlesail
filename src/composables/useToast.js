@@ -13,7 +13,7 @@ export function useToastBus() {
     const toast = {
       id,
       type: opts.type || 'info',
-      message,
+      message
     }
     state.toasts.unshift(toast)
 
@@ -26,14 +26,14 @@ export function useToastBus() {
   }
 
   function remove(id) {
-    const i = state.toasts.findIndex(t => t.id === id)
+    const i = state.toasts.findIndex((t) => t.id === id)
     if (i > -1) state.toasts.splice(i, 1)
   }
 
   return {
     toasts: state.toasts,
     show,
-    remove,
+    remove
   }
 }
 
@@ -45,6 +45,6 @@ export function useToast() {
     success: (m, o) => bus.show(m, { ...o, type: 'success' }),
     warning: (m, o) => bus.show(m, { ...o, type: 'warning' }),
     error: (m, o) => bus.show(m, { ...o, type: 'error' }),
-    remove: bus.remove,
+    remove: bus.remove
   }
 }

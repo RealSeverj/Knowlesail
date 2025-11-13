@@ -1,3 +1,7 @@
+<script setup>
+// 个人信息编辑页面
+</script>
+
 <template>
   <div class="profile-edit-page min-h-screen bg-background p-4">
     <div class="text-center py-12">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 个人信息编辑页面
-</script>
 
 <style scoped>
 .profile-edit-page {

@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
     const devUser = {
       id: 'dev',
       name: '开发模式用户',
-      role: 'dev',
+      role: 'dev'
     }
     login(devUser, 'dev-skip-token')
     console.info('[auth] 已在开发模式下跳过登录')

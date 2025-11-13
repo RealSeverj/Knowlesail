@@ -40,10 +40,7 @@ export const useLibraryCache = () => {
 
   // 总缓存数量
   const totalCacheSize = computed(() =>
-    Object.values(state.cacheStates).reduce(
-      (acc, s) => acc + (s?.cached ? s.size || 0 : 0),
-      0
-    )
+    Object.values(state.cacheStates).reduce((acc, s) => acc + (s?.cached ? s.size || 0 : 0), 0)
   )
 
   // 初始化：加载本地存储的设置和缓存状态
@@ -149,10 +146,7 @@ export const useLibraryCache = () => {
           headers: { Accept: 'application/javascript, text/javascript, */*' }
         }),
         new Promise((_, reject) =>
-          setTimeout(
-            () => reject(new Error(`下载超时（${lib.timeout}ms）`)),
-            lib.timeout
-          )
+          setTimeout(() => reject(new Error(`下载超时（${lib.timeout}ms）`)), lib.timeout)
         )
       ])
 
@@ -185,9 +179,7 @@ export const useLibraryCache = () => {
       }
       libBlobs[libId] = blobUrl
 
-      toast.success(
-        `${lib.name} 下载完成 (${(blob.size / 1024 / 1024).toFixed(2)} MB)`
-      )
+      toast.success(`${lib.name} 下载完成 (${(blob.size / 1024 / 1024).toFixed(2)} MB)`)
       return true
     } catch (error) {
       const errorMsg = error.message || '下载失败'
@@ -288,8 +280,7 @@ export const useLibraryCache = () => {
       return !cacheState?.cached && !cacheState?.isDownloading
     })
 
-    if (unCachedLibIds.length === 0)
-      return toast.success('所有启用的库已缓存完成')
+    if (unCachedLibIds.length === 0) return toast.success('所有启用的库已缓存完成')
 
     // 显示总进度提示
     const total = unCachedLibIds.length
@@ -321,9 +312,7 @@ export const useLibraryCache = () => {
       }
 
       // 统计结果
-      const success = results.filter(
-        (r) => r.status === 'fulfilled' && r.value.result
-      ).length
+      const success = results.filter((r) => r.status === 'fulfilled' && r.value.result).length
       const failed = total - success
       const failedIds = results
         .filter((r) => r.status !== 'fulfilled' || !r.value.result)
@@ -335,8 +324,7 @@ export const useLibraryCache = () => {
         toast.success(`所有 ${success} 个库下载完成`)
       } else {
         toast.warning(
-          `${success} 个库下载成功，${failed} 个失败\n` +
-            `失败库ID: ${failedIds.join(', ')}`,
+          `${success} 个库下载成功，${failed} 个失败\n` + `失败库ID: ${failedIds.join(', ')}`,
           { duration: 6000 } // 延长显示时间
         )
       }
@@ -362,9 +350,7 @@ export const useLibraryCache = () => {
 
       const a = document.createElement('a')
       a.href = url
-      a.download = `library-config-${new Date()
-        .toISOString()
-        .slice(0, 10)}.json`
+      a.download = `library-config-${new Date().toISOString().slice(0, 10)}.json`
       a.click()
 
       URL.revokeObjectURL(url)

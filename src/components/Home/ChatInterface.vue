@@ -1,51 +1,3 @@
-<template>
-  <div class="chat-interface">
-    <!-- 消息列表区域 -->
-    <div ref="messagesContainer" class="messages-container">
-      <!-- 空状态 -->
-      <div v-if="messages.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <var-icon name="chat-outline" :size="64" />
-        </div>
-        <h3 class="empty-title">开始新对话</h3>
-        <p class="empty-description">向 AI 助手提问，获取智能回答</p>
-
-        <!-- 快捷操作 -->
-        <div class="quick-actions">
-          <var-button
-            v-for="action in quickActions"
-            :key="action.text"
-            class="quick-action-btn"
-            @click="handleQuickAction(action.text)"
-          >
-            <var-icon :name="action.icon" />
-            <span>{{ action.text }}</span>
-          </var-button>
-        </div>
-      </div>
-
-      <!-- 消息列表 -->
-      <div v-else class="messages-list">
-        <MessageItem
-          v-for="message in messages"
-          :key="message.id"
-          :message="message"
-          @export="handleExportMessage"
-        />
-
-        <!-- 加载占位 -->
-        <div v-if="isLoading" class="loading-placeholder">
-          <var-loading type="wave"/>
-          <span class="ml-2">AI 正在思考...</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 输入框 -->
-    <InputBox />
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
@@ -99,8 +51,8 @@ watch(
 // 监听最后一条消息内容变化（流式输出）
 watch(
   () => messages.value[messages.value.length - 1]?.content,
-  throttle(()=>{
-    nextTick(()=>{
+  throttle(() => {
+    nextTick(() => {
       scrollToBottom()
     })
   })
@@ -109,11 +61,59 @@ watch(
 // 初始化
 onMounted(() => {
   chatStore.loadConversations()
-  nextTick(()=>{
+  nextTick(() => {
     scrollToBottom()
   })
 })
 </script>
+
+<template>
+  <div class="chat-interface">
+    <!-- 消息列表区域 -->
+    <div ref="messagesContainer" class="messages-container">
+      <!-- 空状态 -->
+      <div v-if="messages.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <var-icon name="chat-outline" :size="64" />
+        </div>
+        <h3 class="empty-title">开始新对话</h3>
+        <p class="empty-description">向 AI 助手提问，获取智能回答</p>
+
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+          <var-button
+            v-for="action in quickActions"
+            :key="action.text"
+            class="quick-action-btn"
+            @click="handleQuickAction(action.text)"
+          >
+            <var-icon :name="action.icon" />
+            <span>{{ action.text }}</span>
+          </var-button>
+        </div>
+      </div>
+
+      <!-- 消息列表 -->
+      <div v-else class="messages-list">
+        <MessageItem
+          v-for="message in messages"
+          :key="message.id"
+          :message="message"
+          @export="handleExportMessage"
+        />
+
+        <!-- 加载占位 -->
+        <div v-if="isLoading" class="loading-placeholder">
+          <var-loading type="wave" />
+          <span class="ml-2">AI 正在思考...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 输入框 -->
+    <InputBox />
+  </div>
+</template>
 
 <style scoped>
 .chat-interface {

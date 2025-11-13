@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 export const useKnowledgeStore = defineStore('knowledge', () => {
   const notes = ref([])
-  
+
   return {
     notes
   }
