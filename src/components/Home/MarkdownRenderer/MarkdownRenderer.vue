@@ -20,9 +20,7 @@ const props = defineProps({
 const emits = defineEmits(['updateHeight'])
 
 const processedContent = computed(() => {
-  return props.content
-    .replace(/<htmath>/g, '```htmath\n')
-    .replace(/<\/htmath>/g, '\n```')
+  return props.content.replace(/<htmath>/g, '```htmath\n').replace(/<\/htmath>/g, '\n```')
 })
 
 // 自定义内置渲染
@@ -105,20 +103,17 @@ const selfCodeXRender = {
       :default-theme-mode="theme"
       class="markdown-prase"
     >
-      <template #img="{ ...props }">
+      <template #img="{ ...imgProps }">
         <img
-          :key="props.key"
-          :src="props.src"
-          :alt="props.alt"
+          :key="imgProps.key"
+          :src="imgProps.src"
+          :alt="imgProps.alt"
           onerror="this.classList.add('error');"
         />
       </template>
     </XMarkdown>
     <!-- MCP 工具调用状态条 -->
-    <div
-      v-if="props.toolCalls && props.toolCalls.length"
-      class="tool-call-banner"
-    >
+    <div v-if="props.toolCalls && props.toolCalls.length" class="tool-call-banner">
       <span class="tool-call-title">正在调用工具：</span>
       <span v-for="name in props.toolCalls" :key="name" class="tool-call-chip">
         <span class="tool-call-spinner" aria-hidden="true"></span>

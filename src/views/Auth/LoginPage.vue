@@ -1,3 +1,7 @@
+<script setup>
+// 登录页面
+</script>
+
 <template>
   <div class="login-page min-h-screen bg-background flex items-center justify-center p-6">
     <div class="text-center max-w-md w-full">
@@ -8,10 +12,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 登录页面
-</script>
 
 <style scoped>
 .login-page {

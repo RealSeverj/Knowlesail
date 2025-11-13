@@ -5,7 +5,12 @@ import { useLibraryCache } from '@/composables/useLibraryCache' // 缓存管理�
 
 const { libBlobs } = useLibraryCache()
 
-const props = defineProps({ html: String })
+const props = defineProps({
+  html: {
+    type: String,
+    required: true
+  }
+})
 const iframeRef = useTemplateRef('iframeRef')
 const emit = defineEmits(['updateHeight'])
 const loading = ref(true)
@@ -95,7 +100,7 @@ watch(
 
 <template>
   <div class="htmath-container">
-    <div class="loading" v-if="loading">
+    <div v-if="loading" class="loading">
       <div class="loading-indicator">
         <div class="spinner"></div>
         <span>正在加载可视化</span>

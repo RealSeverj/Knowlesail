@@ -6,11 +6,11 @@ const state = reactive({
   message: '',
   confirmText: '确认',
   cancelText: '取消',
-  _resolver: null,
+  _resolver: null
 })
 
-export function useConfirmBus(){
-  function open(opts={}){
+export function useConfirmBus() {
+  function open(opts = {}) {
     state.title = opts.title || '确认操作'
     state.message = opts.message || ''
     state.confirmText = opts.confirmText || '确认'
@@ -20,25 +20,25 @@ export function useConfirmBus(){
       state._resolver = resolve
     })
   }
-  function resolveConfirm(val){
-    if(state._resolver) state._resolver(val)
+  function resolveConfirm(val) {
+    if (state._resolver) state._resolver(val)
     cleanup()
   }
-  function resolveCancel(val){
-    if(state._resolver) state._resolver(val)
+  function resolveCancel(val) {
+    if (state._resolver) state._resolver(val)
     cleanup()
   }
-  function cleanup(){
+  function cleanup() {
     state.open = false
     state._resolver = null
   }
   return { state, open, resolveConfirm, resolveCancel }
 }
 
-export function useConfirm(){
+export function useConfirm() {
   const bus = useConfirmBus()
   return {
-    confirm: (message, opts={}) => bus.open({ message, ...opts }),
-    open: bus.open,
+    confirm: (message, opts = {}) => bus.open({ message, ...opts }),
+    open: bus.open
   }
 }

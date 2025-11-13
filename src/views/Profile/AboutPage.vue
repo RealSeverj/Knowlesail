@@ -1,3 +1,7 @@
+<script setup>
+// 关于页面
+</script>
+
 <template>
   <div class="about-page min-h-screen bg-background p-4">
     <div class="text-center py-12">
@@ -8,10 +12,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 关于页面
-</script>
 
 <style scoped>
 .about-page {

@@ -1,3 +1,7 @@
+<script setup>
+// 我的笔记页面
+</script>
+
 <template>
   <div class="my-notes-page">
     <div class="text-center py-12">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 我的笔记页面
-</script>
 
 <style scoped>
 .my-notes-page {

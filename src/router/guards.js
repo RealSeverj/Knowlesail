@@ -5,10 +5,10 @@ export function setupRouterGuards(router) {
   // 全局前置守卫
   router.beforeEach((to, from, next) => {
     const authStore = useAuthStore()
-    
+
     // 设置页面标题
     document.title = to.meta.title ? `${to.meta.title} - 学海智航` : '学海智航'
-    
+
     // 检查是否需要认证
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
       // 未登录，重定向到登录页

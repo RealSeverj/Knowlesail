@@ -15,9 +15,7 @@ export async function sendMessageStream(
 
   try {
     const response = await fetch(
-      `${apiBaseURL}/mcp/api/v1/chat/sse?message=${encodeURIComponent(
-        message
-      )}`,
+      `${apiBaseURL}/mcp/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
       {
         method: 'GET',
         headers: {
@@ -59,10 +57,7 @@ export async function sendMessageStream(
             // 2) MCP 工具调用提示
             if (Array.isArray(data.tool_calls) && data.tool_calls.length > 0) {
               const toolNames = data.tool_calls
-                .map(
-                  (tc) =>
-                    tc?.function?.name || tc?.custom?.name || tc?.type || '工具'
-                )
+                .map((tc) => tc?.function?.name || tc?.custom?.name || tc?.type || '工具')
                 .filter(Boolean)
               if (onToolCall) {
                 onToolCall(toolNames)
@@ -72,9 +67,7 @@ export async function sendMessageStream(
             // 3) MCP 工具返回结果
             if (data.result) {
               const raw =
-                typeof data.result === 'string'
-                  ? data.result
-                  : JSON.stringify(data.result, null, 2)
+                typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2)
               const resultStr = decodeEscapedNewlines(raw)
               accumulatedText += resultStr
               if (onToolResult) {

@@ -20,7 +20,7 @@ const needsPadding = computed(() => {
 <template>
   <div class="app-layout">
     <!-- 主内容区 -->
-    <main 
+    <main
       class="main-content"
       :class="{
         'p-4': needsPadding

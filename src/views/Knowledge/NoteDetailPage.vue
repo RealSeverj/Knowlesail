@@ -1,3 +1,11 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const noteId = computed(() => route.params.id)
+</script>
+
 <template>
   <div class="note-detail-page min-h-screen bg-background p-4">
     <div class="text-center py-12">
@@ -7,14 +15,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const noteId = computed(() => route.params.id)
-</script>
 
 <style scoped>
 .note-detail-page {

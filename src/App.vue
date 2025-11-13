@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted,provide } from 'vue'
+import { onMounted, provide } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import AppLayout from '@/components/Layout/AppLayout.vue'
 
-const { theme,initTheme } = useTheme()
+const { theme, initTheme } = useTheme()
 
 onMounted(() => {
   initTheme()

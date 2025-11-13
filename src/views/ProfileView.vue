@@ -1,3 +1,7 @@
+<script setup>
+// 个人中心页面
+</script>
+
 <template>
   <div class="profile-view min-h-screen bg-background flex items-center justify-center p-6">
     <div class="text-center">
@@ -7,10 +11,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 个人中心页面
-</script>
 
 <style scoped>
 .profile-view {
