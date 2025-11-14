@@ -3,6 +3,7 @@ import { setupRouterGuards } from './guards'
 
 // 主要页面
 import HomeView from '@/views/HomeView.vue'
+import ChatHistoryPage from '@/views/Home/ChatHistoryPage.vue'
 import CurriculumView from '@/views/CurriculumView.vue'
 import TodoView from '@/views/TodoView.vue'
 import KnowledgeView from '@/views/KnowledgeView.vue'
@@ -35,6 +36,12 @@ const routes = [
     name: 'Home',
     component: HomeView,
     meta: { requiresAuth: true, title: '智能助手' }
+  },
+  {
+    path: '/home/history',
+    name: 'ChatHistory',
+    component: ChatHistoryPage,
+    meta: { requiresAuth: true, title: '聊天历史' }
   },
   {
     path: '/curriculum',

@@ -2,6 +2,8 @@
 import { onMounted, provide } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import AppLayout from '@/components/Layout/AppLayout.vue'
+import ToastContainer from '@/components/ToastContainer.vue'
+import ConfirmDialogHost from '@/components/ConfirmDialog.vue'
 
 const { theme, initTheme } = useTheme()
 
@@ -14,6 +16,8 @@ provide('theme', theme)
 </script>
 
 <template>
+  <ToastContainer />
+  <ConfirmDialogHost />
   <div id="app" class="min-h-screen bg-background text-foreground transition-colors">
     <AppLayout />
   </div>

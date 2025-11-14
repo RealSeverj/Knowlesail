@@ -1,153 +1,296 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
 
-const chatStore = useChatStore()
+const props = defineProps({
+  expanded: {
+    type: Boolean,
+    default: false
+  }
+})
 
+const emit = defineEmits(['request-expand', 'request-collapse', 'height-change'])
+
+const chatStore = useChatStore()
+const expanded = computed(() => props.expanded)
+
+const textareaRows = ref(1)
 const inputText = ref('')
-const inputRows = ref(1)
+const MAX_ROWS = 5
+const shellRef = ref(null)
+let resizeObserver = null
 
 const isStreaming = computed(() => chatStore.isStreaming)
-const canSend = computed(() => inputText.value.trim().length > 0)
+const canSend = computed(() => inputText.value.trim().length > 0 && !isStreaming.value)
 
-// 自动调整输入框高度
-function handleInput() {
-  const lines = inputText.value.split('\n').length
-  inputRows.value = Math.min(Math.max(lines, 1), 5)
+const syncTextareaRows = () => {
+  const lineCount = inputText.value.split('\n').length
+  textareaRows.value = Math.min(Math.max(lineCount, 1), MAX_ROWS)
 }
 
-// 处理回车发送
-function handleEnter(e) {
-  if (!e.shiftKey && canSend.value && !isStreaming.value) {
-    e.preventDefault()
+watch(inputText, syncTextareaRows, { immediate: true })
+
+const emitHeight = () => {
+  nextTick(() => {
+    const height = expanded.value && shellRef.value ? shellRef.value.offsetHeight : 0
+    emit('height-change', height)
+  })
+}
+
+const initResizeObserver = () => {
+  if (typeof ResizeObserver === 'undefined' || !shellRef.value) return
+  resizeObserver = new ResizeObserver(() => {
+    emitHeight()
+  })
+  resizeObserver.observe(shellRef.value)
+}
+
+watch([expanded, textareaRows], emitHeight)
+
+onMounted(() => {
+  nextTick(() => {
+    initResizeObserver()
+    emitHeight()
+  })
+})
+
+onBeforeUnmount(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  }
+  emit('height-change', 0)
+})
+
+const handleEnter = (event) => {
+  if (!event.shiftKey && canSend.value) {
+    event.preventDefault()
     handleSend()
   }
 }
 
-// 发送消息
-async function handleSend() {
-  if (!canSend.value || isStreaming.value) return
+const handleSend = async () => {
+  if (!canSend.value) return
 
-  const message = inputText.value.trim()
+  const payload = inputText.value.trim()
   inputText.value = ''
-  inputRows.value = 1
+  textareaRows.value = 1
 
   try {
-    await chatStore.sendMessage(message)
+    await chatStore.sendMessage(payload)
   } catch (error) {
-    console.error('发送消息失败:', error)
+    console.error('发送消息失败', error)
   }
 }
 
-// 停止生成
-function handleStop() {
+const handleStop = () => {
   chatStore.stopStreaming()
 }
 
-// 语音输入（待实现）
-function handleVoiceInput() {
-  console.log('语音输入功能待实现')
-  // TODO: 集成语音输入功能
+const handleVoiceInput = () => {
+  console.info('语音输入占位: 待接入语音识别能力')
+}
+
+const handleExpand = () => {
+  emit('request-expand')
+}
+
+const handleCollapse = () => {
+  if (isStreaming.value) return
+  emit('request-collapse')
 }
 </script>
 
 <template>
-  <div class="input-box-container">
-    <!-- 输入框区域 -->
-    <div class="input-wrapper">
-      <var-input
-        v-model="inputText"
-        placeholder="输入消息..."
-        textarea
-        :rows="inputRows"
-        :maxlength="2000"
-        class="input-field"
-        @keydown.enter.exact="handleEnter"
-        @input="handleInput"
-      />
+  <div class="floating-input-layer">
+    <div
+      ref="shellRef"
+      class="morph-shell"
+      :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
+    >
+      <button
+        v-if="!expanded"
+        type="button"
+        class="morph-trigger"
+        :disabled="isStreaming"
+        @click="handleExpand"
+      >
+        <var-icon name="chat-processing" :size="28" />
+        <span class="sr-only">展开输入框</span>
+      </button>
 
-      <!-- 操作按钮组 -->
-      <div class="button-group">
-        <!-- 语音输入按钮 -->
-        <var-button
-          text
-          round
-          class="action-btn icon-btn"
-          :disabled="isStreaming"
-          @click="handleVoiceInput"
-        >
-          <var-icon name="plus-circle" :size="20" />
-        </var-button>
+      <transition name="input-panel-fade">
+        <div v-if="expanded" class="input-inner">
+          <var-input
+            v-model="inputText"
+            placeholder="Shift + Enter 换行，Enter 发送"
+            textarea
+            :rows="textareaRows"
+            :maxlength="2000"
+            class="flex-1 text-base"
+            spellcheck="false"
+            @keydown.enter.exact="handleEnter"
+          />
 
-        <!-- 停止生成按钮 -->
-        <var-button
-          v-if="isStreaming"
-          type="danger"
-          round
-          class="action-btn send-btn"
-          @click="handleStop"
-        >
-          <var-icon name="window-close" :size="20" />
-          <span class="btn-text">停止</span>
-        </var-button>
+          <div class="action-group">
+            <var-button
+              text
+              round
+              class="icon-btn collapse-btn"
+              :disabled="isStreaming"
+              @click="handleCollapse"
+            >
+              <var-icon name="chevron-down" :size="20" />
+            </var-button>
 
-        <!-- 发送按钮 -->
-        <var-button
-          v-else
-          type="primary"
-          round
-          class="action-btn send-btn"
-          :disabled="!canSend || isStreaming"
-          @click="handleSend"
-        >
-          <var-icon name="chevron-right" :size="20" />
-          <span class="btn-text">发送</span>
-        </var-button>
-      </div>
+            <var-button
+              text
+              round
+              class="icon-btn"
+              :disabled="isStreaming"
+              @click="handleVoiceInput"
+            >
+              <var-icon name="plus-circle-outline" :size="20" />
+            </var-button>
+
+            <var-button
+              v-if="isStreaming"
+              type="danger"
+              round
+              class="send-btn"
+              @click="handleStop"
+            >
+              <var-icon name="window-close" :size="20" />
+            </var-button>
+
+            <var-button
+              v-else
+              type="primary"
+              round
+              class="send-btn"
+              :disabled="!canSend"
+              @click="handleSend"
+            >
+              <var-icon name="chevron-right" :size="20" />
+            </var-button>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 输入框容器 - 固定在底部,在底部导航之上 */
-.input-box-container {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: var(--color-body);
-  border-top: 1px solid var(--color-border);
-  padding: 12px 16px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+.floating-input-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
 }
 
-/* 输入区域包装器 */
-.input-wrapper {
+.morph-shell {
+  position: absolute;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  right: 24px;
+  width: 64px;
+  max-height: 64px;
+  min-height: 64px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  box-shadow: 0 5px 15px rgba(15, 23, 42, 0.25);
+  pointer-events: auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: bottom right;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.3s ease,
+    background 0.25s ease,
+    box-shadow 0.3s ease,
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.morph-shell.is-streaming:not(.is-expanded) {
+  opacity: 0.85;
+}
+
+.morph-shell.is-expanded {
+  left: 0;
+  right: 0;
+  width: min(768px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--color-body);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.15);
+  max-height: 1000px;
+}
+
+.morph-trigger {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-white, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.morph-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.input-inner {
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-/* 输入框 */
-.input-field {
-  flex: 1;
-  min-width: 0;
+.input-panel-fade-enter-active,
+.input-panel-fade-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.input-panel-fade-enter-from,
+.input-panel-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 :deep(.var-input__textarea) {
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--color-surface);
   padding: 12px 16px;
   font-size: 15px;
   line-height: 1.5;
-  resize: none;
-  border: 1px solid var(--color-border);
-  transition:
-    border-color 0.3s,
-    box-shadow 0.2s ease-in-out;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 :deep(.var-input__textarea:focus) {
@@ -155,88 +298,55 @@ function handleVoiceInput() {
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
-/* 按钮组 */
-.button-group {
+.action-group {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  gap: 10px;
 }
 
-/* 按钮基础样式 - 防止被拉伸 */
-.action-btn {
-  flex-shrink: 0;
-  height: 40px !important;
-  min-height: 40px !important;
-  max-height: 40px !important;
+.icon-btn,
+.send-btn {
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  white-space: nowrap;
 }
 
-/* 图标按钮 */
 .icon-btn {
-  width: 40px !important;
-  min-width: 40px !important;
-  max-width: 40px !important;
+  width: 44px !important;
   padding: 0 !important;
 }
 
-/* 发送/停止按钮 */
-.send-btn {
-  padding: 0 16px !important;
-  min-width: auto !important;
+.collapse-btn {
+  color: var(--color-text-secondary) !important;
 }
 
-.btn-text {
-  margin-left: 4px;
-  font-size: 14px;
-  line-height: 1;
-}
 
-/* 字数统计 */
-.char-count {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-  padding: 0 4px;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.char-count span {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-}
-
-/* 响应式 */
 @media (max-width: 640px) {
-  .input-box-container {
-    padding: 10px 12px;
+  .morph-shell {
+    right: 16px;
+    bottom: calc(70px + env(safe-area-inset-bottom));
   }
 
-  .btn-text {
-    display: none;
+  .morph-shell.is-expanded {
+    width: calc(100% - 24px);
+    padding: 12px;
   }
 
-  .send-btn {
-    width: 40px !important;
-    min-width: 40px !important;
-    padding: 0 !important;
+  .input-inner {
+    gap: 8px;
   }
-}
 
-/* 强制覆盖 Varlet UI 的默认样式 */
-:deep(.var-button) {
-  flex-shrink: 0 !important;
+  .char-indicator {
+    font-size: 10px;
+  }
 }
 
 :deep(.var-button__content) {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 </style>
