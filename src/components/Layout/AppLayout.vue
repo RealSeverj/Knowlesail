@@ -40,12 +40,14 @@ const needsPadding = computed(() => {
 
 <style scoped>
 .app-layout {
-  min-height: 100vh;
-  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-content {
-  min-height: 100vh;
+  flex: 1;
+  overflow: hidden;
   /* 预留底部导航高度 + 安全区，防止输入框被遮挡 */
   padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
