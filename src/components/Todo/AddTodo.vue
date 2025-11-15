@@ -7,6 +7,11 @@ const props = defineProps({
 	show: {
 		type: Boolean,
 		default: false
+	},
+	// 传入待编辑的 todo，不传则为新增模式
+	editingTodo: {
+		type: Object,
+		default: null
 	}
 })
 
@@ -37,6 +42,8 @@ const categoryOptions = computed(() => {
 	return Array.from(set)
 })
 
+const isEditMode = computed(() => !!props.editingTodo)
+
 const isOpen = computed({
 	get() {
 		return props.show
@@ -51,7 +58,20 @@ const canSubmit = computed(() => title.value.trim().length > 0)
 watch(
 	() => props.show,
 	(val) => {
-		if (val) return
+		if (val) {
+			// 打开时根据是否有 editingTodo 进行初始化
+			if (props.editingTodo) {
+				title.value = props.editingTodo.title || ''
+				note.value = props.editingTodo.note || ''
+				category.value = props.editingTodo.category || ''
+				deadline.value = props.editingTodo.deadline || ''
+				priority.value = props.editingTodo.priority || 1
+			} else {
+				reset()
+			}
+			return
+		}
+		// 关闭时重置表单
 		reset()
 	}
 )
@@ -63,13 +83,22 @@ const handleClose = () => {
 
 const handleSubmit = () => {
 	if (!canSubmit.value) return
-	todoStore.addTodo({
+
+	const payload = {
 		title: title.value.trim(),
 		note: note.value.trim(),
 		category: category.value.trim() || '默认',
 		deadline: deadline.value || null,
 		priority: Number(priority.value) || 1
-	})
+	}
+
+	if (isEditMode.value && props.editingTodo) {
+		// 编辑模式：更新已有 todo
+		todoStore.updateTodo(props.editingTodo.id, payload)
+	} else {
+		// 新增模式
+		todoStore.addTodo(payload)
+	}
 	handleClose()
 	reset()
 }
@@ -102,7 +131,9 @@ const handleDatePickerClose = () => {
 	>
 		<div class="max-h-[70vh] rounded-t-3xl bg-[var(--color-surface)] px-4 pb-6 pt-4">
 			<header class="mb-3 flex items-center justify-between">
-				<h2 class="text-base font-semibold text-[var(--color-text-primary)]">添加待办</h2>
+				<h2 class="text-base font-semibold text-[var(--color-text-primary)]">
+					{{ isEditMode ? '编辑待办' : '添加待办' }}
+				</h2>
 				<button
 					class="p-1 text-[var(--color-text-secondary)]"
 					@click="handleClose"

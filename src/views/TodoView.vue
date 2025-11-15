@@ -40,6 +40,7 @@ const gridStyle = computed(() => ({
 
 const showSearch = ref(false)
 const showAdd = ref(false)
+const editingTodo = ref(null)
 
 const handleSwitchQuadrant = (id) => {
   activeQuadrant.value = id
@@ -50,6 +51,7 @@ const handleOpenSearch = () => {
 }
 
 const handleOpenAdd = () => {
+  editingTodo.value = null
   showAdd.value = true
 }
 
@@ -59,6 +61,11 @@ const handleCloseSearch = () => {
 
 const handleCloseAdd = () => {
   showAdd.value = false
+}
+
+const handleEditTodo = (todo) => {
+  editingTodo.value = todo
+  showAdd.value = true
 }
 </script>
 
@@ -73,7 +80,7 @@ const handleCloseAdd = () => {
       </div>
     </header>
 
-    <main class="flex-1 px-4 pb-4 overflow-hidden">
+    <main class="flex-1 px-4 pb-20 pt-4 overflow-hidden">
       <div class="quadrant-grid" :style="gridStyle">
         <div
           v-for="q in quadrants"
@@ -92,6 +99,7 @@ const handleCloseAdd = () => {
             :todos="todoStore.quadrantTodos[q.id]"
             :active="activeQuadrant === q.id"
             :compact="activeQuadrant !== q.id"
+				@edit-todo="handleEditTodo"
             class="h-full"
           />
         </div>
@@ -124,7 +132,11 @@ const handleCloseAdd = () => {
     />
 
     <!-- 添加待办面板 -->
-    <AddTodo v-model:show="showAdd" @close="handleCloseAdd" />
+    <AddTodo
+      v-model:show="showAdd"
+      :editing-todo="editingTodo"
+      @close="handleCloseAdd"
+    />
   </div>
 </template>
 

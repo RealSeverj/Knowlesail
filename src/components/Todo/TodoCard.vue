@@ -20,7 +20,7 @@ const props = defineProps({
 	}
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'edit-todo'])
 
 const handleClick = () => {
 	emit('click')
@@ -61,6 +61,7 @@ const handleClick = () => {
 				v-for="todo in todos"
 				:key="todo.id"
 				:todo="todo"
+				@edit="emit('edit-todo', todo)"
 			/>
 			<p
 				v-if="!todos.length"

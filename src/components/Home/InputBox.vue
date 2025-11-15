@@ -150,7 +150,7 @@ const handleCollapse = () => {
               :disabled="isStreaming"
               @click="handleVoiceInput"
             >
-              <var-icon name="plus-circle-outline" :size="20" />
+              <var-icon name="plus-circle-outline" :size="24" />
             </var-button>
 
             <var-button
