@@ -2,6 +2,9 @@
 
 本仓库已按 Tailwind CSS + Varlet UI 的最佳实践完成配置统一。以下为开发指南，帮助你快速上手并保持代码一致性。
 
+## Todos
+- 为todo加入自然语言添加代办
+
 ## 快速开始
 
 - 安装依赖：`pnpm install`

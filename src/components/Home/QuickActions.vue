@@ -9,7 +9,7 @@ const quickActions = Object.freeze([
 		preset: '请帮我解释以下概念：'
 	},
 	{
-		icon: 'code-tags',
+		icon: 'code-json',
 		title: '帮我写代码',
 		description: '提供示例或修复思路',
 		preset: '请帮我写这段代码：'
@@ -21,7 +21,7 @@ const quickActions = Object.freeze([
 		preset: '请翻译下面的文本：'
 	},
 	{
-		icon: 'lightbulb-outline',
+		icon: 'palette-outline',
 		title: '灵感建议',
 		description: '让 AI 给你思路',
 		preset: '我需要些灵感：'

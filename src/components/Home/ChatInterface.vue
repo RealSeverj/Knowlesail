@@ -2,7 +2,8 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import MessageItem from './MessageItem.vue'
-import QuickActions from './QuickActions.vue'
+import LiveAssistence from './LiveAssistence.vue'
+import { fetchAssistantRecommendations } from '@/api/chat'
 import { throttle } from '@/utils/common'
 
 const props = defineProps({
@@ -20,6 +21,8 @@ const isNearBottom = ref(true)
 const bottomThreshold = 4
 const BASE_BOTTOM_PADDING = 24
 const lastScrollTop = ref(0)
+const assistantActions = ref([])
+const assistantLoading = ref(false)
 
 const messages = computed(() => chatStore.currentMessages || [])
 const isStreaming = computed(() => chatStore.isStreaming)
@@ -87,6 +90,19 @@ const handleViewportClick = (event) => {
   emit('request-input-expand')
 }
 
+const loadAssistantRecommendations = async () => {
+  try {
+    assistantLoading.value = true
+    // 这里预留参数位，后续可根据用户 ID、课程等透传
+    const items = await fetchAssistantRecommendations()
+    assistantActions.value = items
+  } catch (err) {
+    console.warn('获取助手推荐失败:', err)
+  } finally {
+    assistantLoading.value = false
+  }
+}
+
 watch(
   () => messages.value.length,
   () => {
@@ -110,6 +126,10 @@ watch(isStreaming, (active) => {
 onMounted(async () => {
   if (!chatStore.currentConversationId) {
     await chatStore.loadConversations()
+  }
+  // 新对话初次进入时加载一次助手推荐
+  if (!hasMessages.value) {
+    loadAssistantRecommendations()
   }
   scrollToBottom()
   nextTick(() => {
@@ -150,17 +170,14 @@ onMounted(async () => {
 
       <div
         v-else
-        class="flex h-full flex-col items-center justify-center gap-6 px-6 text-center"
+        class="flex h-full flex-col"
       >
-        <div class="rounded-full bg-[var(--color-surface)] p-6 text-[var(--color-primary)]">
-          <var-icon name="chat-outline" :size="56" />
-        </div>
-        <div class="space-y-2">
-          <h3 class="text-xl font-semibold text-[var(--color-text-primary)]">开始新对话</h3>
-          <p class="text-sm text-[var(--color-text-secondary)]">向 AI 提问或选择快捷操作开启灵感流</p>
-        </div>
-
-        <QuickActions @select="handleQuickAction" />
+        <LiveAssistence
+          class="flex-1"
+          :actions="assistantActions"
+          :loading="assistantLoading"
+          @select="handleQuickAction"
+        />
       </div>
     </div>
 

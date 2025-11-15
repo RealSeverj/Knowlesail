@@ -106,3 +106,33 @@ function decodeEscapedNewlines(str) {
   s = s.replace(/\\t/g, '\t')
   return s
 }
+
+// ========== 主动助手相关接口预留 ==========
+// 后端可以基于用户、课程进度等，返回希望在助手中展示的推荐项
+// 例如待办提醒、课程通知、预习资料等
+// 这里返回统一结构，方便前端渲染到 LiveAssistence / QuickActions
+export async function fetchAssistantRecommendations(params = {}) {
+  const query = new URLSearchParams(params).toString()
+  const url = query
+    ? `${apiBaseURL}/mcp/api/v1/assistant/recommendations?${query}`
+    : `${apiBaseURL}/mcp/api/v1/assistant/recommendations`
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch assistant recommendations: ${res.status}`)
+  }
+
+  const data = await res.json()
+
+  // 期望后端返回形如：
+  // [{ id, title, description, preset, type, extra }]
+  // 若结构不同，可在此处做一次映射适配
+  return Array.isArray(data) ? data : data?.items || []
+}
+
