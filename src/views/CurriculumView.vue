@@ -1,21 +1,35 @@
 <script setup>
-// 课程表页面
+import { onMounted } from 'vue'
+import { useCurriculumStore } from '@/stores/curriculum'
+import WeekView from '@/components/Curriculum/WeekView.vue'
+import AddCourse from '@/components/Curriculum/AddCourse.vue'
+
+const curriculumStore = useCurriculumStore()
+
+onMounted(() => {
+  curriculumStore.fetchCourses()
+})
 </script>
 
 <template>
-  <div class="curriculum-view min-h-screen bg-background flex items-center justify-center p-6">
-    <div class="text-center">
-      <var-icon name="calendar-month" :size="64" color="var(--color-primary)" class="mb-4" />
-      <h1 class="text-2xl font-bold text-foreground mb-2">课程表</h1>
-      <p class="text-secondary">课程管理功能即将上线</p>
+  <div class="min-h-screen bg-background flex flex-col">
+    <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <h1 class="text-xl font-bold text-foreground">课程表</h1>
+        </div>
+        <p class="text-xs text-secondary">管理你的课表与实践课程</p>
+      </div>
+      <div class="w-28">
+        <AddCourse @created="() => {}" />
+      </div>
+    </div>
+
+    <div class="flex-1 px-4 pb-4">
+      <WeekView />
     </div>
   </div>
 </template>
 
 <style scoped>
-.curriculum-view {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 </style>
