@@ -13,12 +13,10 @@ onMounted(() => {
 
 <template>
   <div class="h-full bg-background flex flex-col overflow-hidden">
-    <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+    <div class="flex items-center justify-between px-4 pb-2 pt-4">
       <div>
-        <div class="flex items-center gap-2 mb-1">
-          <h1 class="text-xl font-bold text-foreground">课程表</h1>
-        </div>
-        <p class="text-xs text-secondary">管理你的课表与实践课程</p>
+        <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">课程表</h1>
+        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">管理你的课表与实践课程</p>
       </div>
       <AddCourse @created="() => {}" />
     </div>

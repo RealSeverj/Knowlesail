@@ -66,10 +66,11 @@
 :root {
   --bottom-navigation-height: 56px;
   --bottom-navigation-z-index: 1000;
-  --bottom-navigation-background: var(--color-surface);
+  --bottom-navigation-background-color: var(--color-surface);
   --bottom-navigation-border-color: var(--color-border);
-  --bottom-navigation-item-color: var(--color-text-secondary);
+  --bottom-navigation-item-inactive-color: #646566;
   --bottom-navigation-item-active-color: var(--color-primary);
+  --bottom-navigation-item-active-background-color: var(--color-surface-variant);
   --bottom-navigation-item-icon-size: 24px;
   --bottom-navigation-item-font-size: 12px;
 }

@@ -37,7 +37,7 @@ const handleBack = () => {
 </script>
 
 <template>
-	<header class="app-header border-b border-[var(--color-border)] bg-[var(--color-body)] px-4 py-3">
+	<header class="app-header border-b border-[var(--color-border)] py-3 px-2">
 		<div class="flex items-center gap-3">
 			<button
 				v-if="showBack"

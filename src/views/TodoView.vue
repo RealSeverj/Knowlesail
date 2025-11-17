@@ -80,10 +80,10 @@ const handleQuadrantDblClick = (quadrantId) => {
 </script>
 
 <template>
-  <div class="todo-view flex min-h-screen flex-col bg-[var(--color-body)]">
+  <div class="todo-view flex min-h-screen flex-col">
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div>
-        <h1 class="text-lg font-semibold text-[var(--color-text-primary)]">待办事项</h1>
+        <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">待办事项</h1>
         <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
           双击对应象限空白处添加代办
         </p>

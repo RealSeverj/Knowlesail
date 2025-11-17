@@ -29,46 +29,43 @@ const handleNewChat = () => {
 </script>
 
 <template>
-	<header
-      class="chat-header flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-body)] px-4 py-3"
-    >
+		<header
+			class="chat-header flex items-center justify-between px-4 pb-2 pt-4"
+		>
 		<div class="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm"
-            @click="handleNavigateHistory"
-          >
-            <var-icon name="menu" :size="20" />
+					<button
+						type="button"
+						class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full shadow"
+						@click="handleNavigateHistory"
+					>
+			<var-icon name="menu" :size="24" />
             <span class="sr-only">查看聊天历史</span>
           </button>
         
           <div class="flex min-w-0 flex-col">
-            <span class="truncate text-base font-semibold text-[var(--color-text-primary)]">
+			<span class="truncate text-lg font-semibold text-[var(--color-text-primary)]">
               {{ title }}
             </span>
-            <span class="truncate text-xs text-[var(--color-text-secondary)]">
+			<span class="mt-1 truncate text-xs text-[var(--color-text-secondary)]">
               {{ subtitle }}
             </span>
           </div>
         </div>
 
-		<button
-			type="button"
-			class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white shadow-sm"
-			@click="handleNewChat"
-		>
-			<var-icon name="plus" :size="20" />
-			<span class="sr-only">新聊天</span>
-		</button>
+		<div class="flex items-center gap-2">
+			<button
+				type="button"
+				class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+				@click="handleNewChat"
+			>
+				<var-icon name="plus" :size="24" />
+				<span class="sr-only">新聊天</span>
+			</button>
+		</div>
 	</header>
 </template>
 
 <style scoped>
-.chat-header {
-	position: sticky;
-	top: 0;
-	z-index: 20;
-}
 
 .sr-only {
 	position: absolute;

@@ -224,7 +224,7 @@ const handleCollapse = () => {
   margin: 0 auto;
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-body);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: 0 2px 5px rgba(15, 23, 42, 0.15);
   max-height: 1000px;

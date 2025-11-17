@@ -70,6 +70,7 @@ const handleClose = () => {
 		:overlay="true"
 		:close-on-click-overlay="true"
 		@click-overlay="handleClose"
+		class="!bg-transparent"
 	>
 		<div class="max-h-[70vh] rounded-t-3xl bg-[var(--color-surface)] px-4 pb-6 pt-4">
 			<header class="mb-3 flex items-center justify-between">
@@ -120,7 +121,7 @@ const handleClose = () => {
 						<li
 							v-for="t in filtered"
 							:key="t.id"
-							class="rounded-xl bg-[var(--color-body)]/70 px-3 py-2 text-xs"
+							class="rounded-xl/70 px-3 py-2 text-xs"
 						>
 							<p class="text-[13px] font-medium text-[var(--color-text-primary)]">
 								{{ t.title }}

@@ -140,7 +140,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="chat-interface flex h-full flex-col bg-[var(--color-body)]">
+  <section class="chat-interface flex h-full flex-col">
     <div
       ref="viewportRef"
       class="message-viewport flex-1 overflow-y-auto px-4 py-6"

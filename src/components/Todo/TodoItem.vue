@@ -56,7 +56,7 @@ const toggleActions = () => {
 
 <template>
 	<div
-		class="relative flex items-start gap-3 rounded-xl bg-[var(--color-body)]/70 px-3 py-2 text-xs"
+		class="relative flex items-start gap-3 rounded-xl/70 px-3 py-2 text-xs"
 	>
 		<button
 			class="mt-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--color-border)] bg-white transition-colors duration-150"
@@ -122,7 +122,7 @@ const toggleActions = () => {
 				class="absolute right-2 top-8 z-20 w-40 rounded-xl bg-[var(--color-surface)] p-2 text-[12px] shadow-lg"
 			>
 				<button
-					class="flex w-full items-center justify-between rounded-lg px-2 py-2 active:bg-[var(--color-body)]/90"
+					class="flex w-full items-center justify-between rounded-lg px-2 py-2"
 					@click.stop="handleEdit"
 				>
 					<span>编辑</span>

@@ -9,23 +9,12 @@ const route = useRoute()
 const hideBottomNav = computed(() => {
   return ['Login', 'Register'].includes(route.name)
 })
-
-// 是否需要内边距（主导航页面不需要，子页面需要）
-const needsPadding = computed(() => {
-  const mainPages = ['Home', 'Curriculum', 'Todo', 'Knowledge', 'Profile']
-  return !mainPages.includes(route.name) && !hideBottomNav.value
-})
 </script>
 
 <template>
   <div class="app-layout">
     <!-- 主内容区 -->
-    <main
-      class="main-content"
-      :class="{
-        'p-4': needsPadding
-      }"
-    >
+    <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />

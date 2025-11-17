@@ -137,6 +137,7 @@ const handleDatePickerClose = () => {
 		:overlay="true"
 		:close-on-click-overlay="true"
 		@click-overlay="handleClose"
+		class="!bg-transparent"
 	>
 		<div class="max-h-[70vh] rounded-t-3xl bg-[var(--color-surface)] px-4 pb-6 pt-4">
 			<header class="mb-3 flex items-center justify-between">

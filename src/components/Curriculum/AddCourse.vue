@@ -90,12 +90,15 @@ async function handleSubmit() {
 
 <template>
 	<div>
-		<var-button text round @click="show = true">
-			<var-icon name="plus-circle-outline" :size="24" />
-		</var-button>
+		<button
+          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          @click="show = true"
+        >
+          <var-icon name="plus" :size="24" />
+        </button>
 
-		<var-popup v-model:show="show" position="bottom" :overlay="true" :lock-scroll="true">
-			<div class="bg-background rounded-t-2xl p-4 max-h-[80vh] overflow-y-auto">
+		<var-popup v-model:show="show" position="bottom" :overlay="true" :lock-scroll="true" class="!bg-transparent">
+			<div class="bg-background rounded-t-3xl p-4 max-h-[80vh] overflow-y-auto">
 				<div class="flex items-center justify-between mb-5">
 					<div class="font-semibold text-base">新建课程</div>
 					<var-icon name="close" @click="show = false" />
