@@ -12,6 +12,11 @@ const props = defineProps({
 	editingTodo: {
 		type: Object,
 		default: null
+	},
+	// 默认象限（用于从象限双击创建待办）
+	defaultQuadrant: {
+		type: Number,
+		default: null
 	}
 })
 
@@ -68,6 +73,10 @@ watch(
 				priority.value = props.editingTodo.priority || 1
 			} else {
 				reset()
+				// 若从象限双击打开，预填对应优先象限
+				if (props.defaultQuadrant) {
+					priority.value = props.defaultQuadrant
+				}
 			}
 			return
 		}

@@ -41,6 +41,7 @@ const gridStyle = computed(() => ({
 const showSearch = ref(false)
 const showAdd = ref(false)
 const editingTodo = ref(null)
+const targetQuadrant = ref(null)
 
 const handleSwitchQuadrant = (id) => {
   activeQuadrant.value = id
@@ -52,6 +53,7 @@ const handleOpenSearch = () => {
 
 const handleOpenAdd = () => {
   editingTodo.value = null
+  targetQuadrant.value = null
   showAdd.value = true
 }
 
@@ -65,7 +67,15 @@ const handleCloseAdd = () => {
 
 const handleEditTodo = (todo) => {
   editingTodo.value = todo
+  targetQuadrant.value = todo.priority || null
   showAdd.value = true
+}
+
+// 处理象限双击：在对应象限空白区域创建待办
+const handleQuadrantDblClick = (quadrantId) => {
+	editingTodo.value = null
+	targetQuadrant.value = quadrantId
+	showAdd.value = true
 }
 </script>
 
@@ -75,8 +85,22 @@ const handleEditTodo = (todo) => {
       <div>
         <h1 class="text-lg font-semibold text-[var(--color-text-primary)]">待办事项</h1>
         <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
-          基于重要/紧急四象限管理你的任务
+          双击对应象限空白处添加代办
         </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          @click="handleOpenSearch"
+        >
+          <var-icon name="magnify" :size="24" />
+        </button>
+        <button
+          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          @click="handleOpenAdd"
+        >
+          <var-icon name="plus" :size="24" />
+        </button>
       </div>
     </header>
 
@@ -93,6 +117,7 @@ const handleEditTodo = (todo) => {
           role="button"
           tabindex="0"
           @click="handleSwitchQuadrant(q.id)"
+          @dblclick="handleQuadrantDblClick(q.id)"
         >
           <TodoCard
             :quadrant="q"
@@ -106,24 +131,6 @@ const handleEditTodo = (todo) => {
       </div>
     </main>
 
-    <!-- 左下角：搜索待办 -->
-    <button
-      class="fixed bottom-20 left-5 z-20 flex h-12 items-center gap-2 rounded-full bg-[var(--color-surface)] px-4 text-sm text-[var(--color-text-primary)] shadow-lg"
-      @click="handleOpenSearch"
-    >
-      <var-icon name="magnify" :size="20" />
-      <span>搜索待办</span>
-    </button>
-
-    <!-- 右下角：添加待办 -->
-    <button
-      class="fixed bottom-20 right-5 z-20 flex h-12 items-center gap-2 rounded-full bg-[var(--color-primary)] px-4 text-sm text-white shadow-lg"
-      @click="handleOpenAdd"
-    >
-      <var-icon name="plus" :size="20" />
-      <span>添加待办</span>
-    </button>
-
     <!-- 搜索面板 -->
     <SearchPannel
       v-model:show="showSearch"
@@ -135,6 +142,7 @@ const handleEditTodo = (todo) => {
     <AddTodo
       v-model:show="showAdd"
       :editing-todo="editingTodo"
+      :default-quadrant="targetQuadrant"
       @close="handleCloseAdd"
     />
   </div>

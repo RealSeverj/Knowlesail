@@ -60,13 +60,13 @@ const heightStyle = computed(() => {
 <template>
 	<div>
 		<div
-			class="absolute left-1 right-1 rounded-lg bg-primary/90 text-primary-foreground px-2 py-1 text-[11px] shadow cursor-pointer overflow-hidden flex flex-col justify-between border-2 border-opacity-50"
+			class="absolute left-1 right-1 rounded-lg bg-primary/90 text-primary-foreground px-1 py-1 text-[11px] shadow cursor-pointer overflow-hidden flex flex-col justify-between border-2 border-opacity-40"
 			:class="borderClass"
 			:style="{ top: topStyle, height: heightStyle }"
 			@click="showDetail = true"
 		>
 			<div class="flex-1 min-h-0 flex items-start">
-				<div class="font-semibold leading-snug line-clamp-3 break-words">
+				<div class="font-semibold leading-snug line-clamp-4 break-words pr-0.5 pl-0.5">
 					{{ course.name }}
 				</div>
 			</div>

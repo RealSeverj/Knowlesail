@@ -41,9 +41,9 @@ export const useCurriculumStore = defineStore('curriculum', () => {
   // 每节课对应的时间段展示（可在页面使用）
   const classTimeMap = {
     1: '08:20',
-    2: '09:05',
+    2: '09:15',
     3: '10:20',
-    4: '11:05',
+    4: '11:15',
     5: '14:00',
     6: '14:55',
     7: '15:50',
