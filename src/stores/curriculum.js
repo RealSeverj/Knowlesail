@@ -53,8 +53,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     11: '20:50'
   }
 
-  // 计算当前周按星期分组的课程安排，便于周视图展示
-  const weekSchedule = computed(() => {
+  // 根据给定周次计算按星期分组的课程安排
+  function getWeekSchedule(weekNo) {
     const result = {
       1: [],
       2: [],
@@ -65,15 +65,17 @@ export const useCurriculumStore = defineStore('curriculum', () => {
       7: []
     }
 
+    if (!weekNo || weekNo < 1) {
+      return result
+    }
+
     courses.value.forEach((course) => {
       course.scheduleRules?.forEach((rule, ruleIndex) => {
-        const inWeekRange =
-          currentWeek.value >= rule.startWeek && currentWeek.value <= rule.endWeek
-
+        const inWeekRange = weekNo >= rule.startWeek && weekNo <= rule.endWeek
         if (!inWeekRange) return
 
         // 单双周过滤
-        const isOddWeek = currentWeek.value % 2 === 1
+        const isOddWeek = weekNo % 2 === 1
         if (isOddWeek && !rule.single) return
         if (!isOddWeek && !rule.double) return
 
@@ -98,13 +100,15 @@ export const useCurriculumStore = defineStore('curriculum', () => {
       })
     })
 
-    // 每天按节次排序，便于渲染
     Object.keys(result).forEach((day) => {
       result[day].sort((a, b) => a.startClass - b.startClass)
     })
 
     return result
-  })
+  }
+
+  // 仍然保留当前周的计算，方便其他地方直接使用
+  const weekSchedule = computed(() => getWeekSchedule(currentWeek.value))
 
   // 之后可在这里接入后端 API，例如：
   // import { getCurriculum, createCourse, updateCourse, deleteCourse } from '@/api/curriculum'
@@ -175,6 +179,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     classTimeMap,
     // getters
     weekSchedule,
+    getWeekSchedule,
     // actions
     fetchCourses,
     createCourse,
