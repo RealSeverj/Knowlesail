@@ -23,7 +23,7 @@ onMounted(() => {
       <AddCourse @created="() => {}" />
     </div>
 
-    <div class="flex-1 px-4 pb-4 overflow-hidden">
+    <div class="flex-1 px-0 pb-4 overflow-hidden">
       <div class="h-full">
         <WeekView />
       </div>
