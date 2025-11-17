@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useCurriculumStore } from '@/stores/curriculum'
+import { useToast } from '@/composables/useToast'
 
 const emit = defineEmits(['created'])
 
 const curriculumStore = useCurriculumStore()
+const toast = useToast()
 
 const show = ref(false)
 
@@ -55,7 +57,7 @@ function resetForm() {
 
 async function handleSubmit() {
 	if (!form.value.name || !form.value.location) {
-		// 未来可接入全局 toast
+		toast.warning('请填写课程名称和上课地点')
 		return
 	}
 
@@ -82,89 +84,91 @@ async function handleSubmit() {
 	emit('created')
 	show.value = false
 	resetForm()
+	toast.success('课程已添加到课表')
 }
 </script>
 
 <template>
 	<div>
-		<var-button type="primary" block @click="show = true">添加课程</var-button>
+		<var-button text round @click="show = true">
+			<var-icon name="plus-circle-outline" :size="24" />
+		</var-button>
 
 		<var-popup v-model:show="show" position="bottom" :overlay="true" :lock-scroll="true">
 			<div class="bg-background rounded-t-2xl p-4 max-h-[80vh] overflow-y-auto">
-				<div class="flex items-center justify-between mb-3">
+				<div class="flex items-center justify-between mb-5">
 					<div class="font-semibold text-base">新建课程</div>
 					<var-icon name="close" @click="show = false" />
 				</div>
 
 				<div class="space-y-3 text-sm">
+					<label class="block text-xs text-[var(--color-text-secondary)]">课程名称</label>
 					<var-input
 						v-model="form.name"
 						placeholder="请输入课程名称"
 						clearable
-					>
-						<template #label>课程名称</template>
-					</var-input>
+					></var-input>
 
+					<label class="block text-xs text-[var(--color-text-secondary)]">任课教师</label>
 					<var-input
 						v-model="form.teacher"
 						placeholder="例如：张三"
 						clearable
-					>
-						<template #label>任课教师</template>
-					</var-input>
+					></var-input>
 
+					<label class="block text-xs text-[var(--color-text-secondary)]">上课地点</label>
 					<var-input
 						v-model="form.location"
 						placeholder="例如：西1-203"
 						clearable
 					>
-						<template #label>上课地点</template>
 					</var-input>
 
 					<div class="grid grid-cols-2 gap-3">
-						<var-select v-model="form.weekday" :options="weekdays" clearable>
-							<template #label>星期</template>
-						</var-select>
-
-						<var-select v-model="form.startClass" :options="classList">
-							<template #label>开始节次</template>
-						</var-select>
-
-						<var-select v-model="form.endClass" :options="classList">
-							<template #label>结束节次</template>
-						</var-select>
-
-						<div class="flex items-center gap-2 mt-4">
+						<div>
+							<label class="block text-xs text-[var(--color-text-secondary)]">星期</label>
+							<var-select v-model="form.weekday" :options="weekdays" clearable />
+						</div>
+						<div class="flex items-center gap-2 mt-5 text-xs text-[var(--color-text-secondary)]">
 							<var-checkbox v-model="form.single">单周</var-checkbox>
 							<var-checkbox v-model="form.double">双周</var-checkbox>
+						</div>
+						<div>
+							<label class="block text-xs text-[var(--color-text-secondary)]">开始节次</label>
+							<var-select v-model="form.startClass" :options="classList" />
+						</div>
+						<div>
+							<label class="block text-xs text-[var(--color-text-secondary)]">结束节次</label>
+							<var-select v-model="form.endClass" :options="classList" />
 						</div>
 					</div>
 
 					<div class="grid grid-cols-2 gap-3">
-						<var-input
-							v-model.number="form.startWeek"
-							type="number"
-							placeholder="1"
-						>
-							<template #label>开始周</template>
-						</var-input>
-						<var-input
-							v-model.number="form.endWeek"
-							type="number"
-							placeholder="16"
-						>
-							<template #label>结束周</template>
-						</var-input>
+						<div>
+							<label class="block text-xs text-[var(--color-text-secondary)]">开始周</label>
+							<var-input
+								v-model.number="form.startWeek"
+								type="number"
+								placeholder="1"
+							/>
+						</div>
+						<div>
+							<label class="block text-xs text-[var(--color-text-secondary)]">结束周</label>
+							<var-input
+								v-model.number="form.endWeek"
+								type="number"
+								placeholder="16"
+							/>
+						</div>
 					</div>
 
+					<label class="block text-xs text-[var(--color-text-secondary)]">备注</label>
 					<var-input
 						v-model="form.remark"
 						type="textarea"
 						rows="2"
 						placeholder="可填写考试说明、平时作业等"
-					>
-						<template #label>备注</template>
-					</var-input>
+					/>
 
 					<div class="mt-4 flex gap-3">
 						<var-button text type="default" class="flex-1" @click="show = false">

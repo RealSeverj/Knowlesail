@@ -15,10 +15,27 @@ const weekdays = [
 	{ label: '日', value: 7 }
 ]
 
-const maxClass = 11
-
 const weekSchedule = computed(() => curriculumStore.weekSchedule)
 const currentWeek = computed(() => curriculumStore.currentWeek)
+const classTimeMap = curriculumStore.classTimeMap
+
+// 计算某节课的结束时间（开始时间 + 45 分钟）
+function getClassEndTime(index) {
+	const start = classTimeMap[index]
+	if (!start) return ''
+
+	const [hStr, mStr] = start.split(':')
+	const h = Number(hStr)
+	const m = Number(mStr)
+	if (Number.isNaN(h) || Number.isNaN(m)) return ''
+
+	let endMinutes = h * 60 + m + 45
+	let endH = Math.floor(endMinutes / 60)
+	let endM = endMinutes % 60
+	if (endH >= 24) endH -= 24
+
+	return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
+}
 
 function changeWeek(delta) {
 	const next = currentWeek.value + delta
@@ -30,7 +47,7 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
 </script>
 
 <template>
-	<div class="w-full">
+	<div class="w-full h-full flex flex-col">
 		<div class="flex items-center justify-between mb-3 px-1">
 			<div class="flex items-center gap-2">
 				<var-button text round size="small" @click="changeWeek(-1)">
@@ -44,10 +61,12 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
 			<div class="text-xs text-secondary">点击课程查看详情</div>
 		</div>
 
-		<div class="border border-border rounded-xl overflow-hidden bg-card">
+		<div class="border border-border rounded-xl overflow-hidden bg-card flex-1 min-h-0 flex flex-col">
 			<!-- 表头：节次 + 周几 -->
-			<div class="grid grid-cols-[3rem_repeat(7,1fr)] bg-muted text-xs text-center">
-				<div class="py-1 border-r border-border">节次</div>
+			<div class="grid grid-cols-[3rem_repeat(7,1fr)] bg-muted text-xs text-center flex-none">
+				<div class="py-1 border-r border-border">
+					<div>节次</div>
+				</div>
 				<div
 					v-for="day in weekdays"
 					:key="day.value"
@@ -58,15 +77,19 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
 			</div>
 
 			<!-- 主体：左侧节次，右侧为 7 列天数，每列内用绝对定位放课程卡片 -->
-			<div class="relative">
+			<div class="relative flex-1 min-h-0">
 				<!-- 左侧节次栏 -->
-				<div class="grid grid-rows-[repeat(11,3.75rem)] w-12 border-r border-border text-[10px] text-center">
+				<div class="absolute inset-y-0 left-0 w-12 border-r border-border text-[10px] text-center grid" :style="{ gridTemplateRows: 'repeat(11, minmax(0, 1fr))' }">
 					<div
-						v-for="i in maxClass"
+						v-for="i in 11"
 						:key="i"
-						class="flex items-center justify-center border-b border-border last:border-b-0"
+						class="flex flex-col items-center justify-center border-b border-border last:border-b-0 px-1"
 					>
-						{{ i }}
+						<div class="font-medium text-[11px]">{{ i }}</div>
+						<div class="mt-0.5 text-[9px] text-secondary leading-tight">
+							<div>{{ classTimeMap[i] }}</div>
+							<div>{{ getClassEndTime(i) }}</div>
+						</div>
 					</div>
 				</div>
 
