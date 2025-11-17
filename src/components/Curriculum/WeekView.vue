@@ -217,7 +217,7 @@ function handleClick(delta) {
 					class="absolute inset-0 flex"
 					:style="{
 						transform: `translateX(${translateX}px)` ,
-						transition: dragging || !enableTransition ? 'none' : 'transform 0.3s ease-out'
+						transition: dragging || !enableTransition ? 'none' : 'transform 0.22s cubic-bezier(0.33, 0.01, 0.3, 1)'
 					}"
 				>
 					<!-- 上一周 -->
@@ -358,6 +358,3 @@ function handleClick(delta) {
 		</div>
 	</var-popup>
 </template>
-
-<style scoped>
-</style>
