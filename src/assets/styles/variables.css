@@ -81,8 +81,8 @@
   /* 无背景图时为不透明 surface，有背景图时略带透明 */
   --bottom-navigation-background-color: color-mix(
     in srgb,
-    var(--color-surface) calc(100% - (var(--app-has-bg-image) * 30%)),
-    transparent calc(var(--app-has-bg-image) * 60%)
+    var(--color-surface) calc(100% - (var(--app-has-bg-image) * 10%)),
+    transparent calc(var(--app-has-bg-image) * 70%)
   );
   --bottom-navigation-border-color: var(--color-border);
   --bottom-navigation-item-inactive-color: #646566;

@@ -116,13 +116,13 @@ initTheme()
 				<p class="text-xs font-medium text-slate-500 dark:text-slate-400">账号与同步</p>
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
-				<var-cell icon="account-circle-outline" title="账号设置">
+				<var-cell icon="account-circle-outline" ripple title="账号设置">
           <template #description>
             <span class="text-xs text-slate-500 dark:text-slate-400">绑定、密码和安全</span>
           </template>
         </var-cell>
         
-        <var-cell icon="refresh" title="数据同步">
+        <var-cell icon="refresh" ripple title="数据同步">
           <template #description>
             <span class="text-xs text-slate-500 dark:text-slate-400">跨设备同步学习数据</span>
           </template>
@@ -136,7 +136,7 @@ initTheme()
 				<p class="text-xs font-medium text-slate-500 dark:text-slate-400">偏好与通知</p>
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
-			    <var-cell icon="cog-outline" title="偏好设置" @click="onOpenPreference">
+			    <var-cell icon="cog-outline" title="偏好设置" ripple @click="onOpenPreference">
             <template #description>
               <span class="text-xs text-slate-500 dark:text-slate-400">
                 笔记与学习体验相关设置
@@ -147,7 +147,7 @@ initTheme()
             </template>
           </var-cell>
           
-          <var-cell icon="calendar-month-outline" title="导出课程表到日历">
+          <var-cell icon="calendar-month-outline" ripple title="导出课程表到日历">
             <template #description>
               <span class="text-xs text-slate-500 dark:text-slate-400">
                 便于系统日历统一查看
@@ -188,7 +188,7 @@ initTheme()
 				<p class="text-xs font-medium text-slate-500 dark:text-slate-400">关于</p>
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
-				<var-cell icon="information-outline" title="关于学海智航" @click="onOpenAbout">
+				<var-cell icon="information-outline" ripple title="关于学海智航" @click="onOpenAbout">
           <template #description>
             <span class="text-xs text-slate-500 dark:text-slate-400">
               版本信息与联系我们

@@ -3,7 +3,7 @@ import AppHeader from '@/components/Layout/AppHeader.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-[var(--color-background)] flex flex-col">
+  <div class="min-h-screen flex flex-col">
     <!-- 顶部导航 -->
     <AppHeader title="关于" showBack />
 
