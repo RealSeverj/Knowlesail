@@ -65,7 +65,7 @@ async function generateImage(prompt) {
 </script>
 
 <template>
-  <div class="group flex gap-3 p-4 my-2 transition-colors rounded-xl hover:bg-surface">
+  <div class="group flex gap-3 p-4 my-2 transition-colors rounded-xl">
     <!-- 头像 -->
     <div class="flex-shrink-0">
       <div

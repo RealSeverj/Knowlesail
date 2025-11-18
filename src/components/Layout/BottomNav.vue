@@ -69,5 +69,4 @@ const activeTab = computed({
   </var-bottom-navigation>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
