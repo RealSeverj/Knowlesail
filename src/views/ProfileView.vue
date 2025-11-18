@@ -38,7 +38,7 @@ const closeCustomTheme = () => {
 </script>
 
 <template>
-  <div class="profile-view min-h-screen bg-gradient-to-b from-slate-50 to-slate-99 dark:from-slate-900 dark:to-slate-950 px-4 pb-16 pt-4">
+  <div class="profile-view bg-gradient-to-b from-slate-50 to-slate-99 dark:from-slate-900 dark:to-slate-950 px-4 pb-4 pt-4">
     <div class="mx-auto flex max-w-screen-sm flex-col gap-4">
       <!-- 顶部用户信息 -->
       <section class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-slate-800/80">
@@ -81,7 +81,7 @@ const closeCustomTheme = () => {
 <style scoped>
 .profile-view {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-  height: 100vh;
+  height: 94vh;
   overflow-y: auto;
 }
 </style>

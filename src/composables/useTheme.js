@@ -48,11 +48,13 @@ export function useTheme() {
       })
     }
 
-    // 背景图片变量
+    // 背景图片变量 + 是否有背景图开关
     if (backgroundImage) {
       root.style.setProperty('--app-bg-image', backgroundImage)
+      root.style.setProperty('--app-has-bg-image', '1')
     } else {
       root.style.removeProperty('--app-bg-image')
+      root.style.setProperty('--app-has-bg-image', '0')
     }
 
     // 背景效果变量（透明度与模糊度）

@@ -42,6 +42,9 @@
   /* 背景图效果相关变量 */
   --app-bg-opacity: 1;
   --app-bg-blur: 0px;
+
+  /* 是否有背景图：0=无，1=有 */
+  --app-has-bg-image: 0;
 }
 
 [data-theme='dark'] {
@@ -75,7 +78,12 @@
 :root {
   --bottom-navigation-height: 56px;
   --bottom-navigation-z-index: 1000;
-  --bottom-navigation-background-color: var(--color-surface);
+  /* 无背景图时为不透明 surface，有背景图时略带透明 */
+  --bottom-navigation-background-color: color-mix(
+    in srgb,
+    var(--color-surface) calc(100% - (var(--app-has-bg-image) * 30%)),
+    transparent calc(var(--app-has-bg-image) * 60%)
+  );
   --bottom-navigation-border-color: var(--color-border);
   --bottom-navigation-item-inactive-color: #646566;
   --bottom-navigation-item-active-color: var(--color-primary);

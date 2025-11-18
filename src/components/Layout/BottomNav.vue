@@ -58,7 +58,7 @@ const activeTab = computed({
 </script>
 
 <template>
-  <var-bottom-navigation v-model:active="activeTab" fixed safe-area class="bottom-nav">
+  <var-bottom-navigation v-model:active="activeTab" fixed safe-area>
     <var-bottom-navigation-item
       v-for="item in navItems"
       :key="item.name"
@@ -70,18 +70,4 @@ const activeTab = computed({
 </template>
 
 <style scoped>
-.bottom-nav {
-  background-color: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  /* 确保底部导航在最底层,输入框在其之上 */
-  z-index: 50 !important;
-}
-
-:deep(.var-bottom-navigation-item) {
-  color: var(--color-text-secondary);
-}
-
-:deep(.var-bottom-navigation-item--active) {
-  color: var(--color-primary);
-}
 </style>

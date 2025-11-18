@@ -61,7 +61,7 @@ initTheme()
         <div class="flex items-center justify-between px-3 py-2">
           <div class="flex items-center">
             <var-icon name="palette-outline" />
-            <div class="flex flex-col ml-2">
+            <div class="flex flex-col ml-3">
               <p class="text-sm font-medium text-slate-800 dark:text-slate-100">界面主题</p>
               <p class="text-xs text-slate-500 dark:text-slate-400">{{ themeDescription }}</p>
             </div>
@@ -117,16 +117,16 @@ initTheme()
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
 				<var-cell icon="account-circle-outline" title="账号设置">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">绑定、密码和安全</span>
-                  </template>
-                </var-cell>
-                
-                <var-cell icon="refresh" title="数据同步">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">跨设备同步学习数据</span>
-                  </template>
-                </var-cell>
+          <template #description>
+            <span class="text-xs text-slate-500 dark:text-slate-400">绑定、密码和安全</span>
+          </template>
+        </var-cell>
+        
+        <var-cell icon="refresh" title="数据同步">
+          <template #description>
+            <span class="text-xs text-slate-500 dark:text-slate-400">跨设备同步学习数据</span>
+          </template>
+        </var-cell>
 			</div>
 		</section>
 
@@ -137,48 +137,48 @@ initTheme()
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
 			    <var-cell icon="cog-outline" title="偏好设置" @click="onOpenPreference">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      笔记与学习体验相关设置
-                    </span>
-                  </template>
-                  <template #extra>
-                    <var-icon name="chevron-right" :size="18" />
-                  </template>
-                </var-cell>
-                
-                <var-cell icon="calendar-month-outline" title="导出课程表到日历">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      便于系统日历统一查看
-                    </span>
-                  </template>
-                  <template #extra>
-                    <var-icon name="chevron-right" :size="18" />
-                  </template>
-                </var-cell>
-                
-                <var-cell icon="pin-outline" title="个性化推荐">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      根据使用习惯推荐学习内容
-                    </span>
-                  </template>
-                  <template #extra>
-                    <var-switch :model-value="preferences.personalizedRecommend" readonly />
-                  </template>
-                </var-cell>
-                
-                <var-cell icon="bell-outline" title="课前提醒与内容推送">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      上课前自动推送相关提醒与资料
-                    </span>
-                  </template>
-                  <template #extra>
-                    <var-switch :model-value="preferences.autoCourseReminder" readonly />
-                  </template>
-                </var-cell>
+            <template #description>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                笔记与学习体验相关设置
+              </span>
+            </template>
+            <template #extra>
+              <var-icon name="chevron-right" :size="18" />
+            </template>
+          </var-cell>
+          
+          <var-cell icon="calendar-month-outline" title="导出课程表到日历">
+            <template #description>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                便于系统日历统一查看
+              </span>
+            </template>
+            <template #extra>
+              <var-icon name="chevron-right" :size="18" />
+            </template>
+          </var-cell>
+          
+          <var-cell icon="pin-outline" title="个性化推荐">
+            <template #description>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                根据使用习惯推荐学习内容
+              </span>
+            </template>
+            <template #extra>
+              <var-switch :model-value="preferences.personalizedRecommend" readonly />
+            </template>
+          </var-cell>
+          
+          <var-cell icon="bell-outline" title="课前提醒与内容推送">
+            <template #description>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                上课前自动推送相关提醒与资料
+              </span>
+            </template>
+            <template #extra>
+              <var-switch :model-value="preferences.autoCourseReminder" readonly />
+            </template>
+          </var-cell>
 			</div>
 		</section>
 
@@ -189,18 +189,22 @@ initTheme()
 			</div>
 			<div class="overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-700/60">
 				<var-cell icon="information-outline" title="关于学海智航" @click="onOpenAbout">
-                  <template #description>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      版本信息与联系我们
-                    </span>
-                  </template>
-                  <template #extra>
-                    <var-icon name="chevron-right" :size="18" />
-                  </template>
-                </var-cell>
+          <template #description>
+            <span class="text-xs text-slate-500 dark:text-slate-400">
+              版本信息与联系我们
+            </span>
+          </template>
+          <template #extra>
+            <var-icon name="chevron-right" :size="18" />
+          </template>
+        </var-cell>
 			</div>
 		</section>
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+::v-deep(.var-cell__icon) {
+  margin-right: 12px;
+}
+</style>

@@ -58,7 +58,7 @@ const formatTimestamp = (value) => {
 </script>
 
 <template>
-	<section class="history-page flex h-full flex-col pb-10">
+	<section class="history-page flex h-full flex-col pb-14">
 		<AppHeader
 			title="历史会话"
 			subtitle="管理和切换聊天记录"
