@@ -139,7 +139,7 @@ const handleDatePickerClose = () => {
 		@click-overlay="handleClose"
 		class="!bg-transparent"
 	>
-		<div class="max-h-[70vh] rounded-t-3xl bg-[var(--color-surface)] px-4 pb-6 pt-4">
+		<div class="bg-background rounded-t-3xl p-4 max-h-[80vh] overflow-y-auto">
 			<header class="mb-3 flex items-center justify-between">
 				<h2 class="text-base font-semibold text-[var(--color-text-primary)]">
 					{{ isEditMode ? '编辑待办' : '添加待办' }}
