@@ -152,7 +152,7 @@ async function handleSubmit() {
 							<var-input
 								v-model.number="form.startWeek"
 								type="number"
-								placeholder="1"
+								placeholder="例：1"
 							/>
 						</div>
 						<div>
@@ -160,7 +160,7 @@ async function handleSubmit() {
 							<var-input
 								v-model.number="form.endWeek"
 								type="number"
-								placeholder="16"
+								placeholder="例：16"
 							/>
 						</div>
 					</div>

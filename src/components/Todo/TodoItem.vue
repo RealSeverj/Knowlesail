@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useTodoStore } from '@/stores/todo'
 import { useConfirm } from '@/composables/useConfirm'
+import PopMenu from '@/components/Common/PopMenu.vue'
 
 const props = defineProps({
 	todo: {
@@ -125,61 +126,43 @@ const toggleActions = () => {
 			</p>
 		</div>
 
-		<!-- 操作菜单：全屏遮罩 + 放大按钮区域，适配移动端 -->
-		<!-- 点击遮罩关闭菜单 -->
-		<transition name="fade-overlay">
-			<div
-				v-if="showActions || showQuadrantSelector"
-				class="fixed inset-0 z-10"
-				@click="showActions = false; showQuadrantSelector = false"
-			/>
-		</transition>
-		<transition name="actions-pop">
-			<div
-				v-if="showActions"
-				class="absolute right-2 top-8 z-20 w-40 rounded-xl bg-[var(--color-surface)] p-2 text-[12px] shadow-lg"
+		<!-- 操作菜单：使用通用 PopMenu 组件 -->
+		<PopMenu v-model="showActions">
+			<button
+				class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2"
+				@click.stop="handleSwitchQuadrant"
 			>
+				<span>切换象限</span>
+				<var-icon name="menu-right" :size="18" />
+			</button>
+			<button
+				class="flex w-full items-center justify-between rounded-lg px-2 py-2"
+				@click.stop="handleEdit"
+			>
+				<span>编辑</span>
+				<var-icon name="wrench" :size="12" />
+			</button>
+			<button
+				class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2 text-red-500 active:bg-red-50"
+				@click.stop="handleDelete"
+			>
+				<span>删除</span>
+				<var-icon name="delete" :size="15" />
+			</button>
+		</PopMenu>
+		<PopMenu v-model="showQuadrantSelector" width-class="w-48">
+			<label class="mb-1 block text-xs text-[var(--color-text-secondary)]">选择象限</label>
+			<div class="space-y-1">
 				<button
-					class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2"
-					@click.stop="handleSwitchQuadrant"
+					v-for="quadrant in quadrants"
+					:key="quadrant.value"
+					class="flex w-full items-center justify-start rounded-lg px-2 py-2 text-left hover:bg-[var(--color-surface-hover)]"
+					@click.stop="selectQuadrant(quadrant.value)"
 				>
-					<span>切换象限</span>
-					<var-icon name="menu-right" :size="18" />
-				</button>
-				<button
-					class="flex w-full items-center justify-between rounded-lg px-2 py-2"
-					@click.stop="handleEdit"
-				>
-					<span>编辑</span>
-					<var-icon name="wrench" :size="12" />
-				</button>
-				<button
-					class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2 text-red-500 active:bg-red-50"
-					@click.stop="handleDelete"
-				>
-					<span>删除</span>
-					<var-icon name="delete" :size="15" />
+					<span>{{ quadrant.label }}</span>
 				</button>
 			</div>
-		</transition>
-		<transition name="actions-pop">
-			<div
-				v-if="showQuadrantSelector"
-				class="absolute right-2 top-8 z-20 w-48 rounded-xl bg-[var(--color-surface)] p-2 text-[12px] shadow-lg"
-			>
-				<label class="mb-1 block text-xs text-[var(--color-text-secondary)]">选择象限</label>
-				<div class="space-y-1">
-					<button
-						v-for="quadrant in quadrants"
-						:key="quadrant.value"
-						class="flex w-full items-center justify-start rounded-lg px-2 py-2 text-left hover:bg-[var(--color-surface-hover)]"
-						@click.stop="selectQuadrant(quadrant.value)"
-					>
-						<span>{{ quadrant.label }}</span>
-					</button>
-				</div>
-			</div>
-		</transition>
+		</PopMenu>
 	</div>
 </template>
 
@@ -190,26 +173,5 @@ const toggleActions = () => {
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
-}
-
-.fade-overlay-enter-active,
-.fade-overlay-leave-active {
-	transition: opacity 0.18s ease;
-}
-
-.fade-overlay-enter-from,
-.fade-overlay-leave-to {
-	opacity: 0;
-}
-
-.actions-pop-enter-active,
-.actions-pop-leave-active {
-	transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.actions-pop-enter-from,
-.actions-pop-leave-to {
-	opacity: 0;
-	transform: translateY(-4px) scale(0.96);
 }
 </style>

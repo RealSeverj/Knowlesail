@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import PopFrame from '@/components/Common/PopFrame.vue'
 
 const props = defineProps({
 	course: {
@@ -75,33 +76,44 @@ const heightStyle = computed(() => {
 			</div>
 		</div>
 
-		<var-dialog v-model:show="showDetail" title="课程详情" lock-scroll>
+		<PopFrame
+			v-model:show="showDetail"
+			:overlay="true"
+			:close-on-click-overlay="true"
+			width-class="w-[88vw] max-w-md"
+			max-height-class="max-h-[70vh]"
+		>
+			<template #header>
+				<h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">
+					课程详情
+				</h2>
+			</template>
 			<div class="space-y-2 text-sm">
 				<div>
-					<div class="text-xs text-secondary mb-1">课程名称</div>
+					<div class="mb-1 text-xs text-secondary">课程名称</div>
 					<div class="font-medium">{{ course.name }}</div>
 				</div>
 				<div>
-					<div class="text-xs text-secondary mb-1">任课教师</div>
+					<div class="mb-1 text-xs text-secondary">任课教师</div>
 					<div>{{ course.teacher || '未填写' }}</div>
 				</div>
 				<div>
-					<div class="text-xs text-secondary mb-1">上课地点</div>
+					<div class="mb-1 text-xs text-secondary">上课地点</div>
 					<div>{{ course.location || '未填写' }}</div>
 				</div>
 				<div>
-					<div class="text-xs text-secondary mb-1">周次范围</div>
+					<div class="mb-1 text-xs text-secondary">周次范围</div>
 					<div>第 {{ course.startWeek }} - {{ course.endWeek }} 周</div>
 				</div>
 				<div>
-					<div class="text-xs text-secondary mb-1">节次</div>
+					<div class="mb-1 text-xs text-secondary">节次</div>
 					<div>第 {{ startClass }} - {{ endClass }} 节</div>
 				</div>
 				<div v-if="course.remark">
-					<div class="text-xs text-secondary mb-1">备注</div>
+					<div class="mb-1 text-xs text-secondary">备注</div>
 					<div class="whitespace-pre-wrap">{{ course.remark }}</div>
 				</div>
-				<div class="flex gap-2 mt-2">
+				<div class="mt-2 flex gap-2">
 					<var-button
 						v-if="course.lessonplan"
 						type="primary"
@@ -122,7 +134,7 @@ const heightStyle = computed(() => {
 					</var-button>
 				</div>
 			</div>
-		</var-dialog>
+		</PopFrame>
 	</div>
 </template>
 

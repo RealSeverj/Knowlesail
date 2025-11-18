@@ -17,6 +17,7 @@ import RegisterPage from '@/views/Auth/RegisterPage.vue'
 import OfficialPage from '@/views/Knowledge/OfficialPage.vue'
 import CommunityPage from '@/views/Knowledge/CommunityPage.vue'
 import MyNotesPage from '@/views/Knowledge/MyNotesPage.vue'
+import SearchResults from '@/components/Knowledge/SearchResults.vue'
 import NoteDetailPage from '@/views/Knowledge/NoteDetailPage.vue'
 import NoteEditPage from '@/views/Knowledge/NoteEditPage.vue'
 
@@ -79,6 +80,12 @@ const routes = [
         name: 'MyNotes',
         component: MyNotesPage,
         meta: { title: '我的笔记' }
+      },
+      {
+        path: 'search',
+        name: 'KnowledgeSearch',
+        component: SearchResults,
+        meta: { title: '搜索结果' }
       }
     ]
   },
