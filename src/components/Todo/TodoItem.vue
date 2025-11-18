@@ -12,8 +12,16 @@ const props = defineProps({
 
 const todoStore = useTodoStore()
 const showActions = ref(false)
+const showQuadrantSelector = ref(false)
 const emit = defineEmits(['edit'])
 const { confirm } = useConfirm()
+
+const quadrants = [
+	{ value: 1, label: '紧急且重要 (一象限)' },
+	{ value: 2, label: '重要不紧急 (二象限)' },
+	{ value: 3, label: '紧急不重要 (三象限)' },
+	{ value: 4, label: '不重要不紧急 (四象限)' }
+]
 
 const isOverdue = computed(() => {
 	if (!props.todo.deadline) return false
@@ -47,6 +55,16 @@ const handleDelete = async () => {
 const handleEdit = () => {
 	emit('edit', props.todo)
 	showActions.value = false
+}
+
+const handleSwitchQuadrant = () => {
+	showQuadrantSelector.value = true
+	showActions.value = false
+}
+
+const selectQuadrant = (value) => {
+	todoStore.updateTodo(props.todo.id, { priority: value })
+	showQuadrantSelector.value = false
 }
 
 const toggleActions = () => {
@@ -111,9 +129,9 @@ const toggleActions = () => {
 		<!-- 点击遮罩关闭菜单 -->
 		<transition name="fade-overlay">
 			<div
-				v-if="showActions"
+				v-if="showActions || showQuadrantSelector"
 				class="fixed inset-0 z-10"
-				@click="showActions = false"
+				@click="showActions = false; showQuadrantSelector = false"
 			/>
 		</transition>
 		<transition name="actions-pop">
@@ -122,11 +140,18 @@ const toggleActions = () => {
 				class="absolute right-2 top-8 z-20 w-40 rounded-xl bg-[var(--color-surface)] p-2 text-[12px] shadow-lg"
 			>
 				<button
+					class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2"
+					@click.stop="handleSwitchQuadrant"
+				>
+					<span>切换象限</span>
+					<var-icon name="menu-right" :size="18" />
+				</button>
+				<button
 					class="flex w-full items-center justify-between rounded-lg px-2 py-2"
 					@click.stop="handleEdit"
 				>
 					<span>编辑</span>
-					<var-icon name="pencil" :size="16" />
+					<var-icon name="wrench" :size="14" />
 				</button>
 				<button
 					class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2 text-red-500 active:bg-red-50"
@@ -135,6 +160,24 @@ const toggleActions = () => {
 					<span>删除</span>
 					<var-icon name="delete" :size="16" />
 				</button>
+			</div>
+		</transition>
+		<transition name="actions-pop">
+			<div
+				v-if="showQuadrantSelector"
+				class="absolute right-2 top-8 z-20 w-48 rounded-xl bg-[var(--color-surface)] p-2 text-[12px] shadow-lg"
+			>
+				<label class="mb-1 block text-xs text-[var(--color-text-secondary)]">选择象限</label>
+				<div class="space-y-1">
+					<button
+						v-for="quadrant in quadrants"
+						:key="quadrant.value"
+						class="flex w-full items-center justify-start rounded-lg px-2 py-2 text-left hover:bg-[var(--color-surface-hover)]"
+						@click.stop="selectQuadrant(quadrant.value)"
+					>
+						<span>{{ quadrant.label }}</span>
+					</button>
+				</div>
 			</div>
 		</transition>
 	</div>
