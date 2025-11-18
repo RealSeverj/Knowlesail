@@ -151,14 +151,14 @@ const toggleActions = () => {
 					@click.stop="handleEdit"
 				>
 					<span>编辑</span>
-					<var-icon name="wrench" :size="14" />
+					<var-icon name="wrench" :size="12" />
 				</button>
 				<button
 					class="mt-1 flex w-full items-center justify-between rounded-lg px-2 py-2 text-red-500 active:bg-red-50"
 					@click.stop="handleDelete"
 				>
 					<span>删除</span>
-					<var-icon name="delete" :size="16" />
+					<var-icon name="delete" :size="15" />
 				</button>
 			</div>
 		</transition>

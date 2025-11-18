@@ -29,10 +29,24 @@ watch(activeTab, (newTab) => {
 
 <template>
   <div class="knowledge-view min-h-screen bg-background">
+    <header class="flex items-center justify-between px-4 pb-2 pt-4">
+      <div>
+        <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">知识库</h1>
+        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
+          在此查看你的笔记
+        </p>
+      </div>
+        <button
+          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          @click="handleOpenAdd"
+        >
+          <var-icon name="format-list-checkbox" :size="24" />
+        </button>
+    </header>
     <!-- 顶部标签导航 -->
     <var-tabs v-model:active="activeTab" class="knowledge-tabs">
       <var-tab>官方知识库</var-tab>
-      <var-tab>社区共建</var-tab>
+      <var-tab>学习社区</var-tab>
       <var-tab>我的笔记</var-tab>
     </var-tabs>
 

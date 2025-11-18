@@ -79,20 +79,21 @@ const routes = [
         name: 'MyNotes',
         component: MyNotesPage,
         meta: { title: '我的笔记' }
-      },
-      {
-        path: 'note/:id',
-        name: 'NoteDetail',
-        component: NoteDetailPage,
-        meta: { title: '笔记详情' }
-      },
-      {
-        path: 'note/:id/edit',
-        name: 'NoteEdit',
-        component: NoteEditPage,
-        meta: { title: '编辑笔记' }
       }
     ]
+  },
+  // 笔记详情与编辑 - 独立全屏页面
+  {
+    path: '/note/:id',
+    name: 'NoteDetail',
+    component: NoteDetailPage,
+    meta: { requiresAuth: true, title: '笔记详情' }
+  },
+  {
+    path: '/note/:id/edit',
+    name: 'NoteEdit',
+    component: NoteEditPage,
+    meta: { requiresAuth: true, title: '编辑笔记' }
   },
   {
     path: '/profile',

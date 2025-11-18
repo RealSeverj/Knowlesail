@@ -33,20 +33,11 @@ const handleNewChat = () => {
 			class="chat-header flex items-center justify-between px-4 pb-2 pt-4"
 		>
 		<div class="flex min-w-0 items-center gap-3">
-					<button
-						type="button"
-						class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full shadow"
-						@click="handleNavigateHistory"
-					>
-			<var-icon name="menu" :size="24" />
-            <span class="sr-only">查看聊天历史</span>
-          </button>
-        
           <div class="flex min-w-0 flex-col">
-			<span class="truncate text-lg font-semibold text-[var(--color-text-primary)]">
+			<span class="text-xl font-semibold text-[var(--color-text-primary)]">
               {{ title }}
             </span>
-			<span class="mt-1 truncate text-xs text-[var(--color-text-secondary)]">
+			<span class="mt-1 text-xs text-[var(--color-text-secondary)]">
               {{ subtitle }}
             </span>
           </div>
@@ -61,6 +52,14 @@ const handleNewChat = () => {
 				<var-icon name="plus" :size="24" />
 				<span class="sr-only">新聊天</span>
 			</button>
+			<button
+				type="button"
+				class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full shadow"
+				@click="handleNavigateHistory"
+			>
+				<var-icon name="menu" :size="24" />
+            	<span class="sr-only">查看聊天历史</span>
+          </button>
 		</div>
 	</header>
 </template>
