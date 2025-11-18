@@ -46,7 +46,7 @@ const handleNewChat = () => {
 		<div class="flex items-center gap-2">
 			<button
 				type="button"
-				class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+				class="flex h-9 w-9 items-center justify-center rounded-full bg-surface hover:bg-surface-variant shadow"
 				@click="handleNewChat"
 			>
 				<var-icon name="plus" :size="24" />
@@ -54,7 +54,7 @@ const handleNewChat = () => {
 			</button>
 			<button
 				type="button"
-				class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full shadow"
+				class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-surface hover:bg-surface-variant shadow"
 				@click="handleNavigateHistory"
 			>
 				<var-icon name="menu" :size="24" />

@@ -35,7 +35,7 @@ const handleSelect = (action) => {
 		</div>
 
 		<div v-if="loading" class="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-			<var-loading type="cube" :size="20" />
+			<var-loading type="cube" size="20" />
 			<span>正在为你获取今日推荐...</span>
 		</div>
 

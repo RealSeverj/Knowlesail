@@ -44,7 +44,7 @@ function handleSearchSubmit() {
 </script>
 
 <template>
-  <div class="knowledge-view min-h-screen bg-background">
+  <div class="knowledge-view min-h-screen">
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div class="flex-1 min-w-0">
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">知识库</h1>
@@ -79,7 +79,7 @@ function handleSearchSubmit() {
 
         <!-- 原有按钮保留，样式保持一致 -->
         <button
-          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          class="flex h-9 w-9 bg-surface hover:bg-surface-variant items-center justify-center rounded-full shadow"
           @click="handleOpenAdd"
         >
           <var-icon name="format-list-checkbox" :size="24" />
@@ -101,10 +101,6 @@ function handleSearchSubmit() {
 </template>
 
 <style scoped>
-.knowledge-view {
-  background-color: var(--color-background);
-}
-
 .knowledge-tabs {
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);

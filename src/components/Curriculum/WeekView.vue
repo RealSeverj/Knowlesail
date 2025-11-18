@@ -190,9 +190,9 @@ function handleClick(delta) {
 			<div class="text-xs text-secondary pr-4">左右滑动切换不同周</div>
 		</div>
 
-		<div class="overflow-hidden bg-card flex-1 min-h-0 flex flex-col">
+		<div class="overflow-hidden flex-1 min-h-0 flex flex-col">
 			<!-- 表头：节次 + 周几 -->
-			<div class="w-full grid grid-cols-[2rem_repeat(7,1fr)] bg-muted text-xs text-center flex-none">
+			<div class="w-full grid grid-cols-[2rem_repeat(7,1fr)] text-xs text-center flex-none">
 				<div class="py-1 border-r border-border">
 					<div>节次</div>
 				</div>
@@ -331,7 +331,7 @@ function handleClick(delta) {
 		:overlay="true"
 		class="week-picker-popup"
 	>
-		<div class="bg-card rounded-t-2xl pt-3 pb-4 px-4 max-h-[60vh] flex flex-col">
+		<div class="rounded-t-2xl pt-3 pb-4 px-4 max-h-[60vh] flex flex-col">
 			<div class="flex items-center justify-between mb-2">
 				<div class="text-sm font-medium text-foreground">选择周次</div>
 				<var-button text round size="small" @click="closeWeekPicker">
@@ -347,8 +347,8 @@ function handleClick(delta) {
 					class="h-9 rounded-full text-xs border transition-colors flex items-center justify-center"
 					:class="
 						w === currentWeek
-							? 'bg-primary text-primary-foreground border-primary'
-							: 'border-border text-foreground/80 active:bg-muted'
+							? 'text-primary-foreground border-primary'
+							: 'border-border text-foreground/80'
 					"
 					@click="jumpToWeek(w)"
 				>

@@ -163,7 +163,7 @@ onMounted(async () => {
           v-if="isStreaming"
           class="flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-secondary)]"
         >
-          <var-loading type="cube" :size="20" />
+          <var-loading type="cube" size="20" />
           <span>AI 正在思考...</span>
         </div>
       </div>

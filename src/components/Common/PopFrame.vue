@@ -89,7 +89,7 @@ const handleClose = () => {
               class="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 shadow-sm hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
               @click="handleClose"
             >
-              <var-icon name="close" :size="16" />
+              <var-icon name="window-close" :size="16" />
             </button>
 
             <!-- 标题插槽 -->

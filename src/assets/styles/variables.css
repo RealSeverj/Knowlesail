@@ -33,6 +33,15 @@
   --transition-fast: 150ms;
   --transition-base: 200ms;
   --transition-slow: 300ms;
+
+  /* 应用背景相关变量 */
+  --app-bg-image: none;
+  --app-bg-size: cover;
+  --app-bg-position: center;
+  --app-bg-repeat: no-repeat;
+  /* 背景图效果相关变量 */
+  --app-bg-opacity: 1;
+  --app-bg-blur: 0px;
 }
 
 [data-theme='dark'] {

@@ -14,7 +14,7 @@ function handleNoteClick(note) {
 </script>
 
 <template>
-  <div class="my-notes-page min-h-screen bg-background px-4 py-4">
+  <div class="min-h-screen px-4 py-4">
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
@@ -41,7 +41,4 @@ function handleNoteClick(note) {
 </template>
 
 <style scoped>
-.my-notes-page {
-  background-color: var(--color-background);
-}
 </style>

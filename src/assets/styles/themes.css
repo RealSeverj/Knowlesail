@@ -80,3 +80,23 @@
   background-color: var(--color-primary-dark);
   transform: scale(0.98);
 }
+
+/* 应用全局背景：支持纯色 + 背景图片 */
+.app-bg {
+
+  position: relative;
+  overflow: hidden;
+}
+
+.app-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--app-bg-image);
+  background-size: var(--app-bg-size);
+  background-position: var(--app-bg-position);
+  background-repeat: var(--app-bg-repeat);
+  opacity: var(--app-bg-opacity);
+  filter: blur(var(--app-bg-blur));
+}

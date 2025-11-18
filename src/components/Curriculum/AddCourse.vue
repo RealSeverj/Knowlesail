@@ -91,7 +91,7 @@ async function handleSubmit() {
 <template>
 	<div>
 		<button
-          class="flex h-9 w-9 items-center justify-center rounded-full shadow"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-surface hover:bg-surface-variant shadow"
           @click="show = true"
         >
           <var-icon name="plus" :size="24" />

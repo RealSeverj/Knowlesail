@@ -19,9 +19,8 @@ const themeMenuVisible = ref(false)
 
 const themeDescription = computed(() => {
   const value = theme.value
-  if (value === 'light') return '当前：浅色'
-  if (value === 'dark') return '当前：深色'
-  return '当前：系统'
+  if (!value) return '当前：默认'
+  return `当前：${value.name || value.id}`
 })
 
 const onOpenPreference = () => {
@@ -33,8 +32,9 @@ const onOpenAbout = () => {
 }
 
 const themeOptions = [
-  { label: '浅色模式', value: 'light', icon: 'white-balance-sunny' },
-  { label: '深色模式', value: 'dark', icon: 'weather-night' }
+  { label: '默认浅色', value: 'light-default', icon: 'white-balance-sunny' },
+  { label: '默认深色', value: 'dark-default', icon: 'weather-night' },
+  { label: '海洋蓝', value: 'ocean-blue', icon: 'palette-outline' }
 ]
 
 const handleThemeSelect = (value) => {
@@ -87,7 +87,7 @@ initTheme()
                     <span>{{ item.label }}</span>
                   </div>
                   <var-icon
-                    v-if="theme === item.value"
+                    v-if="theme?.id === item.value"
                     name="check"
                     :size="14"
                   />

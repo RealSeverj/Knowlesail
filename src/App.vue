@@ -18,7 +18,7 @@ provide('theme', theme)
 <template>
   <ToastContainer />
   <ConfirmDialogHost />
-  <div id="app" class="min-h-screen bg-background text-foreground transition-colors">
+  <div id="app" class="min-h-screen app-bg text-foreground transition-colors">
     <AppLayout />
   </div>
 </template>

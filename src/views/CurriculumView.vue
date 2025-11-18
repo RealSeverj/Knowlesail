@@ -12,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-full bg-background flex flex-col overflow-hidden">
+  <div class="h-full flex flex-col overflow-hidden">
     <div class="flex items-center justify-between px-4 pb-2 pt-4">
       <div>
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">课程表</h1>
