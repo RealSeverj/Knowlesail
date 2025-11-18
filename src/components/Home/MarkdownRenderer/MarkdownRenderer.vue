@@ -21,7 +21,7 @@ const props = defineProps({
 const emits = defineEmits(['updateHeight'])
 
 const processedContent = computed(() => {
-  return props.content.replace(/<htmath>/g, '```htmath\n').replace(/<\/htmath>/g, '\n```')
+  return props.content.replace(/<htmath>/g, '\n```htmath\n').replace(/<\/htmath>/g, '\n```')
 })
 
 // 自定义内置渲染
