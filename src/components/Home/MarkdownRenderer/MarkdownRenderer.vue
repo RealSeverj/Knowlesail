@@ -102,7 +102,7 @@ const selfCodeXRender = {
       :code-x-render="selfCodeXRender"
       :code-x-slot="selfCodeXSlot"
       :allow-html="true"
-      :default-theme-mode="theme"
+      :default-theme-mode="theme?.name"
       class="markdown-prase"
     >
       <template #img="{ ...imgProps }">
