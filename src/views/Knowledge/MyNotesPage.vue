@@ -21,7 +21,7 @@ function handleNoteClick(note) {
         <p class="text-xs text-secondary">当前共 {{ notes.length }} 条笔记</p>
       </div>
       <var-button type="primary" round>
-        <var-icon name="plus" :size="16"  />
+        <var-icon name="plus" :size="16" />
       </var-button>
     </div>
 
@@ -40,5 +40,4 @@ function handleNoteClick(note) {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

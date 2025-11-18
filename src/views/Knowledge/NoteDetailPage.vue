@@ -40,7 +40,9 @@ async function generateImage(prompt) {
 <template>
   <div class="note-detail-page min-h-screen bg-background flex flex-col">
     <!-- 顶部栏：返回 + 标题 + 作者信息 -->
-    <div class="flex items-center px-4 py-3 border-b border-border/60 bg-surface/80 backdrop-blur z-10">
+    <div
+      class="flex items-center px-4 py-3 border-b border-border/60 bg-surface/80 backdrop-blur z-10"
+    >
       <var-button text round size="small" class="mr-1" @click="handleBack">
         <var-icon name="chevron-left" :size="18" />
       </var-button>
@@ -56,12 +58,14 @@ async function generateImage(prompt) {
           <span class="text-border">•</span>
           <span>
             创建于
-            {{ new Date(note.createdAt).toLocaleString('zh-CN', {
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit'
-            }) }}
+            {{
+              new Date(note.createdAt).toLocaleString('zh-CN', {
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+            }}
           </span>
           <span class="text-border">•</span>
           <span>共 {{ note.blocks.length }} 个内容块</span>
@@ -71,7 +75,12 @@ async function generateImage(prompt) {
 
     <div v-if="!note" class="flex-1 flex items-center justify-center px-4">
       <div class="text-center">
-        <var-icon name="file-document-outline" :size="48" color="var(--color-primary)" class="mb-3" />
+        <var-icon
+          name="file-document-outline"
+          :size="48"
+          color="var(--color-primary)"
+          class="mb-3"
+        />
         <h3 class="text-base font-medium text-foreground mb-2">未找到笔记</h3>
         <p class="text-secondary text-xs mb-4">可能是链接失效或笔记已被删除</p>
         <var-button type="primary" round size="small" @click="handleBack">返回上一页</var-button>
@@ -91,9 +100,7 @@ async function generateImage(prompt) {
           <span class="inline-flex items-center gap-1">
             <var-icon name="message-text-outline" :size="16" />
             <span>
-              {{
-                note.blocks.reduce((sum, b) => sum + (b.comments ? b.comments.length : 0), 0)
-              }}
+              {{ note.blocks.reduce((sum, b) => sum + (b.comments ? b.comments.length : 0), 0) }}
               条评论
             </span>
           </span>
@@ -111,7 +118,9 @@ async function generateImage(prompt) {
         class="rounded-2xl bg-surface shadow-card-soft overflow-hidden"
       >
         <!-- 块头部：作者 + 时间 + 点赞/转发 -->
-        <div class="px-4 pt-3 pb-2 flex items-center justify-between text-[11px] text-text-tertiary">
+        <div
+          class="px-4 pt-3 pb-2 flex items-center justify-between text-[11px] text-text-tertiary"
+        >
           <div class="flex items-center gap-2">
             <div class="flex items-center gap-1">
               <var-icon name="account" :size="14" />
@@ -119,12 +128,14 @@ async function generateImage(prompt) {
             </div>
             <span class="text-border">•</span>
             <span>
-              {{ new Date(msg.timestamp).toLocaleString('zh-CN', {
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              }) }}
+              {{
+                new Date(msg.timestamp).toLocaleString('zh-CN', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })
+              }}
             </span>
           </div>
         </div>
@@ -141,10 +152,12 @@ async function generateImage(prompt) {
         </div>
 
         <!-- 评论列表（简单展示） -->
-        <div class="px-4 pb-3 pt-2 border-t border-border/60" v-if="note">
+        <div v-if="note" class="px-4 pb-3 pt-2 border-t border-border/60">
           <div class="flex items-center justify-between mb-2">
             <span class="text-[11px] text-text-secondary">评论</span>
-            <var-button text round size="small"><var-icon name="message-processing-outline" /></var-button>
+            <var-button text round size="small"
+              ><var-icon name="message-processing-outline"
+            /></var-button>
           </div>
           <div
             v-if="
@@ -164,10 +177,12 @@ async function generateImage(prompt) {
                   <span class="font-medium text-[11px] text-text-primary">{{ c.authorId }}</span>
                   <span class="text-border">·</span>
                   <span>
-                    {{ new Date(c.createdAt).toLocaleTimeString('zh-CN', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }) }}
+                    {{
+                      new Date(c.createdAt).toLocaleTimeString('zh-CN', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })
+                    }}
                   </span>
                 </div>
                 <p class="text-[11px] leading-relaxed">{{ c.content }}</p>

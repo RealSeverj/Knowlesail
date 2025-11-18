@@ -5,7 +5,7 @@ import { useToast } from '@/composables/useToast'
 import 'katex/dist/katex.min.css' // 数学公式样式
 // 导入自定义代码块映射的组件
 import Htmath from './Visualization/Htmath.vue' // iframe
-import Echarts from './Visualization/Echarts.vue' // echarts
+const Echarts = () => './Visualization/Echarts.vue' // echarts
 
 const theme = inject('theme')
 const toast = useToast()
@@ -15,12 +15,13 @@ const props = defineProps({
   generateImage: { type: Function, required: true },
   messageId: { type: String, required: true },
   streaming: { type: Boolean, default: false },
-  toolCalls: { type: Array, default: () => [] }
+  toolCalls: { type: Array, default: () => [] },
+  scale: { type: Number, default: 1 } // 文字缩放比例
 })
 const emits = defineEmits(['updateHeight'])
 
 const processedContent = computed(() => {
-  return props.content.replace(/<htmath>/g, '```htmath\n').replace(/<\/htmath>/g, '\n```')
+  return props.content.replace(/<htmath>/g, '\n```htmath\n').replace(/<\/htmath>/g, '\n```')
 })
 
 // 自定义内置渲染
@@ -73,8 +74,9 @@ const selfCodeXRender = {
   echarts: (props) => {
     try {
       const option = JSON.parse(props.raw.content)
-      if (option) return h(Echarts, { option })
-      else return null
+      if (!option) return null
+      const echartsComponent = Echarts()
+      return h(echartsComponent.default, { option })
     } catch (error) {
       return null
     }
@@ -100,7 +102,7 @@ const selfCodeXRender = {
       :code-x-render="selfCodeXRender"
       :code-x-slot="selfCodeXSlot"
       :allow-html="true"
-      :default-theme-mode="theme"
+      :default-theme-mode="theme?.name"
       class="markdown-prase"
     >
       <template #img="{ ...imgProps }">
@@ -128,12 +130,14 @@ const selfCodeXRender = {
   width: 100%;
   padding: 10px;
   overflow-y: auto;
+  --scale-factor: v-bind(props.scale);
 }
 
 .markdown-prase {
   --main-color: #81abe2;
 
-  line-height: 1.5;
+  font-size: calc(16px * var(--scale-factor));
+  line-height: calc(1.5 * var(--scale-factor));
   word-wrap: break-word;
   text-align: left;
   color: var(--fg);
@@ -144,20 +148,20 @@ const selfCodeXRender = {
   h4,
   h5,
   h6 {
-    margin: 24px 0;
+    margin: calc(24px * var(--scale-factor)) 0;
     font-weight: 600;
     font-size: revert;
-    line-height: 1.25;
+    line-height: calc(1.25 * var(--scale-factor));
     color: var(--main-color);
   }
 
   p {
-    margin: 16px 0;
+    margin: calc(16px * var(--scale-factor)) 0;
   }
 
   ul,
   ol {
-    margin: 16px 0;
+    margin: calc(16px * var(--scale-factor)) 0;
     padding-left: 1em;
   }
 
@@ -191,14 +195,14 @@ const selfCodeXRender = {
     -webkit-backdrop-filter: blur(5px);
     color: #c62828;
     border-radius: 8px;
-    margin: 15px 0;
+    margin: calc(15px * var(--scale-factor)) 0;
     text-align: left;
     border-left: 4px solid #c62828;
     box-shadow: 0 4px 10px rgba(198, 40, 40, 0.1);
   }
 
   blockquote {
-    margin: 16px 0;
+    margin: calc(16px * var(--scale-factor)) 0;
     padding: 0.5em 1.2em;
     border-left: 0.25em solid var(--main-color);
     background-color: rgba(230, 244, 255, 0.2);
@@ -208,7 +212,7 @@ const selfCodeXRender = {
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
+    margin: calc(20px * var(--scale-factor)) 0;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -216,7 +220,7 @@ const selfCodeXRender = {
 
     th,
     td {
-      padding: 12px 15px;
+      padding: calc(12px * var(--scale-factor)) calc(15px * var(--scale-factor));
       border: 1px solid #dfe2e5;
     }
 
@@ -278,9 +282,10 @@ const selfCodeXRender = {
   color: #444;
 }
 .tool-call-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
   padding: 6px 10px;
   background: white;
   border: 1px solid #e5e7eb;
@@ -288,6 +293,7 @@ const selfCodeXRender = {
   color: #333;
 }
 .tool-call-spinner {
+  flex-shrink: 0;
   width: 14px;
   height: 14px;
   border: 2px solid #cbd5e1;
@@ -297,6 +303,9 @@ const selfCodeXRender = {
 }
 .tool-call-name {
   font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 @keyframes spin {

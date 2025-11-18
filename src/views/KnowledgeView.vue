@@ -48,16 +48,13 @@ function handleSearchSubmit() {
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div class="flex-1 min-w-0">
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">知识库</h1>
-        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
-          在此查看你的笔记
-        </p>
+        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">在此查看你的笔记</p>
       </div>
       <div class="flex items-center gap-2 ml-3">
         <!-- 搜索按钮 + 输入框 -->
         <div
           class="flex items-center gap-2 bg-surface rounded-full shadow-sm px-2 py-1 transition-all duration-200"
-          :class="searchOpen ? 'w-56' : 'w-9 justify-center'
-          "
+          :class="searchOpen ? 'w-56' : 'w-9 justify-center'"
         >
           <button
             class="flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface-variant transition-colors"

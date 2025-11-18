@@ -73,9 +73,9 @@ const handleEditTodo = (todo) => {
 
 // 处理象限双击：在对应象限空白区域创建待办
 const handleQuadrantDblClick = (quadrantId) => {
-	editingTodo.value = null
-	targetQuadrant.value = quadrantId
-	showAdd.value = true
+  editingTodo.value = null
+  targetQuadrant.value = quadrantId
+  showAdd.value = true
 }
 </script>
 
@@ -84,9 +84,7 @@ const handleQuadrantDblClick = (quadrantId) => {
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div>
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">待办事项</h1>
-        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">
-          双击对应象限空白处添加代办
-        </p>
+        <p class="mt-1 text-xs text-[var(--color-text-secondary)]">双击对应象限空白处添加代办</p>
       </div>
       <div class="flex items-center gap-2">
         <button
@@ -110,10 +108,7 @@ const handleQuadrantDblClick = (quadrantId) => {
           v-for="q in quadrants"
           :key="q.id"
           class="quadrant-cell"
-          :class="[
-            `quadrant-${q.id}`,
-            activeQuadrant === q.id ? 'is-active' : 'is-inactive'
-          ]"
+          :class="[`quadrant-${q.id}`, activeQuadrant === q.id ? 'is-active' : 'is-inactive']"
           role="button"
           tabindex="0"
           @click="handleSwitchQuadrant(q.id)"
@@ -124,19 +119,15 @@ const handleQuadrantDblClick = (quadrantId) => {
             :todos="todoStore.quadrantTodos[q.id]"
             :active="activeQuadrant === q.id"
             :compact="activeQuadrant !== q.id"
-				@edit-todo="handleEditTodo"
             class="h-full"
+            @edit-todo="handleEditTodo"
           />
         </div>
       </div>
     </main>
 
     <!-- 搜索面板 -->
-    <SearchPannel
-      v-model:show="showSearch"
-      :todos="todoStore.todos"
-      @close="handleCloseSearch"
-    />
+    <SearchPannel v-model:show="showSearch" :todos="todoStore.todos" @close="handleCloseSearch" />
 
     <!-- 添加待办面板 -->
     <AddTodo
@@ -159,13 +150,17 @@ const handleQuadrantDblClick = (quadrantId) => {
   width: 100%;
   height: 100%;
   gap: 12px;
-  transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
+  transition:
+    grid-template-columns 0.3s ease,
+    grid-template-rows 0.3s ease;
 }
 
 .quadrant-cell {
   border-radius: 24px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: flex;
   cursor: pointer;
 }

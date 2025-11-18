@@ -61,9 +61,7 @@ function handleItemClick(item) {
       </div>
     </div>
 
-    <div v-if="loading" class="py-8 text-center text-xs text-text-secondary">
-      正在搜索中…
-    </div>
+    <div v-if="loading" class="py-8 text-center text-xs text-text-secondary">正在搜索中…</div>
     <div v-else-if="error" class="py-8 text-center text-xs text-error">
       {{ error }}
     </div>
@@ -79,12 +77,7 @@ function handleItemClick(item) {
       >
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center gap-1 min-w-0">
-            <var-chip
-              size="small"
-              type="primary"
-              class="mr-1"
-              :plain="item.type !== 'note'"
-            >
+            <var-chip size="small" type="primary" class="mr-1" :plain="item.type !== 'note'">
               {{ item.source }}
             </var-chip>
             <h3 class="text-sm font-semibold text-text-primary truncate">

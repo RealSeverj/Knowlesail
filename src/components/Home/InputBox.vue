@@ -153,13 +153,7 @@ const handleCollapse = () => {
               <var-icon name="plus-circle-outline" :size="24" />
             </var-button>
 
-            <var-button
-              v-if="isStreaming"
-              type="danger"
-              round
-              class="send-btn"
-              @click="handleStop"
-            >
+            <var-button v-if="isStreaming" type="danger" round class="send-btn" @click="handleStop">
               <var-icon name="window-close" :size="20" />
             </var-button>
 
@@ -204,7 +198,8 @@ const handleCollapse = () => {
   align-items: center;
   justify-content: center;
   transform-origin: bottom right;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+  transition:
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.3s ease,
@@ -274,7 +269,9 @@ const handleCollapse = () => {
 
 .input-panel-fade-enter-active,
 .input-panel-fade-leave-active {
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
 }
 
 .input-panel-fade-enter-from,
@@ -290,7 +287,9 @@ const handleCollapse = () => {
   font-size: 15px;
   line-height: 1.5;
   border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 :deep(.var-input__textarea:focus) {
@@ -322,7 +321,6 @@ const handleCollapse = () => {
 .collapse-btn {
   color: var(--color-text-secondary) !important;
 }
-
 
 @media (max-width: 640px) {
   .morph-shell {
