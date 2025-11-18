@@ -130,13 +130,12 @@ const selfCodeXRender = {
   width: 100%;
   padding: 10px;
   overflow-y: auto;
-  --scale-factor: v-bind('props.scale'); /* 默认缩放比例100% */
+  --scale-factor: v-bind(props.scale);
 }
 
 .markdown-prase {
   --main-color: #81abe2;
 
-  /* 基础文字大小使用缩放变量 */
   font-size: calc(16px * var(--scale-factor));
   line-height: calc(1.5 * var(--scale-factor));
   word-wrap: break-word;
@@ -151,7 +150,7 @@ const selfCodeXRender = {
   h6 {
     margin: calc(24px * var(--scale-factor)) 0;
     font-weight: 600;
-    font-size: calc(revert * var(--scale-factor));
+    font-size: revert;
     line-height: calc(1.25 * var(--scale-factor));
     color: var(--main-color);
   }
@@ -163,87 +162,179 @@ const selfCodeXRender = {
   ul,
   ol {
     margin: calc(16px * var(--scale-factor)) 0;
-    padding-left: calc(1em * var(--scale-factor));
+    padding-left: 1em;
   }
 
   li {
-    margin: calc(0.5em * var(--scale-factor)) 0;
+    margin: 0.5em 0;
+  }
+
+  a {
+    color: var(--main-color);
+    text-decoration: underline;
   }
 
   img {
     display: block;
     max-width: 100%;
     height: auto;
-    margin: calc(1.5em * var(--scale-factor)) 0;
-    border-radius: calc(10px * var(--scale-factor));
-    box-shadow: 0 calc(4px * var(--scale-factor)) calc(15px * var(--scale-factor))
-      rgba(0, 0, 0, 0.1);
+    margin: 1.5em 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+  }
+
+  img:hover {
+    transform: scale(1.01);
+  }
+
+  img.error {
+    padding: 15px;
+    background-color: rgba(255, 235, 238, 0.7);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: #c62828;
+    border-radius: 8px;
+    margin: calc(15px * var(--scale-factor)) 0;
+    text-align: left;
+    border-left: 4px solid #c62828;
+    box-shadow: 0 4px 10px rgba(198, 40, 40, 0.1);
   }
 
   blockquote {
     margin: calc(16px * var(--scale-factor)) 0;
-    padding: calc(0.5em * var(--scale-factor)) calc(1.2em * var(--scale-factor));
-    border-left: calc(0.25em * var(--scale-factor)) solid var(--main-color);
+    padding: 0.5em 1.2em;
+    border-left: 0.25em solid var(--main-color);
     background-color: rgba(230, 244, 255, 0.2);
-    border-radius: 0 calc(6px * var(--scale-factor)) calc(6px * var(--scale-factor)) 0;
+    border-radius: 0 6px 6px 0;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
     margin: calc(20px * var(--scale-factor)) 0;
-    border-radius: calc(8px * var(--scale-factor));
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 calc(4px * var(--scale-factor)) calc(12px * var(--scale-factor))
-      rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: transparent;
 
     th,
     td {
       padding: calc(12px * var(--scale-factor)) calc(15px * var(--scale-factor));
       border: 1px solid #dfe2e5;
     }
+
+    th {
+      font-weight: 600;
+      background-color: rgba(230, 244, 255, 0.4);
+      text-align: center;
+    }
+
+    tr:nth-child(odd) {
+      background-color: transparent;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--bg-dim);
+    }
   }
 
   .code-top-tool {
-    width: calc(24px * var(--scale-factor));
-    height: calc(24px * var(--scale-factor));
-    margin-right: calc(4px * var(--scale-factor));
-    border-radius: calc(4px * var(--scale-factor));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+    padding: 0px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    color: var(--fg-dim);
   }
 
-  .code-top-tool svg {
-    width: calc(14px * var(--scale-factor));
-    height: calc(14px * var(--scale-factor));
+  .code-top-tool:hover {
+    background-color: var(--bg-dim);
   }
 }
 
-/* 工具调用状态条缩放 */
+/* MCP 工具调用状态样式 */
 .tool-call-banner {
-  gap: calc(8px * var(--scale-factor)) calc(10px * var(--scale-factor));
-  padding: calc(10px * var(--scale-factor)) calc(12px * var(--scale-factor));
-  margin: 0 0 calc(10px * var(--scale-factor)) 0;
-  border-radius: calc(10px * var(--scale-factor));
-  font-size: calc(14px * var(--scale-factor));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 10px 12px;
+  margin: 0 0 10px 0;
+  background: rgba(240, 240, 240, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  color: #555;
+  font-size: 14px;
 }
-
+.tool-call-title {
+  font-weight: 600;
+  color: #444;
+}
 .tool-call-chip {
-  gap: calc(6px * var(--scale-factor));
-  padding: calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));
-  border-radius: calc(999px * var(--scale-factor));
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  color: #333;
+}
+.tool-call-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.tool-call-name {
+  font-weight: 500;
 }
 
-.tool-call-spinner {
-  width: calc(14px * var(--scale-factor));
-  height: calc(14px * var(--scale-factor));
-  border-width: calc(2px * var(--scale-factor));
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .processing-indicator {
-  padding: calc(10px * var(--scale-factor)) calc(15px * var(--scale-factor));
-  border-radius: calc(20px * var(--scale-factor));
-  font-size: calc(14px * var(--scale-factor));
-  margin: calc(15px * var(--scale-factor)) 0;
-  box-shadow: 0 calc(2px * var(--scale-factor)) calc(8px * var(--scale-factor)) rgba(0, 0, 0, 0.05);
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: rgba(240, 240, 240, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 20px;
+  font-size: 14px;
+  color: #666;
+  margin: 15px 0;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 </style>
