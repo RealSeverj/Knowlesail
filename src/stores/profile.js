@@ -34,11 +34,11 @@ export const useProfileStore = defineStore('profile', () => {
     return `${p.slice(0, 3)}****${p.slice(-4)}`
   })
 
-  const updateUser = payload => {
+  const updateUser = (payload) => {
     user.value = { ...user.value, ...payload }
   }
 
-  const updatePreferences = payload => {
+  const updatePreferences = (payload) => {
     preferences.value = { ...preferences.value, ...payload }
   }
 

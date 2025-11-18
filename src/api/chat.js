@@ -135,4 +135,3 @@ export async function fetchAssistantRecommendations(params = {}) {
   // 若结构不同，可在此处做一次映射适配
   return Array.isArray(data) ? data : data?.items || []
 }
-

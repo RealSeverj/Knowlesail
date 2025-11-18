@@ -115,24 +115,13 @@ const selfCodeXRender = {
       </template>
     </XMarkdown>
     <!-- MCP 工具调用状态条 -->
-    <div v-if="true" class="tool-call-banner">
-      <span class="tool-call-title">正在调用工具：</span>
-      <span
-        v-for="name in ['jnkdnfjkfnjkdsfndsjkfnjsdkfndsjkfnsjkfnsjkfsdnjkfsnjfkdsnfdjksfd']"
-        :key="name"
-        class="tool-call-chip"
-      >
-        <span class="tool-call-spinner" aria-hidden="true"></span>
-        <span class="tool-call-name">{{ name }}</span>
-      </span>
-    </div>
-    <!-- <div v-if="props.toolCalls && props.toolCalls.length" class="tool-call-banner">
+    <div v-if="props.toolCalls && props.toolCalls.length" class="tool-call-banner">
       <span class="tool-call-title">正在调用工具：</span>
       <span v-for="name in props.toolCalls" :key="name" class="tool-call-chip">
         <span class="tool-call-spinner" aria-hidden="true"></span>
         <span class="tool-call-name">{{ name }}</span>
       </span>
-    </div> -->
+    </div>
   </div>
 </template>
 

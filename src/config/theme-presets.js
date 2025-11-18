@@ -55,7 +55,7 @@ export const presetThemes = [
       '--color-text-secondary': '#475569'
     },
     backgroundImage: 'url(/images/bg-ocean.jpg)',
-    bgOpacity: 0.30,
+    bgOpacity: 0.3,
     bgBlur: '4px'
   }
 ]

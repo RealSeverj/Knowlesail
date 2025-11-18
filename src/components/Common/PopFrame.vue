@@ -64,10 +64,7 @@ const handleClose = () => {
 <template>
   <Teleport to="body">
     <Transition name="popframe-fade">
-      <div
-        v-if="visible"
-        class="popframe-root fixed inset-0 z-50 flex items-center justify-center"
-      >
+      <div v-if="visible" class="popframe-root fixed inset-0 z-50 flex items-center justify-center">
         <!-- 遮罩层 -->
         <div
           v-if="overlay"
@@ -126,7 +123,9 @@ const handleClose = () => {
 
 .popframe-scale-enter-active,
 .popframe-scale-leave-active {
-  transition: transform 0.18s ease-out, opacity 0.18s ease-out;
+  transition:
+    transform 0.18s ease-out,
+    opacity 0.18s ease-out;
 }
 
 .popframe-scale-enter-from,

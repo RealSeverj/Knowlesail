@@ -84,7 +84,12 @@ const handleExportMessage = (message) => {
 
 const handleViewportClick = (event) => {
   const element = event.target instanceof Element ? event.target : null
-  if (element && element.closest('button, a, input, textarea, [role="button"], .var-button, .var-input, [data-prevent-input-trigger]')) {
+  if (
+    element &&
+    element.closest(
+      'button, a, input, textarea, [role="button"], .var-button, .var-input, [data-prevent-input-trigger]'
+    )
+  ) {
     return
   }
   emit('request-input-expand')
@@ -148,10 +153,7 @@ onMounted(async () => {
       @scroll="handleScroll"
       @click="handleViewportClick"
     >
-      <div
-        v-if="hasMessages"
-        class="mx-auto flex w-full max-w-3xl flex-col gap-4"
-      >
+      <div v-if="hasMessages" class="mx-auto flex w-full max-w-3xl flex-col gap-4">
         <MessageItem
           v-for="message in messages"
           :key="message.id"
@@ -168,10 +170,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div
-        v-else
-        class="flex h-full flex-col"
-      >
+      <div v-else class="flex h-full flex-col">
         <LiveAssistence
           class="flex-1"
           :actions="assistantActions"
@@ -180,7 +179,6 @@ onMounted(async () => {
         />
       </div>
     </div>
-
   </section>
 </template>
 
