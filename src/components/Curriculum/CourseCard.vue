@@ -61,7 +61,7 @@ const heightStyle = computed(() => {
 <template>
 	<div>
 		<div
-			class="absolute left-0.5 right-0.5 rounded-lg bg-surface text-primary-foreground px-0.5 py-0.5 text-[11px] shadow cursor-pointer overflow-hidden flex flex-col justify-between border-2 border-opacity-40"
+			class="absolute left-0.5 right-0.5 rounded-lg bg-surface text-primary-foreground px-0.5 py-0.5 text-[11px] shadow cursor-pointer overflow-hidden flex flex-col justify-between border-2 border-opacity-30"
 			:class="borderClass"
 			:style="{ top: topStyle, height: heightStyle }"
 			@click="showDetail = true"
