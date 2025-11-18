@@ -115,13 +115,24 @@ const selfCodeXRender = {
       </template>
     </XMarkdown>
     <!-- MCP 工具调用状态条 -->
-    <div v-if="props.toolCalls && props.toolCalls.length" class="tool-call-banner">
+    <div v-if="true" class="tool-call-banner">
+      <span class="tool-call-title">正在调用工具：</span>
+      <span
+        v-for="name in ['jnkdnfjkfnjkdsfndsjkfnjsdkfndsjkfnsjkfnsjkfsdnjkfsnjfkdsnfdjksfd']"
+        :key="name"
+        class="tool-call-chip"
+      >
+        <span class="tool-call-spinner" aria-hidden="true"></span>
+        <span class="tool-call-name">{{ name }}</span>
+      </span>
+    </div>
+    <!-- <div v-if="props.toolCalls && props.toolCalls.length" class="tool-call-banner">
       <span class="tool-call-title">正在调用工具：</span>
       <span v-for="name in props.toolCalls" :key="name" class="tool-call-chip">
         <span class="tool-call-spinner" aria-hidden="true"></span>
         <span class="tool-call-name">{{ name }}</span>
       </span>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -282,9 +293,10 @@ const selfCodeXRender = {
   color: #444;
 }
 .tool-call-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
   padding: 6px 10px;
   background: white;
   border: 1px solid #e5e7eb;
@@ -292,6 +304,7 @@ const selfCodeXRender = {
   color: #333;
 }
 .tool-call-spinner {
+  flex-shrink: 0;
   width: 14px;
   height: 14px;
   border: 2px solid #cbd5e1;
@@ -301,6 +314,9 @@ const selfCodeXRender = {
 }
 .tool-call-name {
   font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 @keyframes spin {
