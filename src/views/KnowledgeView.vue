@@ -76,7 +76,7 @@ function handleSearchSubmit() {
 
         <!-- 原有按钮保留，样式保持一致 -->
         <button
-          class="flex h-9 w-9 bg-surface hover:bg-surface-variant items-center justify-center rounded-full shadow"
+          class="icon-circle-btn"
           @click="handleOpenAdd"
         >
           <var-icon name="format-list-checkbox" :size="24" />

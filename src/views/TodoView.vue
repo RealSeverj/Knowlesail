@@ -88,13 +88,13 @@ const handleQuadrantDblClick = (quadrantId) => {
       </div>
       <div class="flex items-center gap-2">
         <button
-          class="flex h-9 w-9 items-center justify-center rounded-full bg-surface hover:bg-surface-variant shadow"
+          class="icon-circle-btn"
           @click="handleOpenSearch"
         >
           <var-icon name="magnify" :size="24" />
         </button>
         <button
-          class="flex h-9 w-9 items-center justify-center rounded-full bg-surface hover:bg-surface-variant shadow"
+          class="icon-circle-btn"
           @click="handleOpenAdd"
         >
           <var-icon name="plus" :size="24" />

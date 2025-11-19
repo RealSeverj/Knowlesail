@@ -45,42 +45,6 @@
   border-color: var(--color-border);
 }
 
-/* 卡片样式 */
-.card {
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  padding: 1rem;
-}
-
-.card-hover {
-  transition: box-shadow var(--transition-base), transform var(--transition-base);
-}
-
-.card-hover:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-/* 按钮样式 */
-.btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  transition: background-color var(--transition-fast);
-}
-
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.btn-primary:active {
-  background-color: var(--color-primary-dark);
-  transform: scale(0.98);
-}
-
 /* 应用全局背景：支持纯色 + 背景图片 */
 .app-bg {
 
@@ -99,4 +63,25 @@
   background-repeat: var(--app-bg-repeat);
   opacity: var(--app-bg-opacity);
   filter: blur(var(--app-bg-blur));
+}
+
+/* 通用圆形图标按钮样式 */
+.icon-circle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem; /* 对应 h-9/w-9 */
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  transition:
+    background-color var(--transition-base) ease-in-out,
+    box-shadow var(--transition-base) ease-in-out,
+    transform var(--transition-base) ease-in-out;
+}
+
+.icon-circle-btn:hover {
+  background-color: var(--color-surface-variant) * 30%;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.22);
 }

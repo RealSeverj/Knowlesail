@@ -44,7 +44,7 @@ const handleBack = () => {
       <button
         v-if="showBack"
         type="button"
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm"
+        class="icon-circle-btn"
         @click="handleBack"
       >
         <var-icon name="chevron-left" :size="20" />
