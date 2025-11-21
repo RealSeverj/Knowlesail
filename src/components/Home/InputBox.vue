@@ -136,7 +136,7 @@ const handleCollapse = () => {
             textarea
             :rows="textareaRows"
             :maxlength="2000"
-            class="flex-1 text-base"
+            class="flex-1 text-base input-box"
             spellcheck="false"
             @keydown.enter.exact="handleEnter"
           />
@@ -259,6 +259,11 @@ const handleCollapse = () => {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.input-box {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .input-inner {
