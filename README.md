@@ -18,7 +18,12 @@
 - 构建生产：`pnpm run build`
 - 同步项目：`npx cap sync android`
 - 打开安卓项目： `npx cap open android`
+- 集成脚本：`pnpm run android:run`
+- 构建apk：
+`cd android`
+`./gradlew assembleRelease`
 
+生成的apk在：android\app\build\outputs\apk\release\app-release.apk
 
 ## 技术栈
 
