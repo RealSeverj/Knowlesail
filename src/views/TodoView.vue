@@ -77,6 +77,81 @@ const handleQuadrantDblClick = (quadrantId) => {
   targetQuadrant.value = quadrantId
   showAdd.value = true
 }
+
+// 滑动切换象限逻辑
+const touchStart = ref({ x: 0, y: 0 })
+const minSwipeDistance = 50 // 滑动阈值
+
+const handleTouchStart = (e) => {
+  touchStart.value = {
+    x: e.changedTouches[0].clientX,
+    y: e.changedTouches[0].clientY
+  }
+}
+
+const handleTouchEnd = (e) => {
+
+完成课程作业
+
+学习
+
+今晚前提交系统分析作业
+
+截止：2025/11/21 12:50:39
+
+重要不紧急
+共 1 项
+紧急不重要
+共 1 项
+  const touchEnd = {
+    x: e.changedTouches[0].clientX,
+    y: e.changedTouches[0].clientY
+  }
+
+  const deltaX = touchEnd.x - touchStart.value.x
+  const deltaY = touchEnd.y - touchStart.value.y
+
+  // 获取当前坐标 (0/1)
+  // 1:(0,0), 2:(1,0), 3:(0,1), 4:(1,1)
+  let currentX = (activeQuadrant.value === 2 || activeQuadrant.value === 4) ? 1 : 0
+  let currentY = (activeQuadrant.value === 3 || activeQuadrant.value === 4) ? 1 : 0
+  
+  let nextX = currentX
+  let nextY = currentY
+
+  // 判断水平滑动
+  if (Math.abs(deltaX) > minSwipeDistance) {
+    if (deltaX < 0) {
+      // 左滑，想看右边 -> x 变 1
+      nextX = 1
+    } else {
+      // 右滑，想看左边 -> x 变 0
+      nextX = 0
+    }
+  }
+
+  // 判断垂直滑动
+  if (Math.abs(deltaY) > minSwipeDistance) {
+    if (deltaY < 0) {
+      // 上滑，想看下边 -> y 变 1
+      nextY = 1
+    } else {
+      // 下滑，想看上边 -> y 变 0
+      nextY = 0
+    }
+  }
+
+  // 计算新的象限 ID
+  let nextQuadrant = 1
+  if (nextX === 0 && nextY === 0) nextQuadrant = 1
+  if (nextX === 1 && nextY === 0) nextQuadrant = 2
+  if (nextX === 0 && nextY === 1) nextQuadrant = 3
+  if (nextX === 1 && nextY === 1) nextQuadrant = 4
+
+  if (nextQuadrant !== activeQuadrant.value) {
+    activeQuadrant.value = nextQuadrant
+  }
+}
 </script>
 
 <template>
@@ -103,7 +178,12 @@ const handleQuadrantDblClick = (quadrantId) => {
     </header>
 
     <main class="flex-1 pl-2 pr-5 pb-20 pt-4 overflow-hidden">
-      <div class="quadrant-grid" :style="gridStyle">
+      <div
+        class="quadrant-grid"
+        :style="gridStyle"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
+      >
         <div
           v-for="q in quadrants"
           :key="q.id"
