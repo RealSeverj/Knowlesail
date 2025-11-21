@@ -90,19 +90,6 @@ const handleTouchStart = (e) => {
 }
 
 const handleTouchEnd = (e) => {
-
-完成课程作业
-
-学习
-
-今晚前提交系统分析作业
-
-截止：2025/11/21 12:50:39
-
-重要不紧急
-共 1 项
-紧急不重要
-共 1 项
   const touchEnd = {
     x: e.changedTouches[0].clientX,
     y: e.changedTouches[0].clientY
