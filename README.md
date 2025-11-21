@@ -8,20 +8,15 @@
 
 ## 快速开始
 
-- 安装依赖：`pnpm install`
-- 运行开发：`pnpm run dev`
-- 构建生产：`pnpm run build`
-- 预览构建：`pnpm run preview`
-
-## 构建安卓APP
-- 安装依赖：`pnpm add @capacitor/core @capacitor/cli @capacitor/android`
-- 构建生产：`pnpm run build`
-- 同步项目：`npx cap sync android`
-- 打开安卓项目： `npx cap open android`
-- 集成脚本：`pnpm run android:run`
-- 构建apk：
-`cd android`
-`./gradlew assembleRelease`
+- 安装依赖：make install
+- 运行开发：make dev
+- 构建生产：make build
+- 预览构建：make preview
+- 安装Capacitor依赖：make install-capacitor
+- 同步安卓项目：make sync-android
+- 打开安卓项目：make open-android
+- 运行安卓项目：make run-android
+- 构建APK：make build-apk
 
 生成的apk在：android\app\build\outputs\apk\release\app-release.apk
 
