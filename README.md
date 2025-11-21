@@ -12,6 +12,13 @@
 - 构建生产：`pnpm run build`
 - 预览构建：`pnpm run preview`
 
+## 构建安卓APP
+- 安装依赖：`pnpm add @capacitor/core @capacitor/cli @capacitor/android`
+- 构建生产：`pnpm run build`
+- 同步项目：`npx cap sync android`
+- 打开安卓项目： `npx cap open android`
+
+
 ## 技术栈
 
 - Vue 3 + Vite 7

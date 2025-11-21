@@ -76,7 +76,7 @@ const handleClose = () => {
         <Transition name="popframe-scale">
           <div
             v-if="visible"
-            class="relative rounded-2xl bg-white/95 p-4 shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-800/95 dark:ring-slate-700/80"
+            class="relative rounded-2xl bg-background p-4 shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-800/95 dark:ring-slate-700/80"
             :class="[widthClass, maxHeightClass, frameClass]"
           >
             <!-- 右上角关闭按钮 -->

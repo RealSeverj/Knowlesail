@@ -156,10 +156,13 @@ function slideToWeek(delta) {
     // 更新完 currentWeek 后直接将基准和偏移同步到新的“中间页”
     baseX.value = -pageWidth.value
     translateX.value = baseX.value
-    // 下一帧再打开过渡，供下一次滑动使用
+    // 使用双重 requestAnimationFrame 确保 DOM 更新并渲染了一帧“无过渡”状态
+    // 这样浏览器才会真正“跳”到新位置，而不是“滑”过去
     requestAnimationFrame(() => {
-      enableTransition.value = true
-      animating.value = false
+      requestAnimationFrame(() => {
+        enableTransition.value = true
+        animating.value = false
+      })
     })
   }, 300)
 }
@@ -325,7 +328,7 @@ function handleClick(delta) {
     lock-scroll
     elevation
     :overlay="true"
-    class="week-picker-popup"
+    class="week-picker-popup bg-background"
   >
     <div class="rounded-t-2xl pt-3 pb-4 px-4 max-h-[60vh] flex flex-col">
       <div class="flex items-center justify-between mb-2">

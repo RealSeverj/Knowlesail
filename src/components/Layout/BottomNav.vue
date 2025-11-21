@@ -58,7 +58,7 @@ const activeTab = computed({
 </script>
 
 <template>
-  <var-bottom-navigation v-model:active="activeTab" fixed safe-area>
+  <var-bottom-navigation v-model:active="activeTab" fixed safe-area class="z-9999">
     <var-bottom-navigation-item
       v-for="item in navItems"
       :key="item.name"

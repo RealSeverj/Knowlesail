@@ -91,7 +91,7 @@ const closeCustomTheme = () => {
     'SF Pro Text',
     'Segoe UI',
     sans-serif;
-  height: 94vh;
+  height: 100%;
   overflow-y: auto;
 }
 </style>

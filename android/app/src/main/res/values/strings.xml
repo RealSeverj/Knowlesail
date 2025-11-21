@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Knowlesail</string>
+    <string name="title_activity_main">Knowlesail</string>
+    <string name="package_name">com.hachimi.knowlesail</string>
+    <string name="custom_url_scheme">com.hachimi.knowlesail</string>
+</resources>

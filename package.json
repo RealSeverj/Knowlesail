@@ -8,9 +8,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "android:run": "pnpm run build && npx cap sync android && npx cap run android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
     "@vant/icons": "^3.0.2",
     "@vant/touch-emulator": "^1.4.0",
     "@varlet/icons": "^3.12.1",
@@ -28,6 +31,7 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.4",
     "@eslint/js": "^9.39.1",
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^6.0.1",

@@ -34,19 +34,22 @@ body {
   min-height: 100vh;
 }
 
-/* 滚动条样式 */
+/* 全局隐藏滚动条 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
+/* Firefox */
+html {
+  scrollbar-width: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-md);
+/* IE/Edge */
+body {
+  -ms-overflow-style: none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
