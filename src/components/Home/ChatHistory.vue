@@ -58,7 +58,7 @@ const formatTimestamp = (value) => {
 </script>
 
 <template>
-  <section class="history-page flex h-full flex-col pb-14">
+  <section class="flex h-full flex-col safe-area-top pb-14">
     <AppHeader
       title="历史会话"
       subtitle="管理和切换聊天记录"
@@ -131,10 +131,6 @@ const formatTimestamp = (value) => {
 </template>
 
 <style scoped>
-.history-page {
-  position: relative;
-}
-
 .fab {
   position: fixed;
   bottom: calc(80px + env(safe-area-inset-bottom));

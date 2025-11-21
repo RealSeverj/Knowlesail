@@ -145,10 +145,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="chat-interface flex h-full flex-col">
+  <section class="flex flex-col min-h-0 flex-1">
     <div
       ref="viewportRef"
-      class="message-viewport flex-1 overflow-y-auto px-4 py-6"
+      class="overflow-y-auto min-h-0 flex-1 px-2 py-6"
       :style="viewportStyle"
       @scroll="handleScroll"
       @click="handleViewportClick"
@@ -183,26 +183,4 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.message-viewport {
-  scroll-behavior: smooth;
-}
-
-.message-viewport::-webkit-scrollbar {
-  width: 6px;
-}
-
-.message-viewport::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.message-viewport::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.32);
-}
-
-@media (max-width: 640px) {
-  .message-viewport {
-    padding: 16px 12px 20px;
-  }
-}
 </style>

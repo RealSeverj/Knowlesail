@@ -142,7 +142,7 @@ const handleTouchEnd = (e) => {
 </script>
 
 <template>
-  <div class="todo-view flex min-h-screen flex-col">
+  <div class="flex h-full flex-col">
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div>
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">待办事项</h1>
@@ -164,7 +164,7 @@ const handleTouchEnd = (e) => {
       </div>
     </header>
 
-    <main class="flex-1 pl-2 pr-5 pb-20 pt-4 overflow-hidden">
+    <main class="flex-1 pl-2 pr-5 pb-5 pt-4 overflow-hidden">
       <div
         class="quadrant-grid"
         :style="gridStyle"
@@ -207,11 +207,6 @@ const handleTouchEnd = (e) => {
 </template>
 
 <style scoped>
-.todo-view {
-  overflow: hidden;
-  height: 100%;
-}
-
 .quadrant-grid {
   display: grid;
   width: 100%;

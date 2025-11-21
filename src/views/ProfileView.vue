@@ -39,7 +39,7 @@ const closeCustomTheme = () => {
 
 <template>
   <div
-    class="profile-view bg-gradient-to-b from-slate-50 to-slate-99 dark:from-slate-900 dark:to-slate-950 px-4 pb-4 pt-4"
+    class="profile-view px-4 pb-4 pt-4"
   >
     <div class="mx-auto flex max-w-screen-sm flex-col gap-4">
       <!-- 顶部用户信息 -->

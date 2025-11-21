@@ -14,6 +14,9 @@ importers:
       '@capacitor/core':
         specifier: ^7.4.4
         version: 7.4.4
+      '@capacitor/status-bar':
+        specifier: ^7.0.3
+        version: 7.0.3(@capacitor/core@7.4.4)
       '@vant/icons':
         specifier: ^3.0.2
         version: 3.0.2
@@ -261,6 +264,11 @@ packages:
 
   '@capacitor/core@7.4.4':
     resolution: {integrity: sha512-xzjxpr+d2zwTpCaN0k+C6wKSZzWFAb9OVEUtmO72ihjr/NEDoLvsGl4WLfjWPcCO2zOy0b2X52tfRWjECFUjtw==}
+
+  '@capacitor/status-bar@7.0.3':
+    resolution: {integrity: sha512-JyRpVnKwHij9hgPWolF6PK+HT3e2HSPjN11/h2OmKxq8GAdPGARFLv+97eZl0pvuvm0Kka/LpiLb5whXISBg7Q==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
 
   '@element-plus/icons-vue@2.3.2':
     resolution: {integrity: sha512-OzIuTaIfC8QXEPmJvB4Y4kw34rSXdCJzxcD1kFStBvr8bK6X1zQAYDo0CNMjojnfTqRQCJ0I7prlErcoRiET2A==}
@@ -2878,6 +2886,10 @@ snapshots:
   '@capacitor/core@7.4.4':
     dependencies:
       tslib: 2.3.0
+
+  '@capacitor/status-bar@7.0.3(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
 
   '@element-plus/icons-vue@2.3.2(vue@3.5.24(typescript@5.9.3))':
     dependencies:

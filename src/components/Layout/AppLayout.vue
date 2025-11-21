@@ -14,7 +14,7 @@ const hideBottomNav = computed(() => {
 <template>
   <div class="app-layout">
     <!-- 主内容区 -->
-    <main class="main-content">
+    <main class="main-content safe-area-top">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />

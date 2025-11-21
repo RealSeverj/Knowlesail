@@ -80,10 +80,11 @@ const handleLeaveBottomByScroll = () => {
 </script>
 
 <template>
-  <div class="home-view">
+  <div class="flex h-full flex-col">
     <ChatHeader />
-    <div class="chat-body">
+    <div class="flex-1 min-h-0 flex">
       <ChatInterface
+        class="flex-1 min-h-0"
         :bottom-offset="inputOffset"
         @bottom-state-change="handleBottomStateChange"
         @request-input-expand="handleViewportExpand"
@@ -100,21 +101,4 @@ const handleLeaveBottomByScroll = () => {
 </template>
 
 <style scoped>
-.home-view {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding-bottom: calc(56px + env(safe-area-inset-bottom));
-}
-
-.chat-body {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
 </style>
