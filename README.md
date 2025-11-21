@@ -18,8 +18,6 @@
 - 运行安卓项目：make run-android
 - 构建APK：make build-apk
 
-生成的apk在：android\app\build\outputs\apk\release\app-release.apk
-
 ## 技术栈
 
 - Vue 3 + Vite 7

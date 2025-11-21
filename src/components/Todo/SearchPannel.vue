@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-
+import { usePopupBackClose } from '@/composables/usePopupBackClose'
 const props = defineProps({
   show: {
     type: Boolean,
@@ -60,6 +60,9 @@ const handleClose = () => {
   isOpen.value = false
   emit('close')
 }
+
+// 物理返回键优先关闭弹层
+usePopupBackClose(isOpen, handleClose)
 </script>
 
 <template>

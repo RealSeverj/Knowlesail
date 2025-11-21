@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, provide, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+import { useBackButtonHandler } from './composables/useBackButtonHandler'
 import { applyStatusBarTheme } from '@/composables/useStatusBar'
 import AppLayout from '@/components/Layout/AppLayout.vue'
 import ToastContainer from '@/components/ToastContainer.vue'
@@ -25,6 +26,10 @@ watch(
 
 // 全局注入主题信息
 provide('theme', theme)
+
+useBackButtonHandler({
+  mainRouteNames: ['Home', 'Todo', 'Curriculum', 'Profile', 'MyNotes'],
+})
 </script>
 
 <template>

@@ -102,11 +102,6 @@ const handleVoiceInput = () => {
 const handleExpand = () => {
   emit('request-expand')
 }
-
-const handleCollapse = () => {
-  if (isStreaming.value) return
-  emit('request-collapse')
-}
 </script>
 
 <template>
@@ -142,16 +137,6 @@ const handleCollapse = () => {
           />
 
           <div class="action-group">
-            <var-button
-              text
-              round
-              class="icon-btn collapse-btn"
-              :disabled="isStreaming"
-              @click="handleCollapse"
-            >
-              <var-icon name="chevron-down" :size="20" />
-            </var-button>
-
             <var-button
               text
               round

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useCurriculumStore } from '@/stores/curriculum'
 import { useToast } from '@/composables/useToast'
+import { usePopupBackClose } from '@/composables/usePopupBackClose'
 
 const emit = defineEmits(['created'])
 
@@ -9,6 +10,11 @@ const curriculumStore = useCurriculumStore()
 const toast = useToast()
 
 const show = ref(false)
+
+// 物理返回键优先关闭弹层
+usePopupBackClose(show, () => {
+  show.value = false
+})
 
 const form = ref({
   name: '',
