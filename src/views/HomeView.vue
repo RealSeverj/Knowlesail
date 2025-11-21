@@ -5,6 +5,7 @@ import ChatInterface from '@/components/Home/ChatInterface.vue'
 import InputBox from '@/components/Home/InputBox.vue'
 import { useChatStore } from '@/stores/chat'
 
+
 const chatStore = useChatStore()
 
 const inputExpanded = ref(false)
@@ -22,8 +23,6 @@ const handleBottomStateChange = (atBottom) => {
     expandInput(true)
     return
   }
-
-  // 离开底部时不立即处理，交给滚动方向逻辑
 }
 
 const expandInput = (isAuto = false) => {

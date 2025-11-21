@@ -1,11 +1,19 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
+import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
+
+const { keyboardOffset } = useKeyboardOffset()
+const finalOffset = computed(() => (keyboardOffset.value ? keyboardOffset.value + 12 : 80))
 
 const props = defineProps({
   expanded: {
     type: Boolean,
     default: false
+  },
+  keyboardOffset: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -107,6 +115,7 @@ const handleCollapse = () => {
       ref="shellRef"
       class="morph-shell"
       :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
+      :style="{ bottom: finalOffset + 'px' }"
     >
       <button
         v-if="!expanded"
@@ -184,7 +193,6 @@ const handleCollapse = () => {
 
 .morph-shell {
   position: absolute;
-  bottom: calc(80px + env(safe-area-inset-bottom));
   right: 24px;
   width: 64px;
   max-height: 64px;
@@ -320,26 +328,6 @@ const handleCollapse = () => {
 
 .collapse-btn {
   color: var(--color-text-secondary) !important;
-}
-
-@media (max-width: 640px) {
-  .morph-shell {
-    right: 16px;
-    bottom: calc(70px + env(safe-area-inset-bottom));
-  }
-
-  .morph-shell.is-expanded {
-    width: calc(100% - 24px);
-    padding: 12px;
-  }
-
-  .input-inner {
-    gap: 8px;
-  }
-
-  .char-indicator {
-    font-size: 10px;
-  }
 }
 
 :deep(.var-button__content) {

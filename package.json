@@ -14,6 +14,7 @@
   "dependencies": {
     "@capacitor/android": "^7.4.4",
     "@capacitor/core": "^7.4.4",
+    "@capacitor/keyboard": "^7.0.3",
     "@capacitor/status-bar": "^7.0.3",
     "@vant/icons": "^3.0.2",
     "@vant/touch-emulator": "^1.4.0",
