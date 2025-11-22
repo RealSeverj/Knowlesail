@@ -18,7 +18,7 @@ export function useToastBus() {
     state.toasts.unshift(toast)
 
     // auto dismiss
-    const ms = typeof opts.duration === 'number' ? opts.duration : 2600
+    const ms = typeof opts.duration === 'number' ? opts.duration : 1000
     if (ms > 0) {
       setTimeout(() => remove(id), ms)
     }

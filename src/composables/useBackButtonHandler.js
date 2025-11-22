@@ -23,7 +23,7 @@ export function useBackButtonHandler(options = {}) {
   const {
     mainRouteNames = ['Home', 'Todo', 'Knowledge', 'Curriculum', 'Profile'],
     exitToastMessage = '再按一次返回键退出应用',
-    exitTimeout = 2000,
+    exitTimeout = 1000,
   } = options
 
   let backPressedOnce = false
