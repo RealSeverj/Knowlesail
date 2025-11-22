@@ -12,6 +12,8 @@
     "android:run": "pnpm run build && npx cap sync android && npx cap run android"
   },
   "dependencies": {
+    "@awesome-cordova-plugins/calendar": "^8.1.0",
+    "@awesome-cordova-plugins/core": "^8.1.0",
     "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
     "@capacitor/core": "^7.4.4",

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import ThemeSwitch from './ThemeSwitch.vue'
 import PopMenu from '@/components/Common/PopMenu.vue'
 import { useTheme } from '@/composables/useTheme'
+import { useCalendarExport } from '@/composables/useCalendarExport'
 
 const props = defineProps({
   preferences: {
@@ -45,6 +46,12 @@ const handleThemeSelect = (value) => {
 const openCustomTheme = () => {
   themeMenuVisible.value = false
   emit('open-custom-theme')
+}
+
+const { exportCurriculumToCalendar } = useCalendarExport()
+
+const handleExportCalendar = async () => {
+  await exportCurriculumToCalendar()
 }
 
 initTheme()
@@ -146,7 +153,12 @@ initTheme()
           </template>
         </var-cell>
 
-        <var-cell icon="calendar-month-outline" ripple title="导出课程表到日历">
+        <var-cell
+          icon="calendar-month-outline"
+          ripple
+          title="导出课程表到日历"
+          @click="handleExportCalendar"
+        >
           <template #description>
             <span class="text-xs text-slate-500 dark:text-slate-400"> 便于系统日历统一查看 </span>
           </template>
