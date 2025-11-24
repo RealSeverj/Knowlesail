@@ -96,7 +96,7 @@ function getIcon(type) {
 <template>
   <Teleport to="body">
     <div
-      class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] max-w-md"
+      class="fixed top-4 safe-area-top left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] max-w-md"
     >
       <TransitionGroup name="toast">
         <div

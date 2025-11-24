@@ -1,4 +1,4 @@
-import { isPlatform } from '@awesome-cordova-plugins/core'
+import { Capacitor } from '@capacitor/core'
 import { Calendar } from '@awesome-cordova-plugins/calendar'
 import { useCurriculumStore } from '@/stores/curriculum'
 import { useToast } from '@/composables/useToast'
@@ -79,7 +79,8 @@ export function useCalendarExport() {
 	const { confirm } = useConfirm()
 
 	async function ensurePlatformSupported() {
-		const isAndroid = isPlatform('android')
+		const platform = Capacitor.getPlatform()
+		const isAndroid = platform === 'android'
 		if (!isAndroid) {
 			showToast('当前仅支持在 Android 真机上导出到系统日历')
 			return false
