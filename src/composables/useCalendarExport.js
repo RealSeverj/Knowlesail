@@ -75,14 +75,14 @@ function formatDateToRRuleUntil(date) {
 
 export function useCalendarExport() {
 	const curriculumStore = useCurriculumStore()
-	const { showToast } = useToast()
+	const toast = useToast()
 	const { confirm } = useConfirm()
 
 	async function ensurePlatformSupported() {
 		const platform = Capacitor.getPlatform()
 		const isAndroid = platform === 'android'
 		if (!isAndroid) {
-			showToast('当前仅支持在 Android 真机上导出到系统日历')
+			toast.warning('当前仅支持在 Android 真机上导出到系统日历')
 			return false
 		}
 		return true
