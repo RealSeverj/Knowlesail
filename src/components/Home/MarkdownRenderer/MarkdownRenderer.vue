@@ -16,7 +16,8 @@ const props = defineProps({
   messageId: { type: String, required: true },
   streaming: { type: Boolean, default: false },
   toolCalls: { type: Array, default: () => [] },
-  scale: { type: Number, default: 1 } // 文字缩放比例
+  scale: { type: Number, default: 1 }, // 文字缩放比例
+  color: { type: String, default: '#81abe2' } // 高亮标题颜色
 })
 const emits = defineEmits(['updateHeight'])
 
@@ -134,7 +135,7 @@ const selfCodeXRender = {
 }
 
 .markdown-prase {
-  --main-color: #81abe2;
+  --main-color: v-bind('props.color');
 
   font-size: calc(16px * var(--scale-factor));
   line-height: calc(1.5 * var(--scale-factor));
