@@ -35,8 +35,5 @@ run-android:
 	pnpm run build && npx cap sync android && npx cap run android
 
 # 构建 APK
-bump-version:
-	powershell -ExecutionPolicy Bypass -File scripts\bump_version.ps1
-
 build-apk:
 	pnpm run build && npx cap sync android && cd android && gradlew.bat assembleRelease && copy app\build\outputs\apk\release\app-release.apk ..

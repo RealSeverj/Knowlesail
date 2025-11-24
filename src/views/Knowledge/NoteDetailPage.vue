@@ -31,6 +31,10 @@ function handleBack() {
   router.back()
 }
 
+function handleEdit() {
+  router.push({ name: 'NoteEdit', params: { id: noteId.value } })
+}
+
 async function generateImage(prompt) {
   console.log('generate image from note block:', prompt)
   return null
@@ -105,10 +109,16 @@ async function generateImage(prompt) {
             </span>
           </span>
         </div>
-        <var-button text round size="small" type="primary">
-          <var-icon name="share-variant" :size="16" class="mr-0.5" />
+        <div>
+          <var-button text size="small" class="rounded-xl" type="primary">
+          <var-icon name="share" :size="16" class="mr-0.5" />
           分享
         </var-button>
+        <var-button text size="small" class="rounded-xl" type="primary" @click="handleEdit">
+          <var-icon name="wrench" :size="14" class="mr-0.5" />
+          编辑
+        </var-button>
+        </div>
       </div>
 
       <!-- 内容块列表 -->
@@ -155,9 +165,9 @@ async function generateImage(prompt) {
         <div v-if="note" class="px-4 pb-3 pt-2 border-t border-border/60">
           <div class="flex items-center justify-between mb-2">
             <span class="text-[11px] text-text-secondary">评论</span>
-            <var-button text round size="small"
-              ><var-icon name="message-processing-outline"
-            /></var-button>
+            <var-button text round size="small">
+              <var-icon name="message-processing-outline"/>
+            </var-button>
           </div>
           <div
             v-if="
