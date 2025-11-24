@@ -145,7 +145,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="flex flex-col min-h-0 flex-1">
+  <section class="flex flex-col min-h-0 flex-1 overflow-x-hidden">
     <div
       ref="viewportRef"
       class="overflow-y-auto min-h-0 flex-1 px-2 py-6"
@@ -182,5 +182,4 @@ onMounted(async () => {
   </section>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
