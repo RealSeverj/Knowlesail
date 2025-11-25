@@ -50,7 +50,6 @@ function updateHeight() {
 // 全屏查看
 const isFullScreen = ref(false)
 function fullScreen() {
-  console.log('full screen')
   isFullScreen.value = true
 }
 </script>
@@ -79,7 +78,7 @@ function fullScreen() {
     <Htmath :html="replaceWithCachedLibs(html)" :use-thumb="true" @finished="updateHeight"></Htmath>
 
     <!-- 全屏查看 -->
-    <FullScreenViewer v-model="isFullScreen"></FullScreenViewer>
+    <FullScreenViewer v-model="isFullScreen" :html="replaceWithCachedLibs(html)"></FullScreenViewer>
   </div>
 </template>
 

@@ -15,11 +15,26 @@ const props = defineProps({
 const iframeRef = useTemplateRef('iframeRef')
 const emits = defineEmits(['finished'])
 const loading = ref(true)
+const showIframe = ref(true)
 
 const thumbUrl = ref(null)
 // 清理失效缩略图
-function revokeThumb() {
-  if (thumbUrl.value) URL.revokeObjectURL(thumbUrl.value)
+function revokeThumb(url) {
+  const target = url ?? thumbUrl.value
+  if (!target || typeof target !== 'string') return false
+  // 仅撤销由 createObjectURL 生成的 blob: URL
+  if (!target.startsWith('blob:')) {
+    if (url == null) thumbUrl.value = null
+    return false
+  }
+  try {
+    URL.revokeObjectURL(target)
+  } catch (e) {
+    /* ignore */
+  }
+  // 如果没有传入 url（即清理组件内存储），同时清空 thumbUrl
+  if (url == null) thumbUrl.value = null
+  return true
 }
 // 获取iframe缩略图
 async function getThumb() {
@@ -27,7 +42,6 @@ async function getThumb() {
     const element = iframeRef.value.contentDocument.body
     const url = await html2png(element)
     if (!url) return null
-    revokeThumb()
     return url
   } catch {
     return null
@@ -43,6 +57,11 @@ function handleRender(iframe) {
 
     // 清除之前的事件监听，避免重复触发
     iframe.contentWindow.onload = null
+
+    if (props.useThumb) {
+      // 使用固定宽度渲染缩略图
+      iframeRef.value.style.minWidth = '768px'
+    }
 
     iframeDoc.open()
     iframeDoc.writeln(props.html)
@@ -71,8 +90,24 @@ function handleRender(iframe) {
           nextTick(async () => {
             if (props.useThumb) {
               // 生成缩略图
-              revokeThumb()
-              thumbUrl.value = await getThumb()
+              const newUrl = await getThumb()
+              if (newUrl) {
+                const oldUrl = thumbUrl.value
+                thumbUrl.value = newUrl
+                if (oldUrl && oldUrl !== newUrl) {
+                  revokeThumb(oldUrl)
+                }
+
+                // 先取消事件监听，避免异步回调持有引用
+                try {
+                  if (iframeRef.value && iframeRef.value.contentWindow) {
+                    iframeRef.value.contentWindow.onload = null
+                  }
+                } catch (e) {
+                  /* ignore */
+                }
+                showIframe.value = false
+              }
             }
             loading.value = false
             nextTick(() => {
@@ -94,6 +129,7 @@ watch(
   () => iframeRef.value,
   (iframe) => {
     if (!iframe) return
+    showIframe.value = true
     handleRender(iframe)
   },
   { immediate: true } // 初始加载时立即检查
@@ -119,7 +155,7 @@ const iframeStyle = computed(() => {
 </script>
 
 <template>
-  <div class="htmath">
+  <div class="htmath" :style="{ overflow: useThumb ? 'hidden' : undefined }">
     <div v-if="loading" class="loading">
       <div class="loading-indicator">
         <div class="spinner"></div>
@@ -128,6 +164,7 @@ const iframeStyle = computed(() => {
     </div>
 
     <iframe
+      v-if="showIframe"
       ref="iframeRef"
       width="100%"
       height="0"
@@ -135,7 +172,7 @@ const iframeStyle = computed(() => {
       class="iframe"
       :style="iframeStyle"
     ></iframe>
-    <img v-if="useThumb" class="thumb" :src="thumbUrl" style="height: auto" />
+    <img v-if="useThumb && thumbUrl" class="thumb" :src="thumbUrl" style="height: auto" />
   </div>
 </template>
 
@@ -146,7 +183,6 @@ const iframeStyle = computed(() => {
 }
 
 .iframe {
-  min-width: 768px;
   transition: height 0.3s ease;
   background-color: #fff;
 }
@@ -156,6 +192,9 @@ const iframeStyle = computed(() => {
   width: fit-content;
   margin: auto;
   padding-top: 20px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 .loading-indicator {
   display: flex;

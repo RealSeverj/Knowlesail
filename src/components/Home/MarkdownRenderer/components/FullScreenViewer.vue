@@ -1,5 +1,10 @@
 <script setup>
+import Htmath from './Htmath.vue'
+
 const isFullScreen = defineModel({ type: Boolean })
+const props = defineProps({
+  html: { type: String, required: true }
+})
 </script>
 
 <template>
@@ -12,7 +17,9 @@ const isFullScreen = defineModel({ type: Boolean })
             <div class="title">可视化面板</div>
             <var-icon name="refresh" />
           </div>
-          <div class="main">Htmath插入</div>
+          <div class="main">
+            <Htmath :html="html" :use-thumb="false"></Htmath>
+          </div>
         </div>
       </div>
     </Transition>
