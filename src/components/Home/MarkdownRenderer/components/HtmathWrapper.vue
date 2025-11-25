@@ -3,6 +3,7 @@ import { ref, useTemplateRef } from 'vue'
 import { visualizationLibs } from '@/config/visualization-libs.config' // 可视化库配置
 import { useLibraryCache } from '@/composables/useLibraryCache' // 缓存管理器
 import Htmath from './Htmath.vue'
+import FullScreenViewer from './FullScreenViewer.vue'
 const { libBlobs } = useLibraryCache()
 
 const props = defineProps({
@@ -45,6 +46,13 @@ function updateHeight() {
   loading.value = false
   emits('updateHeight')
 }
+
+// 全屏查看
+const isFullScreen = ref(false)
+function fullScreen() {
+  console.log('full screen')
+  isFullScreen.value = true
+}
 </script>
 
 <template>
@@ -59,7 +67,7 @@ function updateHeight() {
         height="1em"
         fill="none"
         viewBox="0 0 24 24"
-        @click.stop
+        @click.stop="fullScreen"
       >
         <path
           fill="currentColor"
@@ -69,6 +77,9 @@ function updateHeight() {
     </div>
 
     <Htmath :html="replaceWithCachedLibs(html)" :use-thumb="true" @finished="updateHeight"></Htmath>
+
+    <!-- 全屏查看 -->
+    <FullScreenViewer v-model="isFullScreen"></FullScreenViewer>
   </div>
 </template>
 
