@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import MarkdownRenderer from './MarkdownRenderer/MarkdownRenderer.vue'
 import { Snackbar } from '@varlet/ui'
 
@@ -10,6 +11,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['export'])
+
+// 图片预览状态
+const showImagePreview = ref(false)
 
 // 格式化时间
 function formatTime(timestamp) {
@@ -62,6 +66,16 @@ async function generateImage(prompt) {
   console.log('生成图片:', prompt)
   return null
 }
+
+// 打开图片预览
+function openImagePreview() {
+  showImagePreview.value = true
+}
+
+// 关闭图片预览
+function closeImagePreview() {
+  showImagePreview.value = false
+}
 </script>
 
 <template>
@@ -99,7 +113,7 @@ async function generateImage(prompt) {
       <!-- 内容 -->
       <div
         class="relative leading-relaxed break-words"
-        :class="message.role === 'user' ? 'flex justify-end' : ''"
+        :class="message.role === 'user' ? 'flex flex-col items-end' : ''"
       >
         <div
           v-if="message.role === 'user'"
@@ -107,7 +121,28 @@ async function generateImage(prompt) {
         >
           {{ message.content }}
         </div>
-        <div v-else class="message-bubble inline-block max-w-full px-4 rounded-xl transition-colors">
+
+        <!-- 用户发送的图片 -->
+        <div
+          v-if="message.role === 'user' && message.hasImage && message.imagePreview"
+          class="mt-2 max-w-[85%]"
+        >
+          <div
+            class="user-image-container rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+            @click="openImagePreview"
+          >
+            <img
+              :src="message.imagePreview"
+              alt="用户上传的图片"
+              class="user-image"
+            />
+            <div class="image-overlay">
+              <var-icon name="window-close" :size="24" color="#fff" />
+            </div>
+          </div>
+        </div>
+
+        <div v-if="message.role === 'assistant'" class="message-bubble inline-block max-w-full px-4 rounded-xl transition-colors">
           <MarkdownRenderer
             :content="message.content"
             :message-id="message.id"
@@ -150,6 +185,24 @@ async function generateImage(prompt) {
         </var-button>
       </div>
     </div>
+
+    <!-- 图片预览弹窗 -->
+    <teleport to="body">
+      <transition name="fade">
+        <div
+          v-if="showImagePreview && message.hasImage && message.imagePreview"
+          class="image-preview-modal"
+          @click="closeImagePreview"
+        >
+          <div class="preview-content" @click.stop>
+            <img :src="message.imagePreview" alt="图片预览" class="preview-image" />
+            <button class="close-btn" @click="closeImagePreview">
+              <var-icon name="close" :size="24" color="#fff" />
+            </button>
+          </div>
+        </div>
+      </transition>
+    </teleport>
   </div>
 </template>
 
@@ -160,5 +213,93 @@ async function generateImage(prompt) {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
+}
+
+/* 用户图片样式 */
+.user-image-container {
+  position: relative;
+  display: inline-block;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 12px;
+}
+
+.user-image-container:hover .image-overlay {
+  opacity: 1;
+}
+
+/* 图片预览弹窗 */
+.image-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.preview-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.preview-image {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.close-btn {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

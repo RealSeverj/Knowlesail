@@ -8,16 +8,18 @@ import { apiBaseURL } from './axios-config'
 // signal: AbortSignal 用于取消
 // 返回: Promise<string> 最终累计文本
 export async function sendMessageStream(
-  message,
+  message, image,
   { onChunk, onToolCall, onToolResult, signal } = {}
 ) {
   let accumulatedText = ''
-
+  const formData = new FormData();
+  formData.append('image', image);
   try {
     const response = await fetch(
       `${apiBaseURL}/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
       {
         method: 'POST',
+        body: formData,
         headers: {
           Accept: 'text/event-stream'
         },

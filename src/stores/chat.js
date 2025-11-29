@@ -151,14 +151,17 @@ export const useChatStore = defineStore('chat', () => {
   // ========== 发送消息 ==========
   /**
    * 发送消息并接收流式响应
+   * @param {string} userMessage - 用户消息文本
+   * @param {object|null} imageData - 图片数据 { base64, format, dataUrl }
    */
-  async function sendMessage(userMessage) {
+  async function sendMessage(userMessage, imageData = null) {
     if (!currentConversation.value) {
       createConversation()
     }
 
-    // 添加用户消息
-    addMessage('user', userMessage)
+    // 添加用户消息（如果有图片，可以在消息中附加图片信息）
+    const userMsgMeta = imageData ? { hasImage: true, imagePreview: imageData.dataUrl } : {}
+    addMessage('user', userMessage, userMsgMeta)
 
     // 创建助手消息占位
     const assistantMessage = addMessage('assistant', '', { streaming: true })
@@ -168,7 +171,20 @@ export const useChatStore = defineStore('chat', () => {
     try {
       abortController = new AbortController()
 
-      await sendMessageStream(userMessage, {
+      // 将 base64 转换为 Blob/File 对象用于 FormData
+      let imageFile = null
+      if (imageData && imageData.base64) {
+        const byteCharacters = atob(imageData.base64)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const mimeType = `image/${imageData.format || 'jpeg'}`
+        imageFile = new Blob([byteArray], { type: mimeType })
+      }
+
+      await sendMessageStream(userMessage, imageFile, {
         signal: abortController.signal,
         onChunk: (text, accumulated) => {
           updateMessage(assistantMessage.id, accumulated)

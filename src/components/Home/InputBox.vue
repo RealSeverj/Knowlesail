@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 
 const { keyboardOffset } = useKeyboardOffset()
 const finalOffset = computed(() => (keyboardOffset.value ? keyboardOffset.value + 12 : 80))
@@ -30,6 +31,14 @@ let resizeObserver = null
 
 const isStreaming = computed(() => chatStore.isStreaming)
 const canSend = computed(() => inputText.value.trim().length > 0 && !isStreaming.value)
+
+// 图片相关状态
+const selectedImage = ref(null) // { webPath, base64, format }
+
+// 带图片也可以发送
+const canSendWithImage = computed(
+  () => (inputText.value.trim().length > 0 || selectedImage.value) && !isStreaming.value
+)
 
 const syncTextareaRows = () => {
   const lineCount = inputText.value.split('\n').length
@@ -71,21 +80,24 @@ onBeforeUnmount(() => {
 })
 
 const handleEnter = (event) => {
-  if (!event.shiftKey && canSend.value) {
+  if (!event.shiftKey && canSendWithImage.value) {
     event.preventDefault()
     handleSend()
   }
 }
 
 const handleSend = async () => {
-  if (!canSend.value) return
+  if (!canSendWithImage.value) return
 
   const payload = inputText.value.trim()
+  const imageToSend = selectedImage.value
+
   inputText.value = ''
   textareaRows.value = 1
+  selectedImage.value = null
 
   try {
-    await chatStore.sendMessage(payload)
+    await chatStore.sendMessage(payload, imageToSend)
   } catch (error) {
     console.error('发送消息失败', error)
   }
@@ -93,6 +105,53 @@ const handleSend = async () => {
 
 const handleStop = () => {
   chatStore.stopStreaming()
+}
+
+// 处理图片输入 - 调用 Capacitor Camera
+const handleImageInput = async () => {
+  try {
+    // 检查并请求权限
+    const permissions = await Camera.checkPermissions()
+    if (permissions.camera !== 'granted' || permissions.photos !== 'granted') {
+      const requested = await Camera.requestPermissions()
+      if (requested.camera === 'denied' && requested.photos === 'denied') {
+        console.warn('相机和相册权限被拒绝')
+        return
+      }
+    }
+
+    // 弹出选择框：拍照或从相册选择
+    const photo = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Base64,
+      source: CameraSource.Prompt,
+      promptLabelHeader: '选择图片',
+      promptLabelCancel: '取消',
+      promptLabelPhoto: '从相册选择',
+      promptLabelPicture: '拍照'
+    })
+
+    if (photo) {
+      selectedImage.value = {
+        base64: photo.base64String,
+        webPath: photo.webPath,
+        format: photo.format || 'jpeg',
+        dataUrl: `data:image/${photo.format || 'jpeg'};base64,${photo.base64String}`
+      }
+    }
+  } catch (error) {
+    // 用户取消选择不算错误
+    if (error.message?.includes('cancelled') || error.message?.includes('User cancelled')) {
+      return
+    }
+    console.error('选择图片失败:', error)
+  }
+}
+
+// 移除已选择的图片
+const removeSelectedImage = () => {
+  selectedImage.value = null
 }
 
 const handleVoiceInput = () => {
@@ -125,42 +184,55 @@ const handleExpand = () => {
 
       <transition name="input-panel-fade">
         <div v-if="expanded" class="input-inner">
-          <var-input
-            v-model="inputText"
-            placeholder="Shift + Enter 换行，Enter 发送"
-            textarea
-            :rows="textareaRows"
-            :maxlength="2000"
-            class="flex-1 text-base input-box"
-            spellcheck="false"
-            @keydown.enter.exact="handleEnter"
-          />
+          <!-- 已选择的图片预览 -->
+          <div v-if="selectedImage" class="image-preview-container">
+            <div class="image-preview">
+              <img :src="selectedImage.dataUrl" alt="已选择的图片" class="preview-image" />
+              <button type="button" class="remove-image-btn" @click="removeSelectedImage">
+                <var-icon name="close-circle" :size="20" />
+              </button>
+            </div>
+          </div>
 
-          <div class="action-group">
-            <var-button
-              text
-              round
-              class="icon-btn"
-              :disabled="isStreaming"
-              @click="handleVoiceInput"
-            >
-              <var-icon name="plus-circle-outline" :size="24" />
-            </var-button>
+          <!-- 底部输入区域 -->
+          <div class="input-row">
+            <var-input
+              v-model="inputText"
+              placeholder="Shift + Enter 换行，Enter 发送"
+              textarea
+              :rows="textareaRows"
+              :maxlength="2000"
+              class="flex-1 text-base input-box"
+              spellcheck="false"
+              @keydown.enter.exact="handleEnter"
+            />
 
-            <var-button v-if="isStreaming" type="danger" round class="send-btn" @click="handleStop">
-              <var-icon name="window-close" :size="20" />
-            </var-button>
+            <div class="action-group">
+              <var-button
+                text
+                round
+                class="icon-btn"
+                :disabled="isStreaming"
+                @click="handleImageInput"
+              >
+                <var-icon name="image-outline" :size="24" />
+              </var-button>
 
-            <var-button
-              v-else
-              type="primary"
-              round
-              class="send-btn"
-              :disabled="!canSend"
-              @click="handleSend"
-            >
-              <var-icon name="chevron-right" :size="20" />
-            </var-button>
+              <var-button v-if="isStreaming" type="danger" round class="send-btn" @click="handleStop">
+                <var-icon name="window-close" :size="20" />
+              </var-button>
+
+              <var-button
+                v-else
+                type="primary"
+                round
+                class="send-btn"
+                :disabled="!canSendWithImage"
+                @click="handleSend"
+              >
+                <var-icon name="chevron-right" :size="20" />
+              </var-button>
+            </div>
           </div>
         </div>
       </transition>
@@ -252,7 +324,8 @@ const handleExpand = () => {
 
 .input-inner {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   width: 100%;
   max-width: 100%;
@@ -262,6 +335,59 @@ const handleExpand = () => {
   background: transparent;
   border: none;
   box-shadow: none;
+}
+
+/* 图片预览样式 */
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-variant);
+}
+
+.preview-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.remove-image-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* 底部输入区域 */
+.input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  width: 100%;
 }
 
 .input-panel-fade-enter-active,
