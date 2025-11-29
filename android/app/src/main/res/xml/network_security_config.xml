@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 开发阶段：允许对指定 IP 的明文 HTTP 访问，发布前可按需收紧或改用 HTTPS -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">118.196.24.221</domain>
+    </domain-config>
+</network-security-config>

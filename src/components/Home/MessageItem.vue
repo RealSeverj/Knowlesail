@@ -65,47 +65,58 @@ async function generateImage(prompt) {
 </script>
 
 <template>
-  <div class="group flex gap-3 p-4 my-2 transition-colors rounded-xl">
-    <!-- 头像 -->
-    <div class="flex-shrink-0">
+  <div class="group px-4 transition-colors rounded-xl">
+    <!-- 头部：头像 + 名称 + 时间 -->
+    <div
+      class="flex items-center gap-3 mb-3"
+      :class="message.role === 'user' ? 'flex-row-reverse' : ''"
+    >
+      <!-- 头像 -->
       <div
-        class="w-10 h-10 rounded-full flex items-center justify-center text-white transition-all"
+        class="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0 transition-all"
         :class="
           message.role === 'user'
             ? 'bg-gradient-to-br from-indigo-500 to-purple-600'
             : 'bg-gradient-to-br from-blue-600 to-blue-400'
         "
       >
-        <var-icon :name="message.role === 'user' ? 'account' : 'robot'" :size="24" />
+        <var-icon :name="message.role === 'user' ? 'account' : 'robot'" :size="20" />
       </div>
-    </div>
-
-    <!-- 内容区 -->
-    <div class="flex-1 min-w-0">
-      <!-- 头部 -->
-      <div class="flex items-center gap-3 mb-2">
+      <!-- 名称和时间 -->
+      <div
+        class="flex items-center gap-2"
+        :class="message.role === 'user' ? 'flex-row-reverse' : ''"
+      >
         <span class="font-semibold text-sm text-text-primary">{{
           message.role === 'user' ? '你' : 'AI 助手'
         }}</span>
         <span class="text-xs text-text-secondary">{{ formatTime(message.timestamp) }}</span>
       </div>
+    </div>
 
+    <!-- 内容区：占满宽度 -->
+    <div class="w-full">
       <!-- 内容 -->
-      <div class="relative leading-relaxed break-words">
+      <div
+        class="relative leading-relaxed break-words"
+        :class="message.role === 'user' ? 'flex justify-end' : ''"
+      >
         <div
           v-if="message.role === 'user'"
-          class="px-4 py-3 bg-surface rounded-xl shadow-card-soft text-text-primary text-[15px] whitespace-pre-wrap transition-colors"
+          class="message-bubble inline-block max-w-[85%] px-4 py-3 rounded-xl text-text-primary text-[15px] whitespace-pre-wrap transition-colors"
         >
           {{ message.content }}
         </div>
-        <MarkdownRenderer
-          v-else
-          :content="message.content"
-          :message-id="message.id"
-          :streaming="message.streaming"
-          :tool-calls="message.toolCalls || []"
-          :generate-image="generateImage"
-        />
+        <div v-else class="message-bubble inline-block max-w-full px-4 rounded-xl transition-colors">
+          <MarkdownRenderer
+            :content="message.content"
+            :message-id="message.id"
+            :streaming="message.streaming"
+            :tool-calls="message.toolCalls || []"
+            :generate-image="generateImage"
+            color="var(--color-primary)"
+          />
+        </div>
         <span
           v-if="message.streaming"
           class="inline-block w-[2px] h-[1.2em] bg-primary ml-[2px] align-bottom animate-blink"
@@ -116,6 +127,7 @@ async function generateImage(prompt) {
       <div
         v-if="!message.streaming"
         class="flex gap-1 mt-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+        :class="message.role === 'user' ? 'justify-end' : ''"
       >
         <var-button
           text
@@ -134,11 +146,19 @@ async function generateImage(prompt) {
           class="text-text-secondary hover:text-primary hover:bg-surface"
           @click="handleExport"
         >
-          <var-icon name="book-plus" :size="16" />
+          <var-icon name="plus" :size="16" />
         </var-button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.message-bubble {
+  background-color: color-mix(in srgb, var(--color-surface) 75%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+</style>

@@ -196,7 +196,6 @@ const handleExpand = () => {
     max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.3s ease,
-    background 0.25s ease,
     box-shadow 0.3s ease,
     transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -212,7 +211,7 @@ const handleExpand = () => {
   margin: 0 auto;
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-surface);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: 0 2px 5px rgba(15, 23, 42, 0.15);
   max-height: 1000px;

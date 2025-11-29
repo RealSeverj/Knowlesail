@@ -54,9 +54,8 @@ function handleSave() {
           共 {{ note.blocks.length }} 个内容块
         </p>
       </div>
-      <var-button type="primary" round size="small" @click="handleSave">
-        <var-icon name="content-save" :size="16" class="mr-0.5" />
-        保存
+      <var-button type="primary" round size="large" @click="handleSave">
+        <var-icon name="check" :size="18" />
       </var-button>
     </div>
 

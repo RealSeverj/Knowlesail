@@ -19,7 +19,7 @@ const emit = defineEmits(['bottom-state-change', 'request-input-expand', 'leave-
 const viewportRef = ref(null)
 const isNearBottom = ref(true)
 const bottomThreshold = 4
-const BASE_BOTTOM_PADDING = 24
+const BASE_BOTTOM_PADDING = 28
 const lastScrollTop = ref(0)
 const assistantActions = ref([])
 const assistantLoading = ref(false)
@@ -160,14 +160,6 @@ onMounted(async () => {
           :message="message"
           @export="handleExportMessage"
         />
-
-        <div
-          v-if="isStreaming"
-          class="flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-secondary)]"
-        >
-          <var-loading type="cube" size="20" />
-          <span>AI 正在思考...</span>
-        </div>
       </div>
 
       <div v-else class="flex h-full flex-col">

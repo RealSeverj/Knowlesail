@@ -128,7 +128,6 @@ const selfCodeXRender = {
 <style>
 .markdown-container {
   width: 100%;
-  padding: 10px 0;
   overflow-y: auto;
   --scale-factor: v-bind(props.scale);
 }

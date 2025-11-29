@@ -98,7 +98,7 @@ async function generateImage(prompt) {
       >
         <div class="flex items-center gap-4">
           <span class="inline-flex items-center gap-1">
-            <var-icon name="file-document" :size="16" />
+            <var-icon name="file-document-outline" :size="16" />
             <span>{{ note.blocks.length }} 个内容块</span>
           </span>
           <span class="inline-flex items-center gap-1">
@@ -158,6 +158,7 @@ async function generateImage(prompt) {
             :streaming="msg.streaming"
             :tool-calls="msg.toolCalls"
             :generate-image="generateImage"
+            color="var(--color-primary)"
           />
         </div>
 
@@ -209,7 +210,7 @@ async function generateImage(prompt) {
 <style scoped>
 .note-detail-page {
   background-color: var(--color-background);
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   padding-bottom: 56px;
 }

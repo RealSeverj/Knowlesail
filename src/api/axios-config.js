@@ -1,7 +1,7 @@
 // 统一 axios 配置与基础 URL（主机+端口）
 import axios from 'axios'
 
-export const apiBaseURL = 'http://118.196.24.221:20001'
+export const apiBaseURL = 'http://118.196.24.221'
 
 // 创建 axios 实例，后续如果需要可添加鉴权、重试、全局错误处理等拦截器
 export const http = axios.create({

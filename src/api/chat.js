@@ -15,9 +15,9 @@ export async function sendMessageStream(
 
   try {
     const response = await fetch(
-      `${apiBaseURL}/mcp/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
+      `${apiBaseURL}/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
           Accept: 'text/event-stream'
         },
