@@ -1,11 +1,11 @@
 <script setup>
-import { computed, h, inject } from 'vue'
+import { computed, h, inject, defineAsyncComponent } from 'vue'
 import { XMarkdown } from 'vue-element-plus-x'
 import { useToast } from '@/composables/useToast'
 import 'katex/dist/katex.min.css' // 数学公式样式
 // 导入自定义代码块映射的组件
-import Htmath from './Visualization/Htmath.vue' // iframe
-const Echarts = () => './Visualization/Echarts.vue' // echarts
+const Htmath = defineAsyncComponent(() => import('./components/HtmathWrapper.vue')) // iframe
+const Echarts = defineAsyncComponent(() => import('./components/Echarts.vue')) // echarts
 
 const theme = inject('theme')
 const toast = useToast()
@@ -16,7 +16,8 @@ const props = defineProps({
   messageId: { type: String, required: true },
   streaming: { type: Boolean, default: false },
   toolCalls: { type: Array, default: () => [] },
-  scale: { type: Number, default: 1 } // 文字缩放比例
+  scale: { type: Number, default: 1 }, // 文字缩放比例
+  color: { type: String, default: '#81abe2' } // 高亮标题颜色
 })
 const emits = defineEmits(['updateHeight'])
 
@@ -75,8 +76,7 @@ const selfCodeXRender = {
     try {
       const option = JSON.parse(props.raw.content)
       if (!option) return null
-      const echartsComponent = Echarts()
-      return h(echartsComponent.default, { option })
+      return h(Echarts, { option })
     } catch (error) {
       return null
     }
@@ -128,13 +128,13 @@ const selfCodeXRender = {
 <style>
 .markdown-container {
   width: 100%;
-  padding: 10px;
+  padding: 10px 0;
   overflow-y: auto;
   --scale-factor: v-bind(props.scale);
 }
 
 .markdown-prase {
-  --main-color: #81abe2;
+  --main-color: v-bind('props.color');
 
   font-size: calc(16px * var(--scale-factor));
   line-height: calc(1.5 * var(--scale-factor));

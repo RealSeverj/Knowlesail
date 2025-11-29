@@ -1,4 +1,5 @@
 // 通用型函数
+import html2canvas from 'html2canvas'
 
 /**
  * 防抖函数：在事件触发后延迟指定时间执行，如果在延迟期间再次触发则重新计时
@@ -66,5 +67,27 @@ export function throttle(func, interval = 200, type = 'timer') {
         }, interval)
       }
     }
+  }
+}
+
+/**
+ * 将HTML转化为png图像
+ * @param {HTMLElement} element html元素
+ * @param {Number} width 宽度
+ * @returns {Promise} 图片url
+ */
+export async function html2png(element, width = 768) {
+  try {
+    const canvas = await html2canvas(element, { width, logging: false })
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((b) => {
+        if (b) resolve(b)
+        else reject(new Error('toBlob failed'))
+      }, 'image/png')
+    })
+    if (!blob) return null
+    return URL.createObjectURL(blob)
+  } catch {
+    return null
   }
 }
