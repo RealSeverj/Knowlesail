@@ -2,6 +2,7 @@
 import { ref, useTemplateRef } from 'vue'
 import { visualizationLibs } from '@/config/visualization-libs.config' // 可视化库配置
 import { useLibraryCache } from '@/composables/useLibraryCache' // 缓存管理器
+import { ScreenOrientation } from '@capacitor/screen-orientation'
 import Htmath from './Htmath.vue'
 import FullScreenViewer from './FullScreenViewer.vue'
 const { libBlobs } = useLibraryCache()
@@ -47,9 +48,27 @@ function updateHeight() {
   emits('updateHeight')
 }
 
-// 全屏查看
+// 全屏查看 + 屏幕方向控制
 const isFullScreen = ref(false)
-function fullScreen() {
+
+async function lockLandscape() {
+  try {
+    await ScreenOrientation.lock({ orientation: 'landscape' })
+  } catch (err) {
+    console.warn('锁定横屏失败', err)
+  }
+}
+
+async function unlockOrientation() {
+  try {
+    await ScreenOrientation.unlock()
+  } catch (err) {
+    console.warn('解锁屏幕方向失败', err)
+  }
+}
+
+async function fullScreen() {
+  await lockLandscape()
   isFullScreen.value = true
 }
 </script>
@@ -78,7 +97,11 @@ function fullScreen() {
     <Htmath :html="replaceWithCachedLibs(html)" :use-thumb="true" @finished="updateHeight"></Htmath>
 
     <!-- 全屏查看 -->
-    <FullScreenViewer v-model="isFullScreen" :html="replaceWithCachedLibs(html)"></FullScreenViewer>
+    <FullScreenViewer
+      v-model="isFullScreen"
+      :html="replaceWithCachedLibs(html)"
+      @update:modelValue="(val) => { if (!val) unlockOrientation() }"
+    ></FullScreenViewer>
   </div>
 </template>
 

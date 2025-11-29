@@ -4,13 +4,13 @@
  */
 
 export const visualizationLibs = [
-  {
+   {
     // 库的唯一标识符
     id: 'plotly',
     // 库的名称（用于显示和日志）
     name: 'Plotly',
-    // CDN 地址
-    url: 'https://cdn.plot.ly/plotly-2.30.0.min.js',
+    // CDN 地址 —— 已改为新的 jsDelivr 源
+    url: 'https://cdn.jsdelivr.net/npm/plotly.js-dist-min@3.30.0/plotly.min.js',
     // 全局变量名（加载后在 window 对象上的属性名）
     globalName: 'Plotly',
     // 默认启用状态（仅在首次使用时有效，之后由用户设置控制）
@@ -18,18 +18,20 @@ export const visualizationLibs = [
     // 正则表达式：用于检测和移除 HTML 中的外部引用
     // 支持多个匹配模式
     patterns: [
+      // 老的 cdn.plot.ly / 其他 plotly 地址，保留兼容
       /<script[^>]*src\s*=\s*["']https?:\/\/cdn\.plot\.ly\/plotly[^"']*["'][^>]*>[\s\S]*?<\/script>/gi,
-      /<script[^>]*src\s*=\s*["']https?:\/\/[^"']*plotly[^"']*\.js["'][^>]*>[\s\S]*?<\/script>/gi
+      /<script[^>]*src\s*=\s*["']https?:\/\/[^"']*plotly[^"']*\.js["'][^>]*>[\s\S]*?<\/script>/gi,
+      /<script[^>]*src\s*=\s*["']https?:\/\/cdn\.jsdelivr\.net\/npm\/plotly\.js-dist-min[^"']*["'][^>]*>[\s\S]*?<\/script>/gi
     ],
     // 优先级（数字越小优先级越高，影响加载顺序）
     priority: 1,
-    // 版本号（用于版本管理和缓存控制）
-    version: '2.30.0',
+    // 版本号（和新的 URL 版本保持一致）
+    version: '3.30.0',
     // 依赖的其他库（按 id 引用）
     dependencies: [],
     // 加载超时时间（毫秒）
     timeout: 30000,
-    // 完整性检查（SRI）
+    // 完整性检查（SRI）—— 如有需要可以填入
     integrity: '',
     // 跨域策略
     crossOrigin: 'anonymous'
