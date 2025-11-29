@@ -137,7 +137,7 @@ function closeImagePreview() {
               class="user-image"
             />
             <div class="image-overlay">
-              <var-icon name="window-close" :size="24" color="#fff" />
+              <var-icon name="window-close" :size="24"/>
             </div>
           </div>
         </div>

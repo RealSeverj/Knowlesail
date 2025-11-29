@@ -229,12 +229,8 @@ const selfCodeXRender = {
       text-align: center;
     }
 
-    tr:nth-child(odd) {
+    tr {
       background-color: transparent;
-    }
-
-    tr:nth-child(even) {
-      background-color: var(--color-text-tertiary);
     }
   }
 
