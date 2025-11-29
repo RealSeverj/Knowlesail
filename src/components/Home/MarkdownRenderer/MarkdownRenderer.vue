@@ -139,7 +139,7 @@ const selfCodeXRender = {
   line-height: calc(1.5 * var(--scale-factor));
   word-wrap: break-word;
   text-align: left;
-  color: var(--fg);
+  color: var(--color-text);
 
   h1,
   h2,
@@ -234,8 +234,12 @@ const selfCodeXRender = {
     }
 
     tr:nth-child(even) {
-      background-color: var(--bg-dim);
+      background-color: var(--color-text-tertiary);
     }
+  }
+
+  .htmath-wrapper {
+    margin: calc(16px * var(--scale-factor)) 0;
   }
 
   .code-top-tool {
@@ -252,11 +256,11 @@ const selfCodeXRender = {
     user-select: none;
     transition: all 0.2s ease;
     border-radius: 4px;
-    color: var(--fg-dim);
+    color: var(--color-text-tertiary);
   }
 
   .code-top-tool:hover {
-    background-color: var(--bg-dim);
+    background-color: var(--color-text-tertiary);
   }
 }
 

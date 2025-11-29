@@ -100,7 +100,11 @@ async function fullScreen() {
     <FullScreenViewer
       v-model="isFullScreen"
       :html="replaceWithCachedLibs(html)"
-      @update:modelValue="(val) => { if (!val) unlockOrientation() }"
+      @update:model-value="
+        (val) => {
+          if (!val) unlockOrientation()
+        }
+      "
     ></FullScreenViewer>
   </div>
 </template>
