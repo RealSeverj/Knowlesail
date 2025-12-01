@@ -197,7 +197,7 @@ function closeImagePreview() {
           <div class="preview-content" @click.stop>
             <img :src="message.imagePreview" alt="图片预览" class="preview-image" />
             <button class="close-btn" @click="closeImagePreview">
-              <var-icon name="close" :size="24" color="#fff" />
+              <var-icon name="window-close" :size="24" color="#fff" />
             </button>
           </div>
         </div>
