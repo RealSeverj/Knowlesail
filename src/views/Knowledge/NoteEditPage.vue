@@ -23,13 +23,6 @@ function handleBack() {
   router.back()
 }
 
-function handleBlockContentChange(blockId, value) {
-  const target = note.value?.blocks.find((b) => b.id === blockId)
-  if (target) {
-    target.content = value
-  }
-}
-
 function handleSave() {
   // TODO: 接入后端 / store 持久化
   // 当前先简单 Toast 一下，或控制台打印
@@ -74,11 +67,7 @@ function handleSave() {
     </div>
 
     <div v-else class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-      <div
-        v-for="block in editState.blocks"
-        :key="block.id"
-        class="space-y-2"
-      >
+      <div v-for="block in editState.blocks" :key="block.id" class="space-y-2">
         <!-- 每个内容块的头部信息 -->
         <div class="flex items-center justify-between text-[11px] text-text-tertiary px-1">
           <div class="flex items-center gap-2">
@@ -101,12 +90,7 @@ function handleSave() {
         </div>
 
         <!-- 编辑器 -->
-        <NoteEditor
-          :block-id="block.id"
-          v-model="block.content"
-          class="mt-1"
-          @blur="() => handleBlockContentChange(block.id, block.content)"
-        />
+        <NoteEditor v-model="block.content" :block-id="block.id" class="mt-1" />
       </div>
     </div>
   </div>
