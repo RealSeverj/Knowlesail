@@ -7,10 +7,10 @@ import SearchPannel from '@/components/Todo/SearchPannel.vue'
 
 const todoStore = useTodoStore()
 
-// 页面加载时获取待办列表
+// 页面加载时初始化待办列表（使用缓存策略，避免抖动）
 onMounted(async () => {
   try {
-    await todoStore.fetchTodos()
+    await todoStore.initTodos()
   } catch (err) {
     console.error('获取待办列表失败:', err)
   }

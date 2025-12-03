@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import * as todoApi from '@/api/todo'
 
 // priority: 1-4 对应四象限
@@ -8,10 +8,83 @@ import * as todoApi from '@/api/todo'
 // 3: 紧急但不重要
 // 4: 不紧急不重要
 
+// localStorage 缓存 key
+const TODOS_CACHE_KEY = 'todos_cache'
+const TODOS_CACHE_TIME_KEY = 'todos_cache_time'
+// 缓存有效期（毫秒），默认 5 分钟
+const CACHE_EXPIRY_MS = 5 * 60 * 1000
+
+/**
+ * 从 localStorage 加载缓存的 todos
+ */
+function loadFromCache() {
+  try {
+    const cached = localStorage.getItem(TODOS_CACHE_KEY)
+    if (cached) {
+      return JSON.parse(cached)
+    }
+  } catch (e) {
+    console.warn('加载 todos 缓存失败:', e)
+  }
+  return null
+}
+
+/**
+ * 保存 todos 到 localStorage
+ */
+function saveToCache(data) {
+  try {
+    localStorage.setItem(TODOS_CACHE_KEY, JSON.stringify(data))
+    localStorage.setItem(TODOS_CACHE_TIME_KEY, Date.now().toString())
+  } catch (e) {
+    console.warn('保存 todos 缓存失败:', e)
+  }
+}
+
+/**
+ * 检查缓存是否过期
+ */
+function isCacheExpired() {
+  try {
+    const cacheTime = localStorage.getItem(TODOS_CACHE_TIME_KEY)
+    if (!cacheTime) return true
+    return Date.now() - parseInt(cacheTime) > CACHE_EXPIRY_MS
+  } catch {
+    return true
+  }
+}
+
+/**
+ * 清除 todos 缓存
+ */
+function clearCache() {
+  try {
+    localStorage.removeItem(TODOS_CACHE_KEY)
+    localStorage.removeItem(TODOS_CACHE_TIME_KEY)
+  } catch (e) {
+    console.warn('清除 todos 缓存失败:', e)
+  }
+}
+
 export const useTodoStore = defineStore('todo', () => {
-  const todos = ref([])
+  // 初始化时先从缓存加载
+  const cachedTodos = loadFromCache()
+  const todos = ref(cachedTodos || [])
   const loading = ref(false)
   const error = ref(null)
+  // 标记是否已初始化（从服务器获取过数据）
+  const initialized = ref(false)
+
+  // 监听 todos 变化，自动保存到缓存
+  watch(
+    todos,
+    (newTodos) => {
+      if (newTodos && newTodos.length >= 0) {
+        saveToCache(newTodos)
+      }
+    },
+    { deep: true }
+  )
 
   const quadrantMap = {
     1: '紧急且重要',
@@ -215,24 +288,62 @@ export const useTodoStore = defineStore('todo', () => {
    * @param {number} [params.status] - 状态筛选
    * @param {number} [params.priority] - 优先级筛选
    * @param {string} [params.category] - 分类筛选
+   * @param {boolean} [params.silent] - 静默模式，不显示 loading 状态
    */
   async function fetchTodos(params = {}) {
-    loading.value = true
+    const { silent = false, ...queryParams } = params
+    
+    // 非静默模式才显示 loading
+    if (!silent) {
+      loading.value = true
+    }
     error.value = null
+    
     try {
-      const result = await todoApi.getTodoList(params)
+      const result = await todoApi.getTodoList(queryParams)
       
       // API 返回格式: { code, message, data: { todos: [] } }
       const todosData = result.data?.todos || result.todos || []
       const todoList = todosData.map(fromApiFormat)
       todos.value = todoList
+      initialized.value = true
       return todoList
     } catch (err) {
       error.value = err.message || '获取待办列表失败'
       throw err
     } finally {
-      loading.value = false
+      if (!silent) {
+        loading.value = false
+      }
     }
+  }
+
+  /**
+   * 初始化待办列表（带缓存策略）
+   * 如果有缓存且未过期，先显示缓存，再静默刷新
+   * 如果无缓存或已过期，正常加载显示 loading
+   */
+  async function initTodos() {
+    const hasCachedData = todos.value && todos.value.length > 0
+    const cacheExpired = isCacheExpired()
+    
+    // 如果有缓存数据且未过期，静默刷新
+    if (hasCachedData && !cacheExpired) {
+      // 已有缓存数据显示，后台静默刷新
+      fetchTodos({ silent: true }).catch((err) => {
+        console.warn('静默刷新待办列表失败:', err)
+      })
+      return todos.value
+    }
+    
+    // 如果有缓存数据但已过期，先显示缓存，同时刷新（显示 loading）
+    if (hasCachedData && cacheExpired) {
+      // 缓存已过期，静默刷新但不阻塞
+      return fetchTodos({ silent: true })
+    }
+    
+    // 无缓存数据，正常加载
+    return fetchTodos()
   }
 
   /**
@@ -266,16 +377,19 @@ export const useTodoStore = defineStore('todo', () => {
     error,
     quadrantMap,
     quadrantTodos,
+    initialized,
     // actions
     addTodo,
     updateTodo,
     removeTodo,
     toggleTodo,
     fetchTodos,
+    initTodos,
     fetchTodoDetail,
     fetchTodosByPriority,
     fetchTodosByCategory,
     fetchTodosByStatus,
+    clearCache,
     // utils
     toApiFormat,
     fromApiFormat
