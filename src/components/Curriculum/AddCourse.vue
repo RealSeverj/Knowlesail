@@ -23,8 +23,8 @@ const form = ref({
   weekday: 1,
   startClass: 1,
   endClass: 2,
-  startWeek: 1,
-  endWeek: 16,
+  startWeek: "1",
+  endWeek: "16",
   single: true,
   double: true,
   remark: ''

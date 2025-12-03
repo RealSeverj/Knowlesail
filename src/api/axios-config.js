@@ -1,4 +1,3 @@
-// 统一 axios 配置与基础 URL（主机+端口）
 import axios from 'axios'
 
 export const apiBaseURL = 'http://118.196.24.221'
@@ -23,6 +22,7 @@ http.interceptors.response.use(
   (res) => res.data,
   (error) => {
     // 可以在这里做全局 toast / 上报
+    console.error('API 请求错误：', error)
     return Promise.reject(error)
   }
 )
