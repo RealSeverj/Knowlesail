@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue'
-import ThemeSwitch from './ThemeSwitch.vue'
 import PopMenu from '@/components/Common/PopMenu.vue'
 import { useTheme } from '@/composables/useTheme'
 import { useCalendarExport } from '@/composables/useCalendarExport'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { useConfirm } from '@/composables/useConfirm'
 
 const props = defineProps({
   preferences: {
@@ -52,6 +54,23 @@ const { exportCurriculumToCalendar } = useCalendarExport()
 
 const handleExportCalendar = async () => {
   await exportCurriculumToCalendar()
+}
+
+const authStore = useAuthStore()
+const router = useRouter()
+const { confirm } = useConfirm()
+
+const handleLogout = async () => {
+  const confirmed = await confirm('确定要退出登录吗？', {
+    title: '退出登录',
+    confirmText: '退出',
+    cancelText: '取消'
+  })
+  
+  if (confirmed) {
+    authStore.logout()
+    router.push('/login')
+  }
 }
 
 initTheme()
@@ -206,6 +225,16 @@ initTheme()
           </template>
         </var-cell>
       </div>
+    </section>
+
+    <!-- 退出登录 -->
+    <section>
+      <button
+        class="w-full rounded-xl bg-red-50 py-3 text-sm font-medium text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+        @click="handleLogout"
+      >
+        退出登录
+      </button>
     </section>
   </div>
 </template>

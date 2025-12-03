@@ -1,39 +1,117 @@
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { loginApi } from '@/api/auth'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const toast = useToast()
 
-const handleMockLogin = () => {
-  const devUser = {
-    id: 'dev',
-    name: '开发模式用户',
-    role: 'dev'
+const stuId = ref('')
+const password = ref('')
+const loading = ref(false)
+
+const handleLogin = async () => {
+  if (!stuId.value || !password.value) {
+    toast.warning('请输入学号和密码')
+    return
   }
 
-  authStore.login(devUser, 'dev-mock-token')
-  router.replace({ name: 'Home' })
+  loading.value = true
+
+  try {
+    const res = await loginApi(stuId.value, password.value)
+    
+    // 响应数据在 res.data 中
+    const data = res.data
+    
+    const userInfo = {
+      id: data.identifier,
+      stu_id: stuId.value,
+      cookie: data.cookie
+    }
+    
+    const token = data.access_token
+    
+    if (!token) {
+      toast.error('登录失败：服务器未返回有效 token')
+      return
+    }
+    
+    authStore.login(userInfo, token)
+    toast.success('登录成功')
+    
+    // 等待状态同步后再跳转
+    await new Promise(resolve => setTimeout(resolve, 100))
+    router.replace({ name: 'Home' })
+  } catch (error) {
+    console.error('登录失败:', error)
+    toast.error(error.response?.data?.message || '登录失败，请检查学号和密码')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="login-page min-h-screen bg-background flex items-center justify-center p-6">
-    <div class="text-center max-w-md w-full">
-      <var-icon name="account-circle" :size="80" color="var(--color-primary)" class="mb-6" />
-      <h1 class="text-3xl font-bold text-foreground mb-2">学海智航</h1>
-      <p class="text-secondary mb-8">智能学习助手平台</p>
-      <p class="text-sm text-tertiary mb-6">登录功能开发中...</p>
+  <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 flex flex-col px-8 pt-20 pb-8">
+    <!-- Logo 和标题区域 -->
+    <div class="flex flex-col items-center mb-12">
+      <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
+        <var-icon name="sail-boat" :size="40" color="#fff" />
+      </div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">学海智航</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400">智能学习助手平台</p>
+    </div>
 
-      <var-button type="primary" round block @click="handleMockLogin">
-        一键模拟登录（开发阶段）
-      </var-button>
+    <!-- 表单区域 -->
+    <div class="flex flex-col gap-4 w-full max-w-sm mx-auto">
+      <div class="relative">
+        <var-icon 
+          name="account-circle-outline" 
+          :size="20" 
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"
+        />
+        <input
+          v-model="stuId"
+          type="text"
+          placeholder="请输入学号"
+          :disabled="loading"
+          class="w-full h-12 pl-12 pr-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50"
+        />
+      </div>
+
+      <div class="relative">
+        <var-icon 
+          name="lock-outline" 
+          :size="20" 
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="请输入密码"
+          :disabled="loading"
+          @keyup.enter="handleLogin"
+          class="w-full h-12 pl-12 pr-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50"
+        />
+      </div>
+
+      <!-- 登录按钮 -->
+      <button
+        :disabled="loading"
+        @click="handleLogin"
+        class="w-full h-12 mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <span>{{ loading ? '登录中...' : '登录' }}</span>
+      </button>
+    </div>
+
+    <!-- 底部信息 -->
+    <div class="mt-auto pt-8 text-center">
+      <p class="text-xs text-slate-400 dark:text-slate-500">登录即表示同意《用户协议》和《隐私政策》</p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.login-page {
-  background: linear-gradient(135deg, var(--color-background) 0%, var(--color-surface) 100%);
-}
-</style>

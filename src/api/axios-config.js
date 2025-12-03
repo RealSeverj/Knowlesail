@@ -9,11 +9,12 @@ export const http = axios.create({
   timeout: 15000
 })
 
-// 请求拦截（可在此自动注入 token）
+// 请求拦截（自动注入 token）
 http.interceptors.request.use((config) => {
-  // 例如：从本地存储取 token
-  // const token = localStorage.getItem('token')
-  // if (token) config.headers.Authorization = `Bearer ${token}`
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 

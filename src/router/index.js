@@ -147,7 +147,5 @@ const router = createRouter({
   routes
 })
 
-// 设置路由守卫
-setupRouterGuards(router)
-
+export { setupRouterGuards }
 export default router
