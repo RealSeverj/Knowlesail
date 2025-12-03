@@ -1,38 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getCourseList, getCurrentTerm } from '@/api/curriculum'
+import { getCourseList, getCurrentTerm, getTermInfo } from '@/api/curriculum'
 
 // localStorage 键名
 const STORAGE_KEY_COURSES = 'curriculum_courses'
 const STORAGE_KEY_TERM = 'curriculum_term'
 const STORAGE_KEY_LOCAL_COURSES = 'curriculum_local_courses' // 本地添加的课程
-
-// 课程数据结构示例：
-// {
-//   id: string
-//   name: string
-//   teacher: string
-//   scheduleRules: [
-//     {
-//       location: string
-//       startClass: number
-//       endClass: number
-//       startWeek: number
-//       endWeek: number
-//       weekday: 1-7
-//       single: boolean
-//       double: boolean
-//       adjust: boolean
-//     }
-//   ]
-//   remark: string
-//   lessonplan: string
-//   syllabus: string
-//   rawScheduleRules: string
-//   rawAdjust: string
-//   examType: string
-//   isLocal: boolean // 标记是否为本地添加的课程
-// }
+const STORAGE_KEY_TERM_INFO = 'curriculum_term_info' // 学期信息
 
 export const useCurriculumStore = defineStore('curriculum', () => {
   // 课程列表
@@ -46,6 +20,62 @@ export const useCurriculumStore = defineStore('curriculum', () => {
 
   // 是否已从缓存/后端初始化过
   const initialized = ref(false)
+
+  // 学期信息
+  const termInfo = ref(null)
+  
+  // 学期开始日期（正式上课的第一天，周一）
+  const termStartDate = computed(() => {
+    if (!termInfo.value?.events) return null
+    const startEvent = termInfo.value.events.find(e => e.name === '正式上课')
+    if (!startEvent) return null
+    const startDate = new Date(startEvent.startDate)
+    // 获取这一天所在周的周一
+    const day = startDate.getDay() // 0=周日, 1=周一, ...
+    const diff = day === 0 ? -6 : 1 - day // 计算到周一的天数差
+    const monday = new Date(startDate)
+    monday.setDate(startDate.getDate() + diff)
+    return monday
+  })
+  
+  // 学期最大周数（期末考试结束日期所在周）
+  const maxWeek = computed(() => {
+    if (!termInfo.value?.events || !termStartDate.value) return 20
+    const endEvent = termInfo.value.events.find(e => e.name === '期末考试')
+    if (!endEvent) return 20
+    const endDate = new Date(endEvent.endDate)
+    const diffTime = endDate.getTime() - termStartDate.value.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return Math.ceil((diffDays + 1) / 7)
+  })
+  
+  // 学期事件列表（用于展示）
+  const termEvents = computed(() => {
+    if (!termInfo.value?.events) return []
+    return termInfo.value.events.filter(e => e.name !== '正式上课')
+  })
+
+  // 今天所在的周次
+  const todayWeek = computed(() => {
+    if (!termStartDate.value) return 1
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const start = new Date(termStartDate.value)
+    start.setHours(0, 0, 0, 0)
+    const diffTime = today.getTime() - start.getTime()
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    const week = Math.floor(diffDays / 7) + 1
+    // 限制在有效范围内
+    if (week < 1) return 1
+    if (week > maxWeek.value) return maxWeek.value
+    return week
+  })
+
+  // 今天是周几（1-7，周一到周日）
+  const todayWeekday = computed(() => {
+    const day = new Date().getDay()
+    return day === 0 ? 7 : day
+  })
 
   // 每节课对应的时间段展示（可在页面使用）
   const classTimeMap = {
@@ -93,6 +123,34 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     } catch (e) {
       console.error('从 localStorage 加载课程失败：', e)
       return false
+    }
+  }
+
+  // 从 localStorage 加载学期信息
+  function loadTermInfoFromStorage() {
+    try {
+      const cached = localStorage.getItem(STORAGE_KEY_TERM_INFO)
+      if (cached) {
+        const parsed = JSON.parse(cached)
+        if (parsed && parsed.term === currentTerm.value) {
+          termInfo.value = parsed
+          return true
+        }
+      }
+    } catch (e) {
+      console.error('从 localStorage 加载学期信息失败：', e)
+    }
+    return false
+  }
+
+  // 保存学期信息到 localStorage
+  function saveTermInfoToStorage() {
+    try {
+      if (termInfo.value) {
+        localStorage.setItem(STORAGE_KEY_TERM_INFO, JSON.stringify(termInfo.value))
+      }
+    } catch (e) {
+      console.error('保存学期信息到 localStorage 失败：', e)
     }
   }
 
@@ -202,11 +260,42 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     
     // 尝试从缓存加载
     const hasCache = loadFromStorage()
+    const hasTermInfo = loadTermInfoFromStorage()
     initialized.value = true
     
     // 如果没有缓存，从后端获取
     if (!hasCache) {
       await fetchCourses({ forceRefresh: true })
+    }
+    
+    // 如果没有学期信息缓存，从后端获取
+    if (!hasTermInfo) {
+      await fetchTermInfo()
+    }
+    
+    // 设置当前周为今天所在的周
+    setCurrentWeekToToday()
+  }
+
+  /**
+   * 设置当前周为今天所在的周
+   */
+  function setCurrentWeekToToday() {
+    currentWeek.value = todayWeek.value
+  }
+
+  /**
+   * 从后端获取学期信息
+   */
+  async function fetchTermInfo(term = currentTerm.value) {
+    try {
+      const resp = await getTermInfo(term)
+      if (resp && resp.code === '10000' && resp.data) {
+        termInfo.value = resp.data
+        saveTermInfoToStorage()
+      }
+    } catch (error) {
+      console.error('获取学期信息失败：', error)
     }
   }
 
@@ -370,6 +459,32 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     currentWeek.value = week
   }
 
+  /**
+   * 根据周次获取该周每天的日期
+   * @param {number} weekNo - 周次
+   * @returns {Object} 包含周一到周日日期的对象
+   */
+  function getWeekDates(weekNo) {
+    if (!termStartDate.value || weekNo < 1) {
+      return { 1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '' }
+    }
+    
+    const result = {}
+    const weekStart = new Date(termStartDate.value)
+    weekStart.setDate(weekStart.getDate() + (weekNo - 1) * 7)
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(weekStart)
+      date.setDate(weekStart.getDate() + i)
+      // 格式化为 MM/DD
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      result[i + 1] = `${month}/${day}`
+    }
+    
+    return result
+  }
+
   return {
     // state
     courses,
@@ -378,16 +493,25 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     loading,
     initialized,
     classTimeMap,
+    termInfo,
     // getters
     weekSchedule,
     getWeekSchedule,
+    termStartDate,
+    maxWeek,
+    termEvents,
+    todayWeek,
+    todayWeekday,
     // actions
     initCourses,
     fetchCourses,
+    fetchTermInfo,
     refreshCourses,
     createCourse,
     updateCourse,
     removeCourse,
-    setCurrentWeek
+    setCurrentWeek,
+    setCurrentWeekToToday,
+    getWeekDates
   }
 })

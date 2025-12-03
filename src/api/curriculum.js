@@ -47,3 +47,16 @@ export function getCourseList(options = {}) {
     }
   })
 }
+
+/**
+ * 获取学期详细信息
+ * @param {string} term - 学期代码，如 "202501"
+ * @returns {Promise<Object>} 学期信息数据
+ */
+export function getTermInfo(term = getCurrentTerm()) {
+  return http.get('/api/v1/terms/info', {
+    params: {
+      term
+    }
+  })
+}

@@ -18,9 +18,25 @@ const weekdays = [
 const currentWeek = computed(() => curriculumStore.currentWeek)
 const classTimeMap = curriculumStore.classTimeMap
 
+// 从 store 获取最大周数
+const maxWeek = computed(() => curriculumStore.maxWeek)
+
+// 今天所在的周和星期几
+const todayWeek = computed(() => curriculumStore.todayWeek)
+const todayWeekday = computed(() => curriculumStore.todayWeekday)
+
+// 判断某天是否是今天（用于高亮）
+function isToday(weekday) {
+  return currentWeek.value === todayWeek.value && weekday === todayWeekday.value
+}
+
+// 获取当前周的日期
+const currentWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value))
+const prevWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value - 1))
+const nextWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value + 1))
+
 // 周数选择弹窗
 const weekPickerVisible = ref(false)
-const maxWeek = 20
 
 function openWeekPicker() {
   weekPickerVisible.value = true
@@ -83,12 +99,12 @@ function getClassEndTime(index) {
 
 function changeWeek(delta) {
   const next = currentWeek.value + delta
-  if (next < 1) return
+  if (next < 1 || next > maxWeek.value) return
   curriculumStore.setCurrentWeek(next)
 }
 
 function jumpToWeek(week) {
-  if (!week || week < 1 || week === currentWeek.value) {
+  if (!week || week < 1 || week > maxWeek.value || week === currentWeek.value) {
     weekPickerVisible.value = false
     return
   }
@@ -145,6 +161,14 @@ function snapBack() {
 
 function slideToWeek(delta) {
   if (animating.value) return
+  
+  // 边界检查
+  const nextWeek = currentWeek.value + delta
+  if (nextWeek < 1 || nextWeek > maxWeek.value) {
+    snapBack()
+    return
+  }
+  
   animating.value = true
   enableTransition.value = true
   // 视觉上滑到目标页面
@@ -176,7 +200,7 @@ function handleClick(delta) {
   <div class="w-screen max-w-full h-full flex flex-col">
     <div class="flex items-center justify-between mb-2 px-0">
       <div class="flex items-center gap-2">
-        <var-button text round size="small" @click="handleClick(-1)">
+        <var-button text round size="small" @click="handleClick(-1)" :disabled="currentWeek <= 1">
           <var-icon name="chevron-left" />
         </var-button>
         <div
@@ -186,21 +210,31 @@ function handleClick(delta) {
           {{ weekTitle }}
           <var-icon name="chevron-down" size="14" />
         </div>
-        <var-button text round size="small" @click="handleClick(1)">
+        <var-button text round size="small" @click="handleClick(1)" :disabled="currentWeek >= maxWeek">
           <var-icon name="chevron-right" />
         </var-button>
       </div>
-      <div class="text-xs text-secondary pr-4">左右滑动切换不同周</div>
     </div>
 
     <div class="overflow-hidden flex-1 min-h-0 flex flex-col">
-      <!-- 表头：节次 + 周几 -->
+      <!-- 表头：节次 + 周几 + 日期 -->
       <div class="w-full grid grid-cols-[2rem_repeat(7,1fr)] text-xs text-center flex-none">
         <div class="py-1 border-r border-border">
           <div>节次</div>
         </div>
-        <div v-for="day in weekdays" :key="day.value" class="py-1 border-l border-border">
-          周{{ day.label }}
+        <div 
+          v-for="day in weekdays" 
+          :key="day.value" 
+          class="py-1 border-l border-border transition-colors"
+          :class="isToday(day.value) ? 'bg-primary/10 text-primary font-semibold' : ''"
+        >
+          <div>周{{ day.label }}</div>
+          <div 
+            class="text-[10px]"
+            :class="isToday(day.value) ? 'text-primary' : 'text-secondary'"
+          >
+            {{ currentWeekDates[day.value] }}
+          </div>
         </div>
       </div>
 
@@ -346,7 +380,7 @@ function handleClick(delta) {
           class="h-9 rounded-full text-xs border transition-colors flex items-center justify-center"
           :class="
             w === currentWeek
-              ? 'text-primary-foreground border-primary'
+              ? 'text-primary-foreground border-primary bg-primary'
               : 'border-border text-foreground/80'
           "
           @click="jumpToWeek(w)"
