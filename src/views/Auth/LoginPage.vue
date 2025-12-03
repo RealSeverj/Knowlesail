@@ -24,23 +24,32 @@ const handleLogin = async () => {
   try {
     const res = await loginApi(stuId.value, password.value)
     
-    // 响应数据在 res.data 中
-    const data = res.data
+    // axios 响应拦截器已返回 res.data，所以 res 就是后端返回的 JSON
+    // 后端返回格式: { data: { identifier, cookie, access_token } }
+    console.log('登录响应:', res)
+    const data = res.data || res
+    console.log('解析后的登录数据:', data)
     
     const userInfo = {
       id: data.identifier,
-      stu_id: stuId.value,
+      stu_id: stuId.value
+    }
+    
+    // 登录凭证包含三个字段
+    const authCredentials = {
+      access_token: data.access_token,
+      identifier: data.identifier,
       cookie: data.cookie
     }
     
-    const token = data.access_token
+    console.log('认证凭证:', authCredentials)
     
-    if (!token) {
+    if (!authCredentials.access_token) {
       toast.error('登录失败：服务器未返回有效 token')
       return
     }
     
-    authStore.login(userInfo, token)
+    authStore.login(userInfo, authCredentials)
     toast.success('登录成功')
     
     // 等待状态同步后再跳转

@@ -1,5 +1,24 @@
 import { apiBaseURL } from './axios-config'
 
+// 获取认证头信息
+function getAuthHeaders() {
+  const headers = {}
+  const token = localStorage.getItem('auth_token')
+  const identifier = localStorage.getItem('auth_identifier')
+  const cookie = localStorage.getItem('auth_cookie')
+  
+  if (token) {
+    headers.Authorization = token
+  }
+  if (identifier) {
+    headers.Id = identifier
+  }
+  if (cookie) {
+    headers.Cookies = cookie
+  }
+  return headers
+}
+
 // 发送消息并接收流式响应
 // message: 用户消息
 // onChunk: 每次增量文本回调 (chunk, accumulated)
@@ -21,7 +40,8 @@ export async function sendMessageStream(
         method: 'POST',
         body: formData,
         headers: {
-          Accept: 'text/event-stream'
+          Accept: 'text/event-stream',
+          ...getAuthHeaders()
         },
         signal
       }
@@ -122,7 +142,8 @@ export async function fetchAssistantRecommendations(params = {}) {
   const res = await fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...getAuthHeaders()
     }
   })
 

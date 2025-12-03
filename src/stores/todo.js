@@ -71,9 +71,12 @@ export const useTodoStore = defineStore('todo', () => {
       const apiData = toApiFormat(payload)
       const result = await todoApi.createTodo(apiData)
       
+      // API 返回格式: { code, message, data: { id } }
+      const todoId = result.data?.id || result.id
+      
       // 将新创建的 todo 添加到本地列表
       const newTodo = {
-        id: result.id,
+        id: todoId,
         title: payload.title,
         note: payload.note || '',
         category: payload.category || '默认',
@@ -82,8 +85,9 @@ export const useTodoStore = defineStore('todo', () => {
         completed: false
       }
       todos.value.push(newTodo)
-      return result.id
+      return todoId
     } catch (err) {
+      console.error('Store addTodo - error:', err)
       error.value = err.message || '添加待办失败'
       throw err
     } finally {
@@ -184,7 +188,10 @@ export const useTodoStore = defineStore('todo', () => {
     error.value = null
     try {
       const result = await todoApi.getTodoDetail(id)
-      const todo = fromApiFormat(result.todo)
+      
+      // API 返回格式: { code, message, data: { todo } }
+      const todoData = result.data?.todo || result.todo
+      const todo = fromApiFormat(todoData)
       
       // 更新本地列表中的对应项
       const index = todos.value.findIndex((t) => t.id === id)
@@ -214,7 +221,10 @@ export const useTodoStore = defineStore('todo', () => {
     error.value = null
     try {
       const result = await todoApi.getTodoList(params)
-      const todoList = (result.todos || []).map(fromApiFormat)
+      
+      // API 返回格式: { code, message, data: { todos: [] } }
+      const todosData = result.data?.todos || result.todos || []
+      const todoList = todosData.map(fromApiFormat)
       todos.value = todoList
       return todoList
     } catch (err) {

@@ -1,17 +1,24 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { getUserInfo } from '@/api/profile'
+import { useAuthStore } from './auth'
 
 export const useProfileStore = defineStore('profile', () => {
+  const authStore = useAuthStore()
+  
   const user = ref({
-    studentId: '20250001',
-    phone: '18106916901',
-    nickname: 'Severj',
-    realName: '苏西',
-    academy: '计算机与大数据学院',
-    major: '计算机科学与技术',
-    grade: '2023级',
+    studentId: '',
+    phone: '',
+    nickname: '',
+    realName: '',
+    academy: '',
+    major: '',
+    grade: '',
     signature: '把每一次学习都当成一次远航。'
   })
+
+  const loading = ref(false)
+  const error = ref(null)
 
   const stats = ref({
     notesCount: 42,
@@ -42,12 +49,43 @@ export const useProfileStore = defineStore('profile', () => {
     preferences.value = { ...preferences.value, ...payload }
   }
 
+  // 从后端获取用户信息
+  const fetchUserInfo = async () => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const res = await getUserInfo()
+      const data = res.data
+      
+      // 映射后端数据到前端格式
+      user.value = {
+        studentId: authStore.user?.stu_id || '',
+        phone: data?.phont || '',  // 注意后端字段是 phont
+        nickname: data?.name || '',
+        realName: data?.name || '',
+        academy: data?.college || '',
+        major: data?.major || '',
+        grade: data?.grade ? `${data.grade}级` : '',
+        signature: '把每一次学习都当成一次远航。'
+      }
+    } catch (err) {
+      console.error('获取用户信息失败:', err)
+      error.value = err.message || '获取用户信息失败'
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     user,
     stats,
     preferences,
+    loading,
+    error,
     maskedPhone,
     updateUser,
-    updatePreferences
+    updatePreferences,
+    fetchUserInfo
   }
 })

@@ -1,11 +1,20 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useTodoStore } from '@/stores/todo'
 import TodoCard from '@/components/Todo/TodoCard.vue'
 import AddTodo from '@/components/Todo/AddTodo.vue'
 import SearchPannel from '@/components/Todo/SearchPannel.vue'
 
 const todoStore = useTodoStore()
+
+// 页面加载时获取待办列表
+onMounted(async () => {
+  try {
+    await todoStore.fetchTodos()
+  } catch (err) {
+    console.error('获取待办列表失败:', err)
+  }
+})
 
 // 当前展示的象限，默认 1（紧急且重要）
 const activeQuadrant = ref(1)

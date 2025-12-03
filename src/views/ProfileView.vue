@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProfileStore } from '@/stores/profile'
 import UserInfo from '@/components/Profile/UserInfo.vue'
@@ -10,6 +10,11 @@ import PopFrame from '@/components/Common/PopFrame.vue'
 
 const router = useRouter()
 const profileStore = useProfileStore()
+
+// 页面加载时获取用户信息
+onMounted(() => {
+  profileStore.fetchUserInfo()
+})
 
 // 控制自定义主题弹窗显示
 const showCustomThemeDialog = ref(false)

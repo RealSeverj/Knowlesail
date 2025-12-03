@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import mockResponse from '@/components/Curriculum/response.json'
+import { getCourseList, getCurrentTerm } from '@/api/curriculum'
+
+// localStorage 键名
+const STORAGE_KEY_COURSES = 'curriculum_courses'
+const STORAGE_KEY_TERM = 'curriculum_term'
+const STORAGE_KEY_LOCAL_COURSES = 'curriculum_local_courses' // 本地添加的课程
 
 // 课程数据结构示例：
 // {
@@ -26,6 +31,7 @@ import mockResponse from '@/components/Curriculum/response.json'
 //   rawScheduleRules: string
 //   rawAdjust: string
 //   examType: string
+//   isLocal: boolean // 标记是否为本地添加的课程
 // }
 
 export const useCurriculumStore = defineStore('curriculum', () => {
@@ -37,6 +43,9 @@ export const useCurriculumStore = defineStore('curriculum', () => {
 
   // 是否正在从后端加载课程
   const loading = ref(false)
+
+  // 是否已从缓存/后端初始化过
+  const initialized = ref(false)
 
   // 每节课对应的时间段展示（可在页面使用）
   const classTimeMap = {
@@ -51,6 +60,77 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     9: '19:00',
     10: '19:55',
     11: '20:50'
+  }
+
+  // 从 localStorage 加载缓存的课程
+  function loadFromStorage() {
+    try {
+      const cached = localStorage.getItem(STORAGE_KEY_COURSES)
+      const localCourses = localStorage.getItem(STORAGE_KEY_LOCAL_COURSES)
+      
+      if (cached) {
+        const parsed = JSON.parse(cached)
+        if (Array.isArray(parsed)) {
+          courses.value = parsed
+        }
+      }
+      
+      // 合并本地添加的课程
+      if (localCourses) {
+        const localParsed = JSON.parse(localCourses)
+        if (Array.isArray(localParsed)) {
+          // 将本地课程添加到列表中（如果不存在）
+          localParsed.forEach((localCourse) => {
+            const exists = courses.value.some((c) => c.id === localCourse.id)
+            if (!exists) {
+              courses.value.push(localCourse)
+            }
+          })
+        }
+      }
+      
+      return courses.value.length > 0
+    } catch (e) {
+      console.error('从 localStorage 加载课程失败：', e)
+      return false
+    }
+  }
+
+  // 保存课程到 localStorage
+  function saveToStorage() {
+    try {
+      // 分离后端课程和本地课程
+      const remoteCourses = courses.value.filter((c) => !c.isLocal)
+      const localCourses = courses.value.filter((c) => c.isLocal)
+      
+      localStorage.setItem(STORAGE_KEY_COURSES, JSON.stringify(remoteCourses))
+      localStorage.setItem(STORAGE_KEY_LOCAL_COURSES, JSON.stringify(localCourses))
+    } catch (e) {
+      console.error('保存课程到 localStorage 失败：', e)
+    }
+  }
+
+  // 保存本地添加的课程
+  function saveLocalCourses() {
+    try {
+      const localCourses = courses.value.filter((c) => c.isLocal)
+      localStorage.setItem(STORAGE_KEY_LOCAL_COURSES, JSON.stringify(localCourses))
+    } catch (e) {
+      console.error('保存本地课程失败：', e)
+    }
+  }
+
+  // 获取本地添加的课程
+  function getLocalCourses() {
+    try {
+      const localCourses = localStorage.getItem(STORAGE_KEY_LOCAL_COURSES)
+      if (localCourses) {
+        return JSON.parse(localCourses)
+      }
+    } catch (e) {
+      console.error('获取本地课程失败：', e)
+    }
+    return []
   }
 
   // 根据给定周次计算按星期分组的课程安排
@@ -110,35 +190,138 @@ export const useCurriculumStore = defineStore('curriculum', () => {
   // 仍然保留当前周的计算，方便其他地方直接使用
   const weekSchedule = computed(() => getWeekSchedule(currentWeek.value))
 
-  // 之后可在这里接入后端 API，例如：
-  // import { getCurriculum, createCourse, updateCourse, deleteCourse } from '@/api/curriculum'
+  // 当前学期
+  const currentTerm = ref(getCurrentTerm())
 
-  // 预留：从后端拉取课程表
-  async function fetchCourses() {
+  /**
+   * 初始化课程表
+   * 首先尝试从 localStorage 加载，如果没有缓存则从后端获取
+   */
+  async function initCourses() {
+    if (initialized.value) return
+    
+    // 尝试从缓存加载
+    const hasCache = loadFromStorage()
+    initialized.value = true
+    
+    // 如果没有缓存，从后端获取
+    if (!hasCache) {
+      await fetchCourses({ forceRefresh: true })
+    }
+  }
+
+  /**
+   * 从后端拉取课程表
+   * @param {Object} options - 请求选项
+   * @param {string} options.term - 学期代码
+   * @param {boolean} options.isRefresh - 是否强制刷新后端数据
+   * @param {boolean} options.forceRefresh - 是否强制从后端获取（忽略缓存）
+   */
+  async function fetchCourses(options = {}) {
     loading.value = true
     try {
-      // TODO: 未来替换为真实 API 调用
-      // const resp = await getCurriculum()
-      // courses.value = resp.data
-
-      if (mockResponse && Array.isArray(mockResponse.data)) {
-        courses.value = mockResponse.data.map((item, index) => ({
-          id: String(index + 1),
-          ...item
-        }))
+      const { term = currentTerm.value, isRefresh = false, forceRefresh = false } = options
+      
+      // 如果不是强制刷新且已有缓存，直接返回
+      if (!forceRefresh && !isRefresh && courses.value.length > 0) {
+        return
       }
+      
+      const resp = await getCourseList({ term, isRefresh })
+
+      if (resp && resp.code === '10000' && Array.isArray(resp.data)) {
+        // 获取本地添加的课程
+        const localCourses = getLocalCourses()
+        
+        // 处理后端返回的课程
+        const remoteCourses = resp.data.map((item, index) => ({
+          id: `remote_${index + 1}`,
+          ...item,
+          isLocal: false
+        }))
+        
+        // 合并课程：后端课程 + 本地课程（检查冲突）
+        const mergedCourses = [...remoteCourses]
+        
+        localCourses.forEach((localCourse) => {
+          // 检查是否与后端课程冲突（根据课程名和时间判断）
+          const hasConflict = remoteCourses.some((remoteCourse) => {
+            // 如果课程名相同，认为是同一门课
+            if (remoteCourse.name === localCourse.name) {
+              return true
+            }
+            // 检查时间冲突
+            return checkScheduleConflict(remoteCourse, localCourse)
+          })
+          
+          if (!hasConflict) {
+            mergedCourses.push(localCourse)
+          }
+        })
+        
+        courses.value = mergedCourses
+        
+        // 更新当前学期
+        if (term) {
+          currentTerm.value = term
+          localStorage.setItem(STORAGE_KEY_TERM, term)
+        }
+        
+        // 保存到 localStorage
+        saveToStorage()
+      }
+    } catch (error) {
+      console.error('获取课程表失败：', error)
+      throw error
     } finally {
       loading.value = false
     }
   }
 
-  // 预留：在后端创建课程
+  /**
+   * 检查两门课程是否有时间冲突
+   */
+  function checkScheduleConflict(course1, course2) {
+    if (!course1.scheduleRules || !course2.scheduleRules) return false
+    
+    for (const rule1 of course1.scheduleRules) {
+      for (const rule2 of course2.scheduleRules) {
+        // 检查是否在同一天
+        if (rule1.weekday !== rule2.weekday) continue
+        
+        // 检查周次是否有交集
+        const weekOverlap =
+          rule1.startWeek <= rule2.endWeek && rule1.endWeek >= rule2.startWeek
+        if (!weekOverlap) continue
+        
+        // 检查节次是否有交集
+        const classOverlap =
+          rule1.startClass <= rule2.endClass && rule1.endClass >= rule2.startClass
+        if (!classOverlap) continue
+        
+        // 检查单双周是否有交集
+        const oddWeekOverlap = rule1.single && rule2.single
+        const evenWeekOverlap = rule1.double && rule2.double
+        if (oddWeekOverlap || evenWeekOverlap) {
+          return true
+        }
+      }
+    }
+    
+    return false
+  }
+
+  /**
+   * 下拉刷新 - 强制从后端获取最新数据
+   */
+  async function refreshCourses() {
+    await fetchCourses({ isRefresh: true, forceRefresh: true })
+  }
+
+  // 预留：在后端创建课程（本地添加）
   async function createCourse(payload) {
-    // const resp = await createCourseApi(payload)
-    // courses.value.push(resp.data)
-    // 目前先本地模拟
-    const id = Date.now().toString(36)
-    courses.value.push({
+    const id = `local_${Date.now().toString(36)}`
+    const newCourse = {
       id,
       name: payload.name,
       teacher: payload.teacher || '',
@@ -148,23 +331,39 @@ export const useCurriculumStore = defineStore('curriculum', () => {
       syllabus: payload.syllabus || '',
       rawScheduleRules: payload.rawScheduleRules || '',
       rawAdjust: payload.rawAdjust || '',
-      examType: payload.examType || ''
-    })
+      examType: payload.examType || '',
+      isLocal: true // 标记为本地添加的课程
+    }
+    courses.value.push(newCourse)
+    
+    // 保存本地课程到 localStorage
+    saveLocalCourses()
   }
 
   // 预留：更新课程
   async function updateCourse(id, patch) {
-    // const resp = await updateCourseApi(id, patch)
     const target = courses.value.find((c) => c.id === id)
     if (!target) return
     Object.assign(target, patch)
+    
+    // 如果是本地课程，更新 localStorage
+    if (target.isLocal) {
+      saveLocalCourses()
+    }
   }
 
   // 预留：删除课程
   async function removeCourse(id) {
-    // await deleteCourseApi(id)
     const index = courses.value.findIndex((c) => c.id === id)
-    if (index !== -1) courses.value.splice(index, 1)
+    if (index !== -1) {
+      const course = courses.value[index]
+      courses.value.splice(index, 1)
+      
+      // 如果是本地课程，更新 localStorage
+      if (course.isLocal) {
+        saveLocalCourses()
+      }
+    }
   }
 
   function setCurrentWeek(week) {
@@ -175,13 +374,17 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     // state
     courses,
     currentWeek,
+    currentTerm,
     loading,
+    initialized,
     classTimeMap,
     // getters
     weekSchedule,
     getWeekSchedule,
     // actions
+    initCourses,
     fetchCourses,
+    refreshCourses,
     createCourse,
     updateCourse,
     removeCourse,
