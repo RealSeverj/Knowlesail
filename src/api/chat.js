@@ -21,13 +21,14 @@ function getAuthHeaders() {
 
 // 发送消息并接收流式响应
 // message: 用户消息
+// conversationId: 会话ID（必传）
 // onChunk: 每次增量文本回调 (chunk, accumulated)
 // onToolCall: 工具调用发生回调 (toolNames[])
 // onToolResult: 工具返回结果回调 (resultStr, accumulated)
 // signal: AbortSignal 用于取消
 // 返回: Promise<string> 最终累计文本
 export async function sendMessageStream(
-  message, image,
+  message, image, conversationId,
   { onChunk, onToolCall, onToolResult, signal } = {}
 ) {
   let accumulatedText = ''
@@ -35,7 +36,7 @@ export async function sendMessageStream(
   formData.append('image', image);
   try {
     const response = await fetch(
-      `${apiBaseURL}/api/v1/chat/sse?message=${encodeURIComponent(message)}`,
+      `${apiBaseURL}/api/v1/chat/sse?message=${encodeURIComponent(message)}&conversation_id=${encodeURIComponent(conversationId)}`,
       {
         method: 'POST',
         body: formData,
@@ -157,4 +158,45 @@ export async function fetchAssistantRecommendations(params = {}) {
   // [{ id, title, description, preset, type, extra }]
   // 若结构不同，可在此处做一次映射适配
   return Array.isArray(data) ? data : data?.items || []
+}
+
+// ========== 获取历史对话记录 ==========
+// 根据 conversation_id 获取历史消息
+export async function fetchConversationHistory(conversationId) {
+  const res = await fetch(
+    `${apiBaseURL}/api/v1/conversation/history?conversation_id=${encodeURIComponent(conversationId)}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      }
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch conversation history: ${res.status}`)
+  }
+
+  const result = await res.json()
+
+  if (result.code !== '10000') {
+    throw new Error(result.message || 'Failed to fetch conversation history')
+  }
+
+  // 解析 messages 字符串为数组
+  const data = result.data
+  let messages = []
+  if (data?.messages) {
+    try {
+      messages = typeof data.messages === 'string' ? JSON.parse(data.messages) : data.messages
+    } catch (e) {
+      console.warn('解析历史消息失败:', e)
+    }
+  }
+
+  return {
+    conversationId: data?.conversation_id,
+    messages
+  }
 }

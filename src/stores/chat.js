@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { sendMessageStream } from '@/api/chat'
+import { sendMessageStream, fetchConversationHistory } from '@/api/chat'
+
+// 生成 UUID
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
 
 export const useChatStore = defineStore('chat', () => {
   // ========== 状态 ==========
@@ -26,12 +35,13 @@ export const useChatStore = defineStore('chat', () => {
    */
   function createConversation(title = '新对话') {
     const conversation = {
-      id: Date.now().toString(),
+      id: generateUUID(), // 使用 UUID 作为 conversation_id
       title,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       messages: []
     }
+    console.log('Creating conversation:', conversation)
     conversations.value.unshift(conversation)
     currentConversationId.value = conversation.id
     autoSave()
@@ -184,7 +194,7 @@ export const useChatStore = defineStore('chat', () => {
         imageFile = new Blob([byteArray], { type: mimeType })
       }
 
-      await sendMessageStream(userMessage, imageFile, {
+      await sendMessageStream(userMessage, imageFile, currentConversation.value.id, {
         signal: abortController.signal,
         onChunk: (text, accumulated) => {
           updateMessage(assistantMessage.id, accumulated)
@@ -290,6 +300,42 @@ export const useChatStore = defineStore('chat', () => {
     saveConversations()
   }
 
+  /**
+   * 从服务器加载指定会话的历史消息
+   * @param {string} conversationId - 会话ID
+   */
+  async function loadConversationHistory(conversationId) {
+    try {
+      const { messages } = await fetchConversationHistory(conversationId)
+      
+      const conv = conversations.value.find((c) => c.id === conversationId)
+      if (conv && Array.isArray(messages)) {
+        // 将服务器返回的消息格式转换为本地格式
+        conv.messages = messages.map((msg, index) => ({
+          id: `${conversationId}-${index}-${Date.now()}`,
+          role: msg.role,
+          content: msg.content,
+          timestamp: new Date().toISOString(),
+          streaming: false,
+          toolCalls: []
+        }))
+        conv.updatedAt = new Date().toISOString()
+        
+        // 更新会话标题（使用第一条用户消息）
+        const firstUserMsg = conv.messages.find(m => m.role === 'user')
+        if (firstUserMsg) {
+          conv.title = firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '')
+        }
+        
+        autoSave()
+      }
+      return messages
+    } catch (error) {
+      console.error('加载历史消息失败:', error)
+      throw error
+    }
+  }
+
   return {
     // 状态
     conversations,
@@ -317,6 +363,7 @@ export const useChatStore = defineStore('chat', () => {
     // 本地存储
     loadConversations,
     saveConversations,
-    clearAllConversations
+    clearAllConversations,
+    loadConversationHistory
   }
 })
