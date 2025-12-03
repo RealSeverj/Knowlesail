@@ -9,7 +9,6 @@ import { useChatStore } from '@/stores/chat'
 const chatStore = useChatStore()
 
 const inputExpanded = ref(false)
-const inputOffset = ref(0)
 const autoPinned = ref(false)
 const lastBottomState = ref(false)
 
@@ -42,10 +41,6 @@ const handleRequestExpand = () => {
 
 const handleRequestCollapse = () => {
   collapseInput()
-}
-
-const handleHeightChange = (height) => {
-  inputOffset.value = height
 }
 
 watch(
@@ -84,7 +79,6 @@ const handleLeaveBottomByScroll = () => {
     <div class="flex-1 min-h-0 flex">
       <ChatInterface
         class="flex-1 min-h-0"
-        :bottom-offset="inputOffset"
         @bottom-state-change="handleBottomStateChange"
         @request-input-expand="handleViewportExpand"
         @leave-bottom-by-scroll="handleLeaveBottomByScroll"
@@ -94,7 +88,6 @@ const handleLeaveBottomByScroll = () => {
       :expanded="inputExpanded"
       @request-expand="handleRequestExpand"
       @request-collapse="handleRequestCollapse"
-      @height-change="handleHeightChange"
     />
   </div>
 </template>

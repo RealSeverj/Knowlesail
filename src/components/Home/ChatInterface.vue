@@ -6,20 +6,14 @@ import LiveAssistence from './LiveAssistence.vue'
 import { fetchAssistantRecommendations } from '@/api/chat'
 import { throttle } from '@/utils/common'
 
-const props = defineProps({
-  bottomOffset: {
-    type: Number,
-    default: 0
-  }
-})
-
 const chatStore = useChatStore()
 const emit = defineEmits(['bottom-state-change', 'request-input-expand', 'leave-bottom-by-scroll'])
 
 const viewportRef = ref(null)
 const isNearBottom = ref(true)
 const bottomThreshold = 4
-const BASE_BOTTOM_PADDING = 28
+// 固定底部留白，预留输入框展开后的空间，避免内容跳动
+const FIXED_BOTTOM_PADDING = 180
 const lastScrollTop = ref(0)
 const assistantActions = ref([])
 const assistantLoading = ref(false)
@@ -28,9 +22,6 @@ const messages = computed(() => chatStore.currentMessages || [])
 const isStreaming = computed(() => chatStore.isStreaming)
 const hasMessages = computed(() => messages.value.length > 0)
 const lastMessageContent = computed(() => messages.value[messages.value.length - 1]?.content || '')
-const viewportStyle = computed(() => ({
-  paddingBottom: `${BASE_BOTTOM_PADDING + props.bottomOffset}px`
-}))
 
 const updateBottomState = () => {
   const el = viewportRef.value
@@ -148,8 +139,7 @@ onMounted(async () => {
   <section class="flex flex-col min-h-0 flex-1 overflow-x-hidden">
     <div
       ref="viewportRef"
-      class="overflow-y-auto min-h-0 flex-1 px-2 py-6"
-      :style="viewportStyle"
+      class="overflow-y-auto min-h-0 flex-1 px-2 py-6 chat-viewport"
       @scroll="handleScroll"
       @click="handleViewportClick"
     >
@@ -174,4 +164,9 @@ onMounted(async () => {
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.chat-viewport {
+  /* 固定底部留白，预留输入框展开后的空间 */
+  padding-bottom: 180px;
+}
+</style>

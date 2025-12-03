@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
@@ -18,7 +18,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['request-expand', 'request-collapse', 'height-change'])
+const emit = defineEmits(['request-expand', 'request-collapse'])
 
 const chatStore = useChatStore()
 const expanded = computed(() => props.expanded)
@@ -26,9 +26,6 @@ const expanded = computed(() => props.expanded)
 const textareaRows = ref(1)
 const inputText = ref('')
 const MAX_ROWS = 5
-const shellRef = ref(null)
-let resizeObserver = null
-
 const isStreaming = computed(() => chatStore.isStreaming)
 const canSend = computed(() => inputText.value.trim().length > 0 && !isStreaming.value)
 
@@ -46,38 +43,6 @@ const syncTextareaRows = () => {
 }
 
 watch(inputText, syncTextareaRows, { immediate: true })
-
-const emitHeight = () => {
-  nextTick(() => {
-    const height = expanded.value && shellRef.value ? shellRef.value.offsetHeight : 0
-    emit('height-change', height)
-  })
-}
-
-const initResizeObserver = () => {
-  if (typeof ResizeObserver === 'undefined' || !shellRef.value) return
-  resizeObserver = new ResizeObserver(() => {
-    emitHeight()
-  })
-  resizeObserver.observe(shellRef.value)
-}
-
-watch([expanded, textareaRows], emitHeight)
-
-onMounted(() => {
-  nextTick(() => {
-    initResizeObserver()
-    emitHeight()
-  })
-})
-
-onBeforeUnmount(() => {
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
-  }
-  emit('height-change', 0)
-})
 
 const handleEnter = (event) => {
   if (!event.shiftKey && canSendWithImage.value) {
@@ -166,7 +131,6 @@ const handleExpand = () => {
 <template>
   <div class="floating-input-layer">
     <div
-      ref="shellRef"
       class="morph-shell"
       :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
       :style="{ bottom: finalOffset + 'px' }"
