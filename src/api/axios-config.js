@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useToastBus } from '@/composables/useToast'
 
 export const apiBaseURL = 'http://118.196.24.221'
 
@@ -10,6 +11,68 @@ export const http = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// 用于防止多个请求同时触发刷新凭证
+let isRefreshing = false
+let refreshSubscribers = []
+
+// 订阅刷新完成事件
+const subscribeTokenRefresh = (callback) => {
+  refreshSubscribers.push(callback)
+}
+
+// 通知所有订阅者刷新完成
+const onRefreshed = (success) => {
+  refreshSubscribers.forEach((callback) => callback(success))
+  refreshSubscribers = []
+}
+
+// 执行登录刷新凭证
+const refreshCredentials = async () => {
+  const stuId = JSON.parse(localStorage.getItem('user_info') || '{}')?.stu_id
+  const password = localStorage.getItem('auth_password') // 需要存储密码用于自动重登录
+  
+  if (!stuId || !password) {
+    return false
+  }
+  
+  try {
+    // 直接使用 axios 调用登录接口，避免循环依赖
+    const res = await axios.post(`${apiBaseURL}/api/v1/user/login`, {
+      stu_id: stuId,
+      password
+    })
+    
+    const data = res.data?.data || res.data
+    
+    if (data?.access_token) {
+      localStorage.setItem('auth_token', data.access_token)
+      localStorage.setItem('auth_identifier', data.identifier)
+      localStorage.setItem('auth_cookie', data.cookie)
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('自动刷新凭证失败:', error)
+    return false
+  }
+}
+
+// 执行登出并跳转到登录页
+const performLogout = () => {
+  localStorage.removeItem('auth_token')
+  localStorage.removeItem('auth_identifier')
+  localStorage.removeItem('auth_cookie')
+  localStorage.removeItem('auth_password')
+  localStorage.removeItem('user_info')
+  
+  // 使用 toast 提示
+  const toastBus = useToastBus()
+  toastBus.show('登录已过期，请重新登录', { type: 'error', duration: 3000 })
+  
+  // 跳转到登录页
+  window.location.href = '/#/login'
+}
 
 // 请求拦截（自动注入认证信息：Id、Cookies、Authorization）
 http.interceptors.request.use((config) => {
@@ -30,9 +93,54 @@ http.interceptors.request.use((config) => {
   return config
 })
 
-// 响应拦截：统一返回 data；错误抛出由调用方自行捕获
+// 响应拦截：统一返回 data；处理 40001 错误码自动刷新凭证
 http.interceptors.response.use(
-  (res) => res.data,
+  async (res) => {
+    const data = res.data
+    
+    // 检查是否返回 40001 错误码（凭证过期）
+    if (data?.code === '40001' || data?.code === 40001) {
+      const originalRequest = res.config
+      
+      // 防止重复刷新
+      if (!isRefreshing) {
+        isRefreshing = true
+        
+        const refreshSuccess = await refreshCredentials()
+        
+        isRefreshing = false
+        onRefreshed(refreshSuccess)
+        
+        if (refreshSuccess) {
+          // 刷新成功，重新发起原请求
+          originalRequest.headers.Authorization = localStorage.getItem('auth_token')
+          originalRequest.headers.Id = localStorage.getItem('auth_identifier')
+          originalRequest.headers.Cookies = localStorage.getItem('auth_cookie')
+          return http(originalRequest)
+        } else {
+          // 刷新失败，登出
+          performLogout()
+          return Promise.reject(new Error('凭证刷新失败'))
+        }
+      } else {
+        // 正在刷新中，等待刷新完成
+        return new Promise((resolve, reject) => {
+          subscribeTokenRefresh((success) => {
+            if (success) {
+              originalRequest.headers.Authorization = localStorage.getItem('auth_token')
+              originalRequest.headers.Id = localStorage.getItem('auth_identifier')
+              originalRequest.headers.Cookies = localStorage.getItem('auth_cookie')
+              resolve(http(originalRequest))
+            } else {
+              reject(new Error('凭证刷新失败'))
+            }
+          })
+        })
+      }
+    }
+    
+    return data
+  },
   (error) => {
     console.error('API 请求错误：', error)
     return Promise.reject(error)

@@ -50,6 +50,8 @@ const handleLogin = async () => {
     }
     
     authStore.login(userInfo, authCredentials)
+    // 保存密码用于自动刷新凭证（当收到 40001 错误码时）
+    localStorage.setItem('auth_password', password.value)
     toast.success('登录成功')
     
     // 等待状态同步后再跳转
