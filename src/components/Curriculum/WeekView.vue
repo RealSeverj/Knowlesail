@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch, nextTick, onMounted } from 'vue'
 import { useCurriculumStore } from '@/stores/curriculum'
 import CourseCard from './CourseCard.vue'
 
@@ -17,11 +17,7 @@ const weekdays = [
 
 const currentWeek = computed(() => curriculumStore.currentWeek)
 const classTimeMap = curriculumStore.classTimeMap
-
-// 从 store 获取最大周数
 const maxWeek = computed(() => curriculumStore.maxWeek)
-
-// 今天所在的周和星期几
 const todayWeek = computed(() => curriculumStore.todayWeek)
 const todayWeekday = computed(() => curriculumStore.todayWeekday)
 
@@ -32,8 +28,6 @@ function isToday(weekday) {
 
 // 获取当前周的日期
 const currentWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value))
-const prevWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value - 1))
-const nextWeekDates = computed(() => curriculumStore.getWeekDates(currentWeek.value + 1))
 
 // 周数选择弹窗
 const weekPickerVisible = ref(false)
@@ -46,37 +40,38 @@ function closeWeekPicker() {
   weekPickerVisible.value = false
 }
 
-// 不同周的课表数据
-const prevWeekSchedule = computed(() => {
-  const target = currentWeek.value - 1
-  if (target < 1) return curriculumStore.getWeekSchedule(1)
-  return curriculumStore.getWeekSchedule(target)
-})
-
-const currentWeekSchedule = computed(() => curriculumStore.getWeekSchedule(currentWeek.value))
-
-const nextWeekSchedule = computed(() => {
-  const target = currentWeek.value + 1
-  return curriculumStore.getWeekSchedule(target)
-})
-
 // 滑动相关状态
-const containerRef = ref(null)
-const pageWidth = ref(0)
-const baseX = ref(0)
-const translateX = ref(0)
-const startX = ref(0)
-const dragging = ref(false)
-const animating = ref(false)
-const enableTransition = ref(true)
-onMounted(() => {
-  // 使用外层容器宽度作为一页宽度
-  const container = containerRef.value
-  if (container) {
-    pageWidth.value = container.clientWidth || window.innerWidth
-    baseX.value = -pageWidth.value
-    translateX.value = baseX.value
+const activeIndex = ref(currentWeek.value - 1)
+const swipeRef = ref(null)
+
+// 监听 store 变化同步到 swipe
+watch(currentWeek, (val) => {
+  const targetIndex = val - 1
+  if (activeIndex.value !== targetIndex) {
+    activeIndex.value = targetIndex
+    // 确保 swipe 组件同步跳转
+    nextTick(() => {
+      swipeRef.value?.to(targetIndex)
+    })
   }
+})
+
+// 监听 swipe 变化同步到 store
+function handleSwipeChange(index) {
+  const newWeek = index + 1
+  if (newWeek !== currentWeek.value) {
+    curriculumStore.setCurrentWeek(newWeek)
+  }
+}
+
+// 初始化定位
+onMounted(() => {
+  nextTick(() => {
+    // 如果当前周不是第一周，强制跳转一次以确保位置正确
+    if (swipeRef.value && activeIndex.value > 0) {
+      swipeRef.value.to(activeIndex.value, { animation: false })
+    }
+  })
 })
 
 // 计算某节课的结束时间（开始时间 + 45 分钟）
@@ -97,7 +92,7 @@ function getClassEndTime(index) {
   return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
 }
 
-function changeWeek(delta) {
+function handleClick(delta) {
   const next = currentWeek.value + delta
   if (next < 1 || next > maxWeek.value) return
   curriculumStore.setCurrentWeek(next)
@@ -109,91 +104,10 @@ function jumpToWeek(week) {
     return
   }
   curriculumStore.setCurrentWeek(week)
-  // 直接重置为中间页位置
-  baseX.value = -pageWidth.value
-  translateX.value = baseX.value
   weekPickerVisible.value = false
 }
 
 const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
-
-// 手势事件
-function onTouchStart(e) {
-  if (animating.value) return
-  enableTransition.value = false
-  dragging.value = true
-  startX.value = e.touches[0].clientX
-}
-
-function onTouchMove(e) {
-  if (!dragging.value) return
-  const currentX = e.touches[0].clientX
-  const deltaX = currentX - startX.value
-  translateX.value = baseX.value + deltaX
-}
-
-function onTouchEnd() {
-  if (!dragging.value) return
-  dragging.value = false
-
-  const delta = translateX.value - baseX.value
-  const threshold = pageWidth.value * 0.15
-  if (delta <= -threshold) {
-    // 向左滑，下一周
-    slideToWeek(1)
-  } else if (delta >= threshold) {
-    // 向右滑，上 一周
-    slideToWeek(-1)
-  } else {
-    // 回弹
-    snapBack()
-  }
-}
-
-function snapBack() {
-  animating.value = true
-  enableTransition.value = true
-  translateX.value = baseX.value
-  setTimeout(() => {
-    animating.value = false
-  }, 300)
-}
-
-function slideToWeek(delta) {
-  if (animating.value) return
-  
-  // 边界检查
-  const nextWeek = currentWeek.value + delta
-  if (nextWeek < 1 || nextWeek > maxWeek.value) {
-    snapBack()
-    return
-  }
-  
-  animating.value = true
-  enableTransition.value = true
-  // 视觉上滑到目标页面
-  translateX.value = baseX.value - delta * pageWidth.value
-  setTimeout(() => {
-    // 第二段：关闭过渡，瞬间重置到中间页
-    enableTransition.value = false
-    changeWeek(delta)
-    // 更新完 currentWeek 后直接将基准和偏移同步到新的“中间页”
-    baseX.value = -pageWidth.value
-    translateX.value = baseX.value
-    // 使用双重 requestAnimationFrame 确保 DOM 更新并渲染了一帧“无过渡”状态
-    // 这样浏览器才会真正“跳”到新位置，而不是“滑”过去
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        enableTransition.value = true
-        animating.value = false
-      })
-    })
-  }, 300)
-}
-
-function handleClick(delta) {
-  slideToWeek(delta)
-}
 </script>
 
 <template>
@@ -238,29 +152,21 @@ function handleClick(delta) {
         </div>
       </div>
 
-      <!-- 主体：左侧节次 + 右侧 7 天列，外面套滑动容器 -->
-      <div
-        ref="containerRef"
-        class="relative flex-1 min-h-0 overflow-hidden"
-        @touchstart.passive="onTouchStart"
-        @touchmove.prevent="onTouchMove"
-        @touchend="onTouchEnd"
+      <!-- 主体：使用 var-swipe 实现滑动 -->
+      <var-swipe
+        ref="swipeRef"
+        class="flex-1 min-h-0"
+        :loop="false"
+        :indicator="false"
+        v-model:active="activeIndex"
+        @change="handleSwipeChange"
       >
-        <div
-          class="absolute inset-0 flex"
-          :style="{
-            transform: `translateX(${translateX}px)`,
-            transition:
-              dragging || !enableTransition
-                ? 'none'
-                : 'transform 0.22s cubic-bezier(0.33, 0.01, 0.3, 1)'
-          }"
-        >
-          <!-- 上一周 -->
-          <div class="w-full flex-shrink-0 relative">
+        <var-swipe-item v-for="week in maxWeek" :key="week" class="h-full">
+          <!-- 性能优化：只渲染当前周及其前后的内容 -->
+          <div v-if="Math.abs(week - (activeIndex + 1)) <= 1" class="h-full flex relative">
             <!-- 左侧节次栏 -->
             <div
-              class="absolute inset-y-0 left-0 w-8 border-r border-border text-[10px] text-center grid"
+              class="w-8 border-r border-border text-[10px] text-center grid flex-none"
               :style="{ gridTemplateRows: 'repeat(11, minmax(0, 1fr))' }"
             >
               <div
@@ -276,10 +182,10 @@ function handleClick(delta) {
               </div>
             </div>
             <!-- 右侧 7 天列 -->
-            <div class="absolute inset-y-0 left-8 right-0 grid grid-cols-7">
+            <div class="flex-1 grid grid-cols-7 relative">
               <div v-for="day in weekdays" :key="day.value" class="relative border-l border-border">
                 <CourseCard
-                  v-for="item in prevWeekSchedule[day.value]"
+                  v-for="item in curriculumStore.getWeekSchedule(week)[day.value]"
                   :key="item.id || item.courseId || item.name || i"
                   :course="item"
                   :start-class="item.startClass"
@@ -288,70 +194,8 @@ function handleClick(delta) {
               </div>
             </div>
           </div>
-
-          <!-- 当前周 -->
-          <div class="w-full flex-shrink-0 relative">
-            <div
-              class="absolute inset-y-0 left-0 w-8 border-r border-border text-[10px] text-center grid"
-              :style="{ gridTemplateRows: 'repeat(11, minmax(0, 1fr))' }"
-            >
-              <div
-                v-for="i in 11"
-                :key="i"
-                class="flex flex-col items-center justify-center border-b border-border last:border-b-0 px-1"
-              >
-                <div class="font-medium text-[11px]">{{ i }}</div>
-                <div class="mt-0.5 text-[9px] text-secondary leading-tight">
-                  <div>{{ classTimeMap[i] }}</div>
-                  <div>{{ getClassEndTime(i) }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="absolute inset-y-0 left-8 right-0 grid grid-cols-7">
-              <div v-for="day in weekdays" :key="day.value" class="relative border-l border-border">
-                <CourseCard
-                  v-for="item in currentWeekSchedule[day.value]"
-                  :key="item.id || item.courseId || item.name || i"
-                  :course="item"
-                  :start-class="item.startClass"
-                  :end-class="item.endClass"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- 下一周 -->
-          <div class="w-full flex-shrink-0 relative">
-            <div
-              class="absolute inset-y-0 left-0 w-8 border-r border-border text-[10px] text-center grid"
-              :style="{ gridTemplateRows: 'repeat(11, minmax(0, 1fr))' }"
-            >
-              <div
-                v-for="i in 11"
-                :key="i"
-                class="flex flex-col items-center justify-center border-b border-border last:border-b-0 px-1"
-              >
-                <div class="font-medium text-[11px]">{{ i }}</div>
-                <div class="mt-0.5 text-[9px] text-secondary leading-tight">
-                  <div>{{ classTimeMap[i] }}</div>
-                  <div>{{ getClassEndTime(i) }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="absolute inset-y-0 left-8 right-0 grid grid-cols-7">
-              <div v-for="day in weekdays" :key="day.value" class="relative border-l border-border">
-                <CourseCard
-                  v-for="item in nextWeekSchedule[day.value]"
-                  :key="item.id || item.courseId || item.name || i"
-                  :course="item"
-                  :start-class="item.startClass"
-                  :end-class="item.endClass"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </var-swipe-item>
+      </var-swipe>
     </div>
   </div>
 

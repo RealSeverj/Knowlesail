@@ -1,32 +1,74 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick, onMounted, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+
+// 异步加载子页面组件
+const OfficialPage = defineAsyncComponent(() => import('./Knowledge/OfficialPage.vue'))
+const CommunityPage = defineAsyncComponent(() => import('./Knowledge/CommunityPage.vue'))
+const MyNotesPage = defineAsyncComponent(() => import('./Knowledge/MyNotesPage.vue'))
 
 const router = useRouter()
 const route = useRoute()
 const activeTab = ref(2) // 默认显示我的笔记
 const searchOpen = ref(false)
 const searchKeyword = ref('')
+const swipeRef = ref(null)
+const isInternalChange = ref(false) // 用于防止循环触发
 
 // 根据当前路由设置激活标签
 watch(
   () => route.name,
   (newName) => {
-    if (newName === 'OfficialKnowledge') activeTab.value = 0
-    else if (newName === 'CommunityKnowledge') activeTab.value = 1
-    else if (newName === 'MyNotes') activeTab.value = 2
+    let newIndex = -1
+    if (newName === 'OfficialKnowledge') newIndex = 0
+    else if (newName === 'CommunityKnowledge') newIndex = 1
+    else if (newName === 'MyNotes') newIndex = 2
+    
+    if (newIndex >= 0 && activeTab.value !== newIndex) {
+      isInternalChange.value = true
+      activeTab.value = newIndex
+      nextTick(() => {
+        swipeRef.value?.to(newIndex)
+        isInternalChange.value = false
+      })
+    }
   },
   { immediate: true }
 )
 
-// 监听标签切换
-watch(activeTab, (newTab) => {
+// 监听标签点击切换
+watch(activeTab, (newTab, oldTab) => {
+  if (isInternalChange.value) return
+  
+  // 同步滑动组件
+  swipeRef.value?.to(newTab)
+  
+  // 更新路由
   const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
   const targetRoute = routes[newTab]
   if (route.name !== targetRoute) {
-    router.push({ name: targetRoute })
+    router.replace({ name: targetRoute })
   }
 })
+
+// 滑动切换回调
+function onSwipeChange(index) {
+  if (activeTab.value === index) return
+  
+  isInternalChange.value = true
+  activeTab.value = index
+  
+  // 更新路由
+  const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
+  const targetRoute = routes[index]
+  if (route.name !== targetRoute) {
+    router.replace({ name: targetRoute })
+  }
+  
+  nextTick(() => {
+    isInternalChange.value = false
+  })
+}
 
 function toggleSearch() {
   searchOpen.value = !searchOpen.value
@@ -41,6 +83,13 @@ function handleSearchSubmit() {
   if (!keyword) return
   router.push({ name: 'KnowledgeSearch', query: { q: keyword } })
 }
+
+onMounted(() => {
+  // 初始化时同步滑动位置
+  nextTick(() => {
+    swipeRef.value?.to(activeTab.value)
+  })
+})
 </script>
 
 <template>
@@ -90,10 +139,31 @@ function handleSearchSubmit() {
       <var-tab>我的笔记</var-tab>
     </var-tabs>
 
-    <!-- 内容区域 -->
-    <div class="p-4">
-      <router-view />
-    </div>
+    <!-- 滑动内容区域 -->
+    <var-swipe
+      ref="swipeRef"
+      class="knowledge-swipe"
+      :touchable="true"
+      :indicator="false"
+      :loop="false"
+      @change="onSwipeChange"
+    >
+      <var-swipe-item class="swipe-item">
+        <div class="p-4">
+          <OfficialPage />
+        </div>
+      </var-swipe-item>
+      <var-swipe-item class="swipe-item">
+        <div class="p-4">
+          <CommunityPage />
+        </div>
+      </var-swipe-item>
+      <var-swipe-item class="swipe-item">
+        <div class="p-4">
+          <MyNotesPage />
+        </div>
+      </var-swipe-item>
+    </var-swipe>
   </div>
 </template>
 
@@ -104,6 +174,18 @@ function handleSearchSubmit() {
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.knowledge-swipe {
+  height: calc(100vh - 140px); /* 减去头部和标签栏高度 */
+  overflow: hidden;
+}
+
+.swipe-item {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fade-width-enter-active,
