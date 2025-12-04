@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { sendMessageStream, fetchConversationHistory } from '@/api/chat'
+import { STORAGE_KEYS, getItem, setItem, debouncedSetItem } from '@/utils/storage'
 
 // 生成 UUID
 function generateUUID() {
@@ -243,17 +244,15 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // ========== 本地存储 ==========
-  const STORAGE_KEY = 'chat_conversations'
 
   /**
    * 从 localStorage 加载会话
    */
   function loadConversations() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        conversations.value = parsed
+      const saved = getItem(STORAGE_KEYS.CHAT_CONVERSATIONS)
+      if (saved && Array.isArray(saved)) {
+        conversations.value = saved
 
         if (conversations.value.length > 0) {
           currentConversationId.value = conversations.value[0].id
@@ -273,22 +272,14 @@ export const useChatStore = defineStore('chat', () => {
    * 保存会话到 localStorage
    */
   function saveConversations() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations.value))
-    } catch (error) {
-      console.error('保存会话失败:', error)
-    }
+    setItem(STORAGE_KEYS.CHAT_CONVERSATIONS, conversations.value)
   }
 
   /**
    * 自动保存（防抖）
    */
-  let saveTimer = null
   function autoSave() {
-    if (saveTimer) clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-      saveConversations()
-    }, 1000)
+    debouncedSetItem(STORAGE_KEYS.CHAT_CONVERSATIONS, conversations.value, 1000)
   }
 
   /**

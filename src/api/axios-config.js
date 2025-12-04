@@ -93,13 +93,13 @@ http.interceptors.request.use((config) => {
   return config
 })
 
-// 响应拦截：统一返回 data；处理 40001 错误码自动刷新凭证
+// 响应拦截：统一返回 data；处理 50001 错误码自动刷新凭证
 http.interceptors.response.use(
   async (res) => {
     const data = res.data
-    
-    // 检查是否返回 40001 错误码（凭证过期）
-    if (data?.code === '40001' || data?.code === 40001) {
+    console.log('API Response:', data)
+    // 检查是否返回 50001 错误码（凭证过期）
+    if (data?.code === '50001' || data?.code === 50001) {
       const originalRequest = res.config
       
       // 防止重复刷新

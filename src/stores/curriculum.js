@@ -1,12 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getCourseList, getCurrentTerm, getTermInfo } from '@/api/curriculum'
-
-// localStorage 键名
-const STORAGE_KEY_COURSES = 'curriculum_courses'
-const STORAGE_KEY_TERM = 'curriculum_term'
-const STORAGE_KEY_LOCAL_COURSES = 'curriculum_local_courses' // 本地添加的课程
-const STORAGE_KEY_TERM_INFO = 'curriculum_term_info' // 学期信息
+import { STORAGE_KEYS, getItem, setItem } from '@/utils/storage'
 
 export const useCurriculumStore = defineStore('curriculum', () => {
   // 课程列表
@@ -94,101 +89,63 @@ export const useCurriculumStore = defineStore('curriculum', () => {
 
   // 从 localStorage 加载缓存的课程
   function loadFromStorage() {
-    try {
-      const cached = localStorage.getItem(STORAGE_KEY_COURSES)
-      const localCourses = localStorage.getItem(STORAGE_KEY_LOCAL_COURSES)
-      
-      if (cached) {
-        const parsed = JSON.parse(cached)
-        if (Array.isArray(parsed)) {
-          courses.value = parsed
-        }
-      }
-      
-      // 合并本地添加的课程
-      if (localCourses) {
-        const localParsed = JSON.parse(localCourses)
-        if (Array.isArray(localParsed)) {
-          // 将本地课程添加到列表中（如果不存在）
-          localParsed.forEach((localCourse) => {
-            const exists = courses.value.some((c) => c.id === localCourse.id)
-            if (!exists) {
-              courses.value.push(localCourse)
-            }
-          })
-        }
-      }
-      
-      return courses.value.length > 0
-    } catch (e) {
-      console.error('从 localStorage 加载课程失败：', e)
-      return false
+    const cached = getItem(STORAGE_KEYS.CURRICULUM_COURSES, [])
+    const localCourses = getItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, [])
+    
+    if (Array.isArray(cached)) {
+      courses.value = cached
     }
+    
+    // 合并本地添加的课程
+    if (Array.isArray(localCourses)) {
+      // 将本地课程添加到列表中（如果不存在）
+      localCourses.forEach((localCourse) => {
+        const exists = courses.value.some((c) => c.id === localCourse.id)
+        if (!exists) {
+          courses.value.push(localCourse)
+        }
+      })
+    }
+    
+    return courses.value.length > 0
   }
 
   // 从 localStorage 加载学期信息
   function loadTermInfoFromStorage() {
-    try {
-      const cached = localStorage.getItem(STORAGE_KEY_TERM_INFO)
-      if (cached) {
-        const parsed = JSON.parse(cached)
-        if (parsed && parsed.term === currentTerm.value) {
-          termInfo.value = parsed
-          return true
-        }
-      }
-    } catch (e) {
-      console.error('从 localStorage 加载学期信息失败：', e)
+    const cached = getItem(STORAGE_KEYS.CURRICULUM_TERM_INFO, null)
+    if (cached && cached.term === currentTerm.value) {
+      termInfo.value = cached
+      return true
     }
     return false
   }
 
   // 保存学期信息到 localStorage
   function saveTermInfoToStorage() {
-    try {
-      if (termInfo.value) {
-        localStorage.setItem(STORAGE_KEY_TERM_INFO, JSON.stringify(termInfo.value))
-      }
-    } catch (e) {
-      console.error('保存学期信息到 localStorage 失败：', e)
+    if (termInfo.value) {
+      setItem(STORAGE_KEYS.CURRICULUM_TERM_INFO, termInfo.value)
     }
   }
 
   // 保存课程到 localStorage
   function saveToStorage() {
-    try {
-      // 分离后端课程和本地课程
-      const remoteCourses = courses.value.filter((c) => !c.isLocal)
-      const localCourses = courses.value.filter((c) => c.isLocal)
-      
-      localStorage.setItem(STORAGE_KEY_COURSES, JSON.stringify(remoteCourses))
-      localStorage.setItem(STORAGE_KEY_LOCAL_COURSES, JSON.stringify(localCourses))
-    } catch (e) {
-      console.error('保存课程到 localStorage 失败：', e)
-    }
+    // 分离后端课程和本地课程
+    const remoteCourses = courses.value.filter((c) => !c.isLocal)
+    const localCourses = courses.value.filter((c) => c.isLocal)
+    
+    setItem(STORAGE_KEYS.CURRICULUM_COURSES, remoteCourses)
+    setItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, localCourses)
   }
 
   // 保存本地添加的课程
   function saveLocalCourses() {
-    try {
-      const localCourses = courses.value.filter((c) => c.isLocal)
-      localStorage.setItem(STORAGE_KEY_LOCAL_COURSES, JSON.stringify(localCourses))
-    } catch (e) {
-      console.error('保存本地课程失败：', e)
-    }
+    const localCourses = courses.value.filter((c) => c.isLocal)
+    setItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, localCourses)
   }
 
   // 获取本地添加的课程
   function getLocalCourses() {
-    try {
-      const localCourses = localStorage.getItem(STORAGE_KEY_LOCAL_COURSES)
-      if (localCourses) {
-        return JSON.parse(localCourses)
-      }
-    } catch (e) {
-      console.error('获取本地课程失败：', e)
-    }
-    return []
+    return getItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, [])
   }
 
   // 根据给定周次计算按星期分组的课程安排

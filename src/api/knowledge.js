@@ -17,22 +17,6 @@ export function searchKnowledge(keyword) {
       snippet: '向量与线性空间、线性组合与线性相关性、基与维数、子空间与直和分解……',
       source: '我的笔记',
       highlight: trimmed
-    },
-    {
-      id: 'official-1',
-      type: 'official',
-      title: '【官方】学习计划模板',
-      snippet: '本模板帮助你从周视角规划课程学习与复习节奏……',
-      source: '官方知识库',
-      highlight: trimmed
-    },
-    {
-      id: 'community-1',
-      type: 'community',
-      title: '学习社区精选：高效记笔记的方法',
-      snippet: '结合番茄钟与间隔重复，将课堂内容拆分为可复习的知识块……',
-      source: '学习社区',
-      highlight: trimmed
     }
   ]
 

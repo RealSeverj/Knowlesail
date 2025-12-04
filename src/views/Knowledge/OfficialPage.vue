@@ -6,7 +6,7 @@
   <div class="official-page">
     <div class="text-center py-12">
       <var-icon
-        name="book-open-page-variant"
+        name="notebook"
         :size="48"
         color="var(--color-primary)"
         class="mb-3"

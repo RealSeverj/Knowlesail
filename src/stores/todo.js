@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import * as todoApi from '@/api/todo'
+import { 
+  STORAGE_KEYS, 
+  getItem, 
+  setItem, 
+  isCacheExpired as checkCacheExpired,
+  clearCache as clearStorageCache 
+} from '@/utils/storage'
 
 // priority: 1-4 对应四象限
 // 1: 紧急且重要
@@ -8,9 +15,6 @@ import * as todoApi from '@/api/todo'
 // 3: 紧急但不重要
 // 4: 不紧急不重要
 
-// localStorage 缓存 key
-const TODOS_CACHE_KEY = 'todos_cache'
-const TODOS_CACHE_TIME_KEY = 'todos_cache_time'
 // 缓存有效期（毫秒），默认 5 分钟
 const CACHE_EXPIRY_MS = 5 * 60 * 1000
 
@@ -18,52 +22,29 @@ const CACHE_EXPIRY_MS = 5 * 60 * 1000
  * 从 localStorage 加载缓存的 todos
  */
 function loadFromCache() {
-  try {
-    const cached = localStorage.getItem(TODOS_CACHE_KEY)
-    if (cached) {
-      return JSON.parse(cached)
-    }
-  } catch (e) {
-    console.warn('加载 todos 缓存失败:', e)
-  }
-  return null
+  return getItem(STORAGE_KEYS.TODOS_CACHE, null)
 }
 
 /**
  * 保存 todos 到 localStorage
  */
 function saveToCache(data) {
-  try {
-    localStorage.setItem(TODOS_CACHE_KEY, JSON.stringify(data))
-    localStorage.setItem(TODOS_CACHE_TIME_KEY, Date.now().toString())
-  } catch (e) {
-    console.warn('保存 todos 缓存失败:', e)
-  }
+  setItem(STORAGE_KEYS.TODOS_CACHE, data)
+  setItem(STORAGE_KEYS.TODOS_CACHE_TIME, Date.now())
 }
 
 /**
  * 检查缓存是否过期
  */
 function isCacheExpired() {
-  try {
-    const cacheTime = localStorage.getItem(TODOS_CACHE_TIME_KEY)
-    if (!cacheTime) return true
-    return Date.now() - parseInt(cacheTime) > CACHE_EXPIRY_MS
-  } catch {
-    return true
-  }
+  return checkCacheExpired(STORAGE_KEYS.TODOS_CACHE, CACHE_EXPIRY_MS, STORAGE_KEYS.TODOS_CACHE_TIME)
 }
 
 /**
  * 清除 todos 缓存
  */
 function clearCache() {
-  try {
-    localStorage.removeItem(TODOS_CACHE_KEY)
-    localStorage.removeItem(TODOS_CACHE_TIME_KEY)
-  } catch (e) {
-    console.warn('清除 todos 缓存失败:', e)
-  }
+  clearStorageCache(STORAGE_KEYS.TODOS_CACHE, STORAGE_KEYS.TODOS_CACHE_TIME)
 }
 
 export const useTodoStore = defineStore('todo', () => {
