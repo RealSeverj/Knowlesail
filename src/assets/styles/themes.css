@@ -85,3 +85,34 @@
   background-color: var(--color-surface-variant) * 30%;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.22);
 }
+
+/* 通用默认圆角按钮样式（非完全圆形） */
+.rounded-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  transition:
+    background-color var(--transition-base) ease-in-out,
+    box-shadow var(--transition-base) ease-in-out,
+    transform var(--transition-base) ease-in-out;
+}
+
+/* 如果内部是 Varlet 的按钮组件，透传圆角和对齐 */
+.rounded-btn :where(.var-button, .var-button__content) {
+  border-radius: inherit;
+}
+
+/* 悬停/按下效果 */
+.rounded-btn:hover {
+  background-color: var(--color-surface-variant);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
+.rounded-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+}

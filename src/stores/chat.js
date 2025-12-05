@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { sendMessageStream, fetchConversationHistory } from '@/api/chat'
+import { sendMessageStream, fetchConversationHistory, deleteConversation as deleteConversationApi } from '@/api/chat'
 import { STORAGE_KEYS, getItem, setItem, debouncedSetItem } from '@/utils/storage'
 
 // 生成 UUID
@@ -64,17 +64,24 @@ export const useChatStore = defineStore('chat', () => {
    */
   function deleteConversation(conversationId) {
     const index = conversations.value.findIndex((c) => c.id === conversationId)
-    if (index > -1) {
-      conversations.value.splice(index, 1)
-      if (currentConversationId.value === conversationId) {
-        if (conversations.value.length > 0) {
-          switchConversation(conversations.value[0].id)
-        } else {
-          createConversation()
-        }
+    if (index === -1) return
+
+    // 先更新本地状态
+    conversations.value.splice(index, 1)
+    if (currentConversationId.value === conversationId) {
+      if (conversations.value.length > 0) {
+        switchConversation(conversations.value[0].id)
+      } else {
+        createConversation()
       }
-      autoSave()
     }
+    autoSave()
+
+    // 尝试通知后端删除对应会话
+    // 这里采用“本地立即删除 + 后端失败仅打日志”的策略，避免影响前端交互
+    deleteConversationApi(conversationId).catch((err) => {
+      console.error('删除会话接口调用失败:', err)
+    })
   }
 
   /**
@@ -283,15 +290,6 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   /**
-   * 清空所有会话
-   */
-  function clearAllConversations() {
-    conversations.value = []
-    createConversation()
-    saveConversations()
-  }
-
-  /**
    * 从服务器加载指定会话的历史消息
    * @param {string} conversationId - 会话ID
    */
@@ -354,7 +352,6 @@ export const useChatStore = defineStore('chat', () => {
     // 本地存储
     loadConversations,
     saveConversations,
-    clearAllConversations,
     loadConversationHistory
   }
 })

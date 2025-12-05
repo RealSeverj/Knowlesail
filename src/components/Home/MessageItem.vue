@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import MarkdownRenderer from './MarkdownRenderer/MarkdownRenderer.vue'
+import ExportToKnowledge from './ExportToKnowledge.vue'
+import ChatSelection from './ChatSelection.vue'
 import { Snackbar } from '@varlet/ui'
 
 const props = defineProps({
@@ -14,6 +16,11 @@ const emit = defineEmits(['export'])
 
 // 图片预览状态
 const showImagePreview = ref(false)
+
+// 导出相关状态
+const showExportPanel = ref(false)
+const showChatSelection = ref(false)
+const exportRef = ref(null)
 
 // 格式化时间
 function formatTime(timestamp) {
@@ -58,7 +65,35 @@ async function handleCopy() {
 
 // 导出到知识库
 function handleExport() {
-  emit('export', props.message)
+  showExportPanel.value = true
+}
+
+// 处理选择消息请求
+function handleSelectMessages() {
+  showChatSelection.value = true
+}
+
+// 处理聊天块选择确认
+function handleSelectionConfirm(selectedIds) {
+  if (exportRef.value) {
+    exportRef.value.handleSelectionComplete(selectedIds)
+  }
+}
+
+// 处理聊天块选择取消（跳过）
+function handleSelectionCancel() {
+  // 用户选择跳过，直接进入 ready 状态
+  if (exportRef.value) {
+    exportRef.value.handleSelectionComplete([])
+  }
+}
+
+// 处理导出面板关闭
+function handleExportClose() {
+  showExportPanel.value = false
+  if (exportRef.value) {
+    exportRef.value.reset()
+  }
 }
 
 // 图片生成（占位）
@@ -184,7 +219,33 @@ function closeImagePreview() {
           <var-icon name="plus" :size="16" />
         </var-button>
       </div>
+
+      <!-- 导出面板 -->
+      <div
+        v-if="showExportPanel && message.role === 'assistant'"
+        class="mt-2 p-3 rounded-xl bg-surface/80 border border-border/60"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-secondary">导出到知识库</span>
+          <var-button text round size="mini" @click="handleExportClose">
+            <var-icon name="window-close" :size="14" />
+          </var-button>
+        </div>
+        <ExportToKnowledge
+          ref="exportRef"
+          :message="message"
+          @close="handleExportClose"
+          @select-messages="handleSelectMessages"
+        />
+      </div>
     </div>
+
+    <!-- 聊天记录选择器 -->
+    <ChatSelection
+      v-model:visible="showChatSelection"
+      @confirm="handleSelectionConfirm"
+      @cancel="handleSelectionCancel"
+    />
 
     <!-- 图片预览弹窗 -->
     <teleport to="body">

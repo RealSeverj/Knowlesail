@@ -200,3 +200,27 @@ export async function fetchConversationHistory(conversationId) {
     messages
   }
 }
+
+// ========== 删除会话 ==========
+// 根据 conversation_id 删除后端会话记录
+export async function deleteConversation(conversationId) {
+  const res = await fetch(`${apiBaseURL}/api/v1/conversation/delete`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders()
+    },
+    body: JSON.stringify({ conversation_id: conversationId })
+  })
+
+  if (!res.ok) {
+    throw new Error(`Failed to delete conversation: ${res.status}`)
+  }
+
+  const result = await res.json()
+  if (result.code !== '10000') {
+    throw new Error(result.message || 'Failed to delete conversation')
+  }
+
+  return result
+}

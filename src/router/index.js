@@ -3,6 +3,7 @@ import { setupRouterGuards } from './guards'
 
 // 主要页面
 import HomeView from '@/views/HomeView.vue'
+import LiveAssistence from '@/views/Home/LiveAssistence.vue'
 import ChatHistoryPage from '@/views/Home/ChatHistoryPage.vue'
 import CurriculumView from '@/views/CurriculumView.vue'
 import TodoView from '@/views/TodoView.vue'
@@ -35,6 +36,12 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
+    component: LiveAssistence,
+    meta: { requiresAuth: true, title: '智能助手' }
+  },
+  {
+    path: '/home/chat/:conversationId',
+    name: 'Chat',
     component: HomeView,
     meta: { requiresAuth: true, title: '智能助手' }
   },

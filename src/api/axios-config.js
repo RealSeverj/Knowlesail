@@ -6,7 +6,7 @@ export const apiBaseURL = 'http://118.196.24.221'
 // 创建 axios 实例，后续如果需要可添加鉴权、重试、全局错误处理等拦截器
 export const http = axios.create({
   baseURL: apiBaseURL,
-  timeout: 15000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -137,6 +137,14 @@ http.interceptors.response.use(
           })
         })
       }
+    }
+
+    // 统一处理业务错误码（非 10000 视为业务错误）
+    if (data?.code && data.code !== '10000' && data.code !== 10000) {
+      const error = new Error(data.message || '请求失败')
+      error.code = data.code
+      error.data = data
+      return Promise.reject(error)
     }
     
     return data

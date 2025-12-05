@@ -2,8 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import MessageItem from './MessageItem.vue'
-import LiveAssistence from './LiveAssistence.vue'
-import { fetchAssistantRecommendations } from '@/api/chat'
+import QuickActions from './QuickActions.vue'
 import { throttle } from '@/utils/common'
 
 const chatStore = useChatStore()
@@ -15,8 +14,6 @@ const bottomThreshold = 4
 // 固定底部留白，预留输入框展开后的空间，避免内容跳动
 const FIXED_BOTTOM_PADDING = 180
 const lastScrollTop = ref(0)
-const assistantActions = ref([])
-const assistantLoading = ref(false)
 
 const messages = computed(() => chatStore.currentMessages || [])
 const isStreaming = computed(() => chatStore.isStreaming)
@@ -68,11 +65,6 @@ const handleQuickAction = (action) => {
   chatStore.sendMessage(action.preset || action.title)
 }
 
-const handleExportMessage = (message) => {
-  // 预留导出能力，当前仅做占位日志
-  console.debug('导出消息到知识库占位：', message)
-}
-
 const handleViewportClick = (event) => {
   const element = event.target instanceof Element ? event.target : null
   if (
@@ -84,19 +76,6 @@ const handleViewportClick = (event) => {
     return
   }
   emit('request-input-expand')
-}
-
-const loadAssistantRecommendations = async () => {
-  try {
-    assistantLoading.value = true
-    // 这里预留参数位，后续可根据用户 ID、课程等透传
-    const items = await fetchAssistantRecommendations()
-    assistantActions.value = items
-  } catch (err) {
-    console.warn('获取助手推荐失败:', err)
-  } finally {
-    assistantLoading.value = false
-  }
 }
 
 watch(
@@ -122,10 +101,6 @@ watch(isStreaming, (active) => {
 onMounted(async () => {
   if (!chatStore.currentConversationId) {
     await chatStore.loadConversations()
-  }
-  // 新对话初次进入时加载一次助手推荐
-  if (!hasMessages.value) {
-    loadAssistantRecommendations()
   }
   scrollToBottom()
   nextTick(() => {
@@ -153,10 +128,8 @@ onMounted(async () => {
       </div>
 
       <div v-else class="flex h-full flex-col">
-        <LiveAssistence
+        <QuickActions
           class="flex-1"
-          :actions="assistantActions"
-          :loading="assistantLoading"
           @select="handleQuickAction"
         />
       </div>

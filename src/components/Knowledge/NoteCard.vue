@@ -10,10 +10,22 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 
-const firstBlock = computed(() => props.note.blocks?.[0] || null)
+// 从 notes 对象中获取第一个内容块
+const firstBlockContent = computed(() => {
+  const notesObj = props.note.notes
+  if (!notesObj || typeof notesObj !== 'object') return ''
+  return notesObj.block1 || ''
+})
 
+// 笔记标题
+const noteTitle = computed(() => props.note.notes?.title || '未命名笔记')
+
+// 标签
+const tags = computed(() => props.note.tags || [])
+
+// 创建时间
 const createdAtText = computed(() => {
-  const date = new Date(props.note.createdAt)
+  const date = new Date(props.note.created_at)
   return date.toLocaleString('zh-CN', {
     month: '2-digit',
     day: '2-digit',
@@ -22,10 +34,27 @@ const createdAtText = computed(() => {
   })
 })
 
+// 预览内容：优先显示 summary_text，否则显示第一个内容块
 const previewContent = computed(() => {
-  if (!firstBlock.value?.content) return ''
-  const text = firstBlock.value.content.replace(/^#+\s*/gm, '').replace(/`{1,3}[^`]*`{1,3}/g, '')
+  const summary = props.note.summary_text
+  if (summary) {
+    return summary.length > 120 ? summary.slice(0, 120) + '…' : summary
+  }
+  const text = firstBlockContent.value.replace(/^#+\s*/gm, '').replace(/`{1,3}[^`]*`{1,3}/g, '')
   return text.length > 120 ? text.slice(0, 120) + '…' : text
+})
+
+// 计算内容块数量
+const blockCount = computed(() => {
+  const notesObj = props.note.notes
+  if (!notesObj || typeof notesObj !== 'object') return 0
+  let count = 0
+  let i = 1
+  while (notesObj[`block${i}`] !== undefined) {
+    count++
+    i++
+  }
+  return count
 })
 
 function handleClick() {
@@ -44,10 +73,25 @@ function handleClick() {
         <div class="flex items-center gap-2 min-w-0">
           <var-icon name="notebook" :size="20" class="text-primary" />
           <h3 class="text-base font-semibold text-foreground truncate">
-            {{ note.title || '未命名笔记' }}
+            {{ noteTitle }}
           </h3>
         </div>
         <span class="text-[11px] text-text-secondary whitespace-nowrap">{{ createdAtText }}</span>
+      </div>
+
+      <!-- 标签 -->
+      <div v-if="tags.length" class="flex flex-wrap gap-1">
+        <var-chip
+          v-for="tag in tags.slice(0, 3)"
+          :key="tag"
+          size="mini"
+          class="text-[10px]"
+        >
+          {{ tag }}
+        </var-chip>
+        <span v-if="tags.length > 3" class="text-[10px] text-text-tertiary">
+          +{{ tags.length - 3 }}
+        </span>
       </div>
 
       <p class="text-sm text-text-secondary leading-relaxed line-clamp-3 whitespace-pre-wrap">
@@ -57,16 +101,8 @@ function handleClick() {
       <div class="flex items-center justify-between mt-1 text-xs text-text-tertiary">
         <div class="flex items-center gap-3">
           <span class="inline-flex items-center gap-1">
-            <var-icon name="thumb-up" :size="14" />
-            <span>{{ firstBlock?.likes ?? 0 }}</span>
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <var-icon name="share" :size="14" />
-            <span>{{ firstBlock?.shares ?? 0 }}</span>
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <var-icon name="message-text-outline" :size="14" />
-            <span>{{ firstBlock?.comments?.length ?? 0 }}</span>
+            <var-icon name="file-document-outline" :size="14" />
+            <span>{{ blockCount }} 个内容块</span>
           </span>
         </div>
         <div class="flex items-center gap-1 text-primary">

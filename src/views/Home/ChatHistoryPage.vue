@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/Layout/AppHeader.vue'
 import { useChatStore } from '@/stores/chat'
@@ -13,13 +13,20 @@ const toast = useToast()
 
 const conversations = computed(() => chatStore.conversations || [])
 
+// 页面加载时确保会话数据已从 localStorage 加载
+onMounted(() => {
+  if (chatStore.conversations.length === 0) {
+    chatStore.loadConversations()
+  }
+})
+
 const handleBack = () => {
   router.push({ name: 'Home' })
 }
 
 const handleSelect = (conversationId) => {
   chatStore.switchConversation(conversationId)
-  router.push({ name: 'Home' })
+  router.push({ name: 'Chat', params: { conversationId } })
 }
 
 const handleDelete = async (conversationId) => {
@@ -31,16 +38,6 @@ const handleDelete = async (conversationId) => {
   if (!confirmed) return
   chatStore.deleteConversation(conversationId)
   toast.success('会话已删除')
-}
-
-const handleClearAll = async () => {
-  if (conversations.value.length === 0) return
-  const confirmed = await confirm('是否清空所有历史会话？该操作不可撤销。', {
-    title: '清空确认'
-  })
-  if (!confirmed) return
-  chatStore.clearAllConversations()
-  toast.success('已清空所有历史会话')
 }
 
 const getPreview = (conversation) => {
@@ -123,11 +120,6 @@ const formatTimestamp = (value) => {
           </li>
         </ul>
       </div>
-
-      <button v-if="conversations.length > 0" type="button" class="fab" @click="handleClearAll">
-        <var-icon name="delete" :size="22" />
-        <span class="sr-only">清空全部历史会话</span>
-      </button>
     </section>
   </div>
 </template>

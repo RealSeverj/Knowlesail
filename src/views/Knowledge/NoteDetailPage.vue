@@ -1,38 +1,86 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useKnowledgeStore } from '@/stores/knowledge'
+import { listSummaries, getSummaryDetail } from '@/api/knowledge'
 import MarkdownRenderer from '@/components/Home/MarkdownRenderer/MarkdownRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
 const knowledgeStore = useKnowledgeStore()
-const { notes } = storeToRefs(knowledgeStore)
+const { summaries, loaded, loading } = storeToRefs(knowledgeStore)
 
-const noteId = computed(() => route.params.id)
+// 单独加载的笔记详情（用于直接访问/刷新页面的情况）
+const localSummary = ref(null)
+const localLoading = ref(false)
 
-const note = computed(() => notes.value.find((n) => n.id === noteId.value))
+const summaryId = computed(() => route.params.id)
 
-const messageBlocks = computed(() => {
-  if (!note.value) return []
-  return note.value.blocks.map((block) => ({
-    id: block.id,
-    authorId: block.authorId,
-    content: block.content,
-    role: 'assistant',
-    timestamp: block.createdAt,
-    streaming: false,
-    toolCalls: []
-  }))
+// 优先从 store 中查找，如果没有则使用本地加载的数据
+const summary = computed(() => {
+  const fromStore = summaries.value.find((s) => s.id === summaryId.value)
+  return fromStore || localSummary.value
 })
+
+// 确保数据已加载
+async function ensureLoaded() {
+  // 如果 store 中已有数据，直接使用
+  if (summaries.value.find((s) => s.id === summaryId.value)) {
+    return
+  }
+  
+  // 尝试加载整个列表
+  if (!loaded.value && !loading.value) {
+    await knowledgeStore.loadSummaries(listSummaries)
+  }
+  
+  // 如果列表中还是没有，单独获取详情
+  if (!summaries.value.find((s) => s.id === summaryId.value)) {
+    localLoading.value = true
+    try {
+      const detail = await getSummaryDetail(summaryId.value)
+      if (detail) {
+        localSummary.value = detail
+        // 同时更新到 store 中
+        knowledgeStore.upsertSummary(detail)
+      }
+    } catch (e) {
+      console.error('加载笔记详情失败:', e)
+    } finally {
+      localLoading.value = false
+    }
+  }
+}
+
+onMounted(() => {
+  ensureLoaded()
+})
+
+// 从 notes 对象中提取内容块
+const contentBlocks = computed(() => {
+  if (!summary.value?.notes) return []
+  return knowledgeStore.getBlocksFromNotes(summary.value.notes)
+})
+
+// 笔记标题
+const noteTitle = computed(() => summary.value?.notes?.title || '未命名笔记')
+
+// 标签
+const tags = computed(() => summary.value?.tags || [])
 
 function handleBack() {
   router.back()
 }
 
 function handleEdit() {
-  router.push({ name: 'NoteEdit', params: { id: noteId.value } })
+  router.push({ name: 'NoteEdit', params: { id: summaryId.value } })
+}
+
+function goToConversation() {
+  if (summary.value?.conversation_id) {
+    router.push({ name: 'Chat', params: { conversationId: summary.value.conversation_id } })
+  }
 }
 
 async function generateImage(prompt) {
@@ -52,18 +100,13 @@ async function generateImage(prompt) {
       </var-button>
       <div class="flex-1 min-w-0">
         <h2 class="text-base font-semibold text-foreground truncate">
-          {{ note?.title || '笔记详情' }}
+          {{ noteTitle }}
         </h2>
-        <div v-if="note" class="flex items-center gap-2 mt-0.5 text-[11px] text-secondary">
-          <div class="flex items-center gap-1">
-            <var-icon name="account-circle" :size="14" />
-            <span>作者 ID: {{ note.authorId }}</span>
-          </div>
-          <span class="text-border">•</span>
+        <div v-if="summary" class="flex items-center gap-2 mt-0.5 text-[11px] text-secondary">
           <span>
             创建于
             {{
-              new Date(note.createdAt).toLocaleString('zh-CN', {
+              new Date(summary.created_at).toLocaleString('zh-CN', {
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
@@ -72,12 +115,30 @@ async function generateImage(prompt) {
             }}
           </span>
           <span class="text-border">•</span>
-          <span>共 {{ note.blocks.length }} 个内容块</span>
+          <span>共 {{ contentBlocks.length }} 个内容块</span>
         </div>
+      </div>
+      <!-- 回到原始对话按钮 -->
+      <var-button
+        v-if="summary?.conversation_id"
+        text
+        class="rounded-btn"
+        @click="goToConversation"
+      >
+        <var-icon name="message-text-outline" :size="18" class="mr-1" />
+        原对话
+      </var-button>
+    </div>
+
+    <!-- 加载中状态 -->
+    <div v-if="localLoading || loading" class="flex-1 flex items-center justify-center px-4">
+      <div class="text-center">
+        <var-loading type="circle" color="var(--color-primary)" />
+        <p class="text-secondary text-sm mt-3">加载中...</p>
       </div>
     </div>
 
-    <div v-if="!note" class="flex-1 flex items-center justify-center px-4">
+    <div v-else-if="!summary" class="flex-1 flex items-center justify-center px-4">
       <div class="text-center">
         <var-icon
           name="file-document-outline"
@@ -92,6 +153,29 @@ async function generateImage(prompt) {
     </div>
 
     <div v-else class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <!-- AI 总结卡片 -->
+      <div class="px-4 py-3 rounded-2xl bg-surface shadow-card-soft">
+        <div class="flex items-center gap-2 mb-2">
+          <var-icon name="robot" :size="16" class="text-primary" />
+          <span class="text-xs font-medium text-primary">AI 总结</span>
+        </div>
+        <p class="text-sm text-text-secondary leading-relaxed">
+          {{ summary.summary_text }}
+        </p>
+      </div>
+
+      <!-- 标签 -->
+      <div v-if="tags.length" class="flex flex-wrap gap-2">
+        <var-chip
+          v-for="tag in tags"
+          :key="tag"
+          size="small"
+          class="text-xs"
+        >
+          {{ tag }}
+        </var-chip>
+      </div>
+
       <!-- 笔记统计信息卡片 -->
       <div
         class="px-4 py-3 rounded-2xl bg-surface shadow-card-soft flex items-center justify-between text-xs text-text-secondary"
@@ -99,53 +183,35 @@ async function generateImage(prompt) {
         <div class="flex items-center gap-4">
           <span class="inline-flex items-center gap-1">
             <var-icon name="file-document-outline" :size="16" />
-            <span>{{ note.blocks.length }} 个内容块</span>
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <var-icon name="message-text-outline" :size="16" />
-            <span>
-              {{ note.blocks.reduce((sum, b) => sum + (b.comments ? b.comments.length : 0), 0) }}
-              条评论
-            </span>
+            <span>{{ contentBlocks.length }} 个内容块</span>
           </span>
         </div>
         <div>
           <var-button text size="small" class="rounded-xl" type="primary">
-          <var-icon name="share" :size="16" class="mr-0.5" />
-          分享
-        </var-button>
-        <var-button text size="small" class="rounded-xl" type="primary" @click="handleEdit">
-          <var-icon name="wrench" :size="14" class="mr-0.5" />
-          编辑
-        </var-button>
+            <var-icon name="share" :size="16" class="mr-0.5" />
+            分享
+          </var-button>
+          <var-button text size="small" class="rounded-xl" type="primary" @click="handleEdit">
+            <var-icon name="wrench" :size="14" class="mr-0.5" />
+            编辑
+          </var-button>
         </div>
       </div>
 
       <!-- 内容块列表 -->
       <div
-        v-for="msg in messageBlocks"
-        :key="msg.id"
+        v-for="(block, index) in contentBlocks"
+        :key="block.key"
         class="rounded-2xl bg-surface shadow-card-soft overflow-hidden"
       >
-        <!-- 块头部：作者 + 时间 + 点赞/转发 -->
+        <!-- 块头部 -->
         <div
           class="px-4 pt-3 pb-2 flex items-center justify-between text-[11px] text-text-tertiary"
         >
           <div class="flex items-center gap-2">
-            <div class="flex items-center gap-1">
-              <var-icon name="account" :size="14" />
-              <span>作者 ID: {{ msg.authorId }}</span>
-            </div>
-            <span class="text-border">•</span>
-            <span>
-              {{
-                new Date(msg.timestamp).toLocaleString('zh-CN', {
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })
-              }}
+            <span class="inline-flex items-center gap-1">
+              <var-icon name="notebook" :size="14" />
+              <span>内容块 {{ index + 1 }}</span>
             </span>
           </div>
         </div>
@@ -153,54 +219,13 @@ async function generateImage(prompt) {
         <!-- Markdown 内容 -->
         <div class="px-4 pb-3 pt-1 text-text-primary text-[15px] whitespace-pre-wrap">
           <MarkdownRenderer
-            :content="msg.content"
-            :message-id="msg.id"
-            :streaming="msg.streaming"
-            :tool-calls="msg.toolCalls"
+            :content="block.content"
+            :message-id="block.key"
+            :streaming="false"
+            :tool-calls="[]"
             :generate-image="generateImage"
             color="var(--color-primary)"
           />
-        </div>
-
-        <!-- 评论列表（简单展示） -->
-        <div v-if="note" class="px-4 pb-3 pt-2 border-t border-border/60">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-[11px] text-text-secondary">评论</span>
-            <var-button text round size="small">
-              <var-icon name="message-processing-outline"/>
-            </var-button>
-          </div>
-          <div
-            v-if="
-              note.blocks.find((b) => b.id === msg.id)?.comments &&
-              note.blocks.find((b) => b.id === msg.id)?.comments.length
-            "
-            class="space-y-1.5"
-          >
-            <div
-              v-for="c in note.blocks.find((b) => b.id === msg.id)?.comments || []"
-              :key="c.id"
-              class="text-[11px] text-text-secondary flex items-start gap-1.5"
-            >
-              <var-icon name="account-circle" :size="14" class="mt-0.5" />
-              <div class="flex-1">
-                <div class="flex items-center gap-1">
-                  <span class="font-medium text-[11px] text-text-primary">{{ c.authorId }}</span>
-                  <span class="text-border">·</span>
-                  <span>
-                    {{
-                      new Date(c.createdAt).toLocaleTimeString('zh-CN', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })
-                    }}
-                  </span>
-                </div>
-                <p class="text-[11px] leading-relaxed">{{ c.content }}</p>
-              </div>
-            </div>
-          </div>
-          <p v-else class="text-[11px] text-text-tertiary">暂无评论</p>
         </div>
       </div>
     </div>

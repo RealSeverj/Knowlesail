@@ -1,12 +1,26 @@
 <script setup>
+import { onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useKnowledgeStore } from '@/stores/knowledge'
+import { listSummaries } from '@/api/knowledge'
 import NoteCard from '@/components/Knowledge/NoteCard.vue'
 
 const router = useRouter()
 const knowledgeStore = useKnowledgeStore()
-const { notes } = storeToRefs(knowledgeStore)
+const { summaries, loaded, loading } = storeToRefs(knowledgeStore)
+
+const notes = computed(() => summaries.value || [])
+
+async function ensureLoaded() {
+  if (!loaded.value && !loading.value) {
+    await knowledgeStore.loadSummaries(listSummaries)
+  }
+}
+
+onMounted(() => {
+  ensureLoaded()
+})
 
 function handleNoteClick(note) {
   router.push({ name: 'NoteDetail', params: { id: note.id } })
@@ -18,7 +32,9 @@ function handleNoteClick(note) {
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
-        <p class="text-xs text-secondary">当前共 {{ notes.length }} 条笔记</p>
+        <p class="text-xs text-secondary">
+          当前共 {{ notes.length }} 条笔记
+        </p>
       </div>
       <var-button type="primary" round>
         <var-icon name="plus" :size="16" />

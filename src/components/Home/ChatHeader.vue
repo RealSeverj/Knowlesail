@@ -1,10 +1,13 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
+import ExportToKnowledge from '@/components/Home/ExportToKnowledge.vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
+
+const selectedMessageIds = ref([])
 
 const title = computed(() => {
   const fallback = '新对话'
@@ -42,6 +45,8 @@ const handleNewChat = () => {
     </div>
 
     <div class="flex items-center gap-2">
+			<ExportToKnowledge />
+
       <button
         type="button"
         class="icon-circle-btn"
@@ -72,11 +77,5 @@ const handleNewChat = () => {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-}
-
-:deep(.var-button__content) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
