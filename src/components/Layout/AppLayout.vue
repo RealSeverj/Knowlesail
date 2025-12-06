@@ -14,7 +14,10 @@ const hideBottomNav = computed(() => {
 <template>
   <div class="app-layout">
     <!-- 主内容区 -->
-    <main class="main-content safe-area-top">
+    <main
+      class="main-content safe-area-top"
+      :class="hideBottomNav ? 'nav-padding-bottom' : 'nav-bottom'"
+    >
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -37,8 +40,15 @@ const hideBottomNav = computed(() => {
 .main-content {
   flex: 1;
   overflow: hidden;
+}
+
+.nav-bottom {
   /* 预留底部导航高度 + 安全区，防止输入框被遮挡 */
   margin-bottom: calc(56px + env(safe-area-inset-bottom));
+}
+
+.nav-padding-bottom {
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
 /* 页面切换动画 */
