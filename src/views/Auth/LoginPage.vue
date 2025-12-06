@@ -23,39 +23,39 @@ const handleLogin = async () => {
 
   try {
     const res = await loginApi(stuId.value, password.value)
-    
+
     // axios 响应拦截器已返回 res.data，所以 res 就是后端返回的 JSON
     // 后端返回格式: { data: { identifier, cookie, access_token } }
     console.log('登录响应:', res)
     const data = res.data || res
     console.log('解析后的登录数据:', data)
-    
+
     const userInfo = {
       id: data.identifier,
       stu_id: stuId.value
     }
-    
+
     // 登录凭证包含三个字段
     const authCredentials = {
       access_token: data.access_token,
       identifier: data.identifier,
       cookie: data.cookie
     }
-    
+
     console.log('认证凭证:', authCredentials)
-    
+
     if (!authCredentials.access_token) {
       toast.error('登录失败：服务器未返回有效 token')
       return
     }
-    
+
     authStore.login(userInfo, authCredentials)
     // 保存密码用于自动刷新凭证（当收到 50001 错误码时）
     localStorage.setItem('auth_password', password.value)
     toast.success('登录成功')
-    
+
     // 等待状态同步后再跳转
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     router.replace({ name: 'Home' })
   } catch (error) {
     console.error('登录失败:', error)
@@ -67,10 +67,14 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 flex flex-col px-8 pt-20 pb-8">
+  <div
+    class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 flex flex-col px-8 pt-20 pb-8"
+  >
     <!-- Logo 和标题区域 -->
     <div class="flex flex-col items-center mb-12">
-      <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
+      <div
+        class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6"
+      >
         <var-icon name="sail-boat" :size="40" color="#fff" />
       </div>
       <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">学海智航</h1>
@@ -80,9 +84,9 @@ const handleLogin = async () => {
     <!-- 表单区域 -->
     <div class="flex flex-col gap-4 w-full max-w-sm mx-auto">
       <div class="relative">
-        <var-icon 
-          name="account-circle-outline" 
-          :size="20" 
+        <var-icon
+          name="account-circle-outline"
+          :size="20"
           class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"
         />
         <input
@@ -95,9 +99,9 @@ const handleLogin = async () => {
       </div>
 
       <div class="relative">
-        <var-icon 
-          name="lock-outline" 
-          :size="20" 
+        <var-icon
+          name="lock-outline"
+          :size="20"
           class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"
         />
         <input
@@ -105,16 +109,16 @@ const handleLogin = async () => {
           type="password"
           placeholder="请输入密码"
           :disabled="loading"
-          @keyup.enter="handleLogin"
           class="w-full h-12 pl-12 pr-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50"
+          @keyup.enter="handleLogin"
         />
       </div>
 
       <!-- 登录按钮 -->
       <button
         :disabled="loading"
-        @click="handleLogin"
         class="w-full h-12 mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        @click="handleLogin"
       >
         <span>{{ loading ? '登录中...' : '登录' }}</span>
       </button>
@@ -122,7 +126,9 @@ const handleLogin = async () => {
 
     <!-- 底部信息 -->
     <div class="mt-auto pt-8 text-center">
-      <p class="text-xs text-slate-400 dark:text-slate-500">登录即表示同意《用户协议》和《隐私政策》</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">
+        登录即表示同意《用户协议》和《隐私政策》
+      </p>
     </div>
   </div>
 </template>

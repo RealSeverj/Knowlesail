@@ -28,13 +28,11 @@ function handleNoteClick(note) {
 </script>
 
 <template>
-  <div class="min-h-screen px-2 py-4">
+  <div class="px-2 py-4">
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
-        <p class="text-xs text-secondary">
-          当前共 {{ notes.length }} 条笔记
-        </p>
+        <p class="text-xs text-secondary">当前共 {{ notes.length }} 条笔记</p>
       </div>
       <var-button type="primary" round>
         <var-icon name="plus" :size="16" />

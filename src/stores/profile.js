@@ -5,7 +5,7 @@ import { useAuthStore } from './auth'
 
 export const useProfileStore = defineStore('profile', () => {
   const authStore = useAuthStore()
-  
+
   const user = ref({
     studentId: '',
     phone: '',
@@ -53,15 +53,15 @@ export const useProfileStore = defineStore('profile', () => {
   const fetchUserInfo = async () => {
     loading.value = true
     error.value = null
-    
+
     try {
       const res = await getUserInfo()
       const data = res.data
-      
+
       // 映射后端数据到前端格式
       user.value = {
         studentId: authStore.user?.stu_id || '',
-        phone: data?.phont || '',  // 注意后端字段是 phont
+        phone: data?.phont || '', // 注意后端字段是 phont
         nickname: data?.name || '',
         realName: data?.name || '',
         academy: data?.college || '',

@@ -59,19 +59,19 @@ const handleClick = (action) => {
     </div>
 
     <div class="quick-actions grid w-full max-w-2xl gap-3 sm:grid-cols-2">
-    <var-button
-      v-for="action in quickActions"
-      :key="action.title"
-      type="default"
-      class="quick-action-card flex flex-col items-start gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left"
-      @click="handleClick(action)"
-    >
-      <div class="flex items-center gap-2 text-[var(--color-primary)]">
-        <var-icon :name="action.icon" :size="20" />
-        <span class="text-sm font-medium">{{ action.title }}</span>
-      </div>
-      <p class="text-xs text-[var(--color-text-secondary)]">{{ action.description }}</p>
-    </var-button>
+      <var-button
+        v-for="action in quickActions"
+        :key="action.title"
+        type="default"
+        class="quick-action-card flex flex-col items-start gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left"
+        @click="handleClick(action)"
+      >
+        <div class="flex items-center gap-2 text-[var(--color-primary)]">
+          <var-icon :name="action.icon" :size="20" />
+          <span class="text-sm font-medium">{{ action.title }}</span>
+        </div>
+        <p class="text-xs text-[var(--color-text-secondary)]">{{ action.description }}</p>
+      </var-button>
     </div>
   </div>
 </template>

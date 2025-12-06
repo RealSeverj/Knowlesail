@@ -12,8 +12,6 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['export'])
-
 // 图片预览状态
 const showImagePreview = ref(false)
 
@@ -166,18 +164,17 @@ function closeImagePreview() {
             class="user-image-container rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
             @click="openImagePreview"
           >
-            <img
-              :src="message.imagePreview"
-              alt="用户上传的图片"
-              class="user-image"
-            />
+            <img :src="message.imagePreview" alt="用户上传的图片" class="user-image" />
             <div class="image-overlay">
-              <var-icon name="window-close" :size="24"/>
+              <var-icon name="window-close" :size="24" />
             </div>
           </div>
         </div>
 
-        <div v-if="message.role === 'assistant'" class="message-bubble inline-block max-w-full px-4 rounded-xl transition-colors">
+        <div
+          v-if="message.role === 'assistant'"
+          class="message-bubble inline-block max-w-full px-4 rounded-xl transition-colors"
+        >
           <MarkdownRenderer
             :content="message.content"
             :message-id="message.id"

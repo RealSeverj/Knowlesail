@@ -43,9 +43,7 @@ const closeCustomTheme = () => {
 </script>
 
 <template>
-  <div
-    class="profile-view px-4 pb-4 pt-4"
-  >
+  <div class="profile-view px-4 pb-4 pt-4">
     <div class="mx-auto flex max-w-screen-sm flex-col gap-4">
       <!-- 顶部用户信息 -->
       <section class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-slate-800/80">

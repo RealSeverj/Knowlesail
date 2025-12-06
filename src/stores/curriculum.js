@@ -18,11 +18,11 @@ export const useCurriculumStore = defineStore('curriculum', () => {
 
   // 学期信息
   const termInfo = ref(null)
-  
+
   // 学期开始日期（正式上课的第一天，周一）
   const termStartDate = computed(() => {
     if (!termInfo.value?.events) return null
-    const startEvent = termInfo.value.events.find(e => e.name === '正式上课')
+    const startEvent = termInfo.value.events.find((e) => e.name === '正式上课')
     if (!startEvent) return null
     const startDate = new Date(startEvent.startDate)
     // 获取这一天所在周的周一
@@ -32,22 +32,22 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     monday.setDate(startDate.getDate() + diff)
     return monday
   })
-  
+
   // 学期最大周数（期末考试结束日期所在周）
   const maxWeek = computed(() => {
     if (!termInfo.value?.events || !termStartDate.value) return 20
-    const endEvent = termInfo.value.events.find(e => e.name === '期末考试')
+    const endEvent = termInfo.value.events.find((e) => e.name === '期末考试')
     if (!endEvent) return 20
     const endDate = new Date(endEvent.endDate)
     const diffTime = endDate.getTime() - termStartDate.value.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return Math.ceil((diffDays + 1) / 7)
   })
-  
+
   // 学期事件列表（用于展示）
   const termEvents = computed(() => {
     if (!termInfo.value?.events) return []
-    return termInfo.value.events.filter(e => e.name !== '正式上课')
+    return termInfo.value.events.filter((e) => e.name !== '正式上课')
   })
 
   // 今天所在的周次
@@ -91,11 +91,11 @@ export const useCurriculumStore = defineStore('curriculum', () => {
   function loadFromStorage() {
     const cached = getItem(STORAGE_KEYS.CURRICULUM_COURSES, [])
     const localCourses = getItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, [])
-    
+
     if (Array.isArray(cached)) {
       courses.value = cached
     }
-    
+
     // 合并本地添加的课程
     if (Array.isArray(localCourses)) {
       // 将本地课程添加到列表中（如果不存在）
@@ -106,7 +106,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
         }
       })
     }
-    
+
     return courses.value.length > 0
   }
 
@@ -132,7 +132,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     // 分离后端课程和本地课程
     const remoteCourses = courses.value.filter((c) => !c.isLocal)
     const localCourses = courses.value.filter((c) => c.isLocal)
-    
+
     setItem(STORAGE_KEYS.CURRICULUM_COURSES, remoteCourses)
     setItem(STORAGE_KEYS.CURRICULUM_LOCAL_COURSES, localCourses)
   }
@@ -214,22 +214,22 @@ export const useCurriculumStore = defineStore('curriculum', () => {
    */
   async function initCourses() {
     if (initialized.value) return
-    
+
     // 尝试从缓存加载
     const hasCache = loadFromStorage()
     const hasTermInfo = loadTermInfoFromStorage()
     initialized.value = true
-    
+
     // 如果没有缓存，从后端获取
     if (!hasCache) {
       await fetchCourses({ forceRefresh: true })
     }
-    
+
     // 如果没有学期信息缓存，从后端获取
     if (!hasTermInfo) {
       await fetchTermInfo()
     }
-    
+
     // 设置当前周为今天所在的周
     setCurrentWeekToToday()
   }
@@ -267,28 +267,28 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     loading.value = true
     try {
       const { term = currentTerm.value, isRefresh = false, forceRefresh = false } = options
-      
+
       // 如果不是强制刷新且已有缓存，直接返回
       if (!forceRefresh && !isRefresh && courses.value.length > 0) {
         return
       }
-      
+
       const resp = await getCourseList({ term, isRefresh })
 
       if (resp && resp.code === '10000' && Array.isArray(resp.data)) {
         // 获取本地添加的课程
         const localCourses = getLocalCourses()
-        
+
         // 处理后端返回的课程
         const remoteCourses = resp.data.map((item, index) => ({
           id: `remote_${index + 1}`,
           ...item,
           isLocal: false
         }))
-        
+
         // 合并课程：后端课程 + 本地课程（检查冲突）
         const mergedCourses = [...remoteCourses]
-        
+
         localCourses.forEach((localCourse) => {
           // 检查是否与后端课程冲突（根据课程名和时间判断）
           const hasConflict = remoteCourses.some((remoteCourse) => {
@@ -299,20 +299,20 @@ export const useCurriculumStore = defineStore('curriculum', () => {
             // 检查时间冲突
             return checkScheduleConflict(remoteCourse, localCourse)
           })
-          
+
           if (!hasConflict) {
             mergedCourses.push(localCourse)
           }
         })
-        
+
         courses.value = mergedCourses
-        
+
         // 更新当前学期
         if (term) {
           currentTerm.value = term
-          localStorage.setItem(STORAGE_KEY_TERM, term)
+          localStorage.setItem(STORAGE_KEYS.CURRICULUM_TERM, term)
         }
-        
+
         // 保存到 localStorage
         saveToStorage()
       }
@@ -329,22 +329,21 @@ export const useCurriculumStore = defineStore('curriculum', () => {
    */
   function checkScheduleConflict(course1, course2) {
     if (!course1.scheduleRules || !course2.scheduleRules) return false
-    
+
     for (const rule1 of course1.scheduleRules) {
       for (const rule2 of course2.scheduleRules) {
         // 检查是否在同一天
         if (rule1.weekday !== rule2.weekday) continue
-        
+
         // 检查周次是否有交集
-        const weekOverlap =
-          rule1.startWeek <= rule2.endWeek && rule1.endWeek >= rule2.startWeek
+        const weekOverlap = rule1.startWeek <= rule2.endWeek && rule1.endWeek >= rule2.startWeek
         if (!weekOverlap) continue
-        
+
         // 检查节次是否有交集
         const classOverlap =
           rule1.startClass <= rule2.endClass && rule1.endClass >= rule2.startClass
         if (!classOverlap) continue
-        
+
         // 检查单双周是否有交集
         const oddWeekOverlap = rule1.single && rule2.single
         const evenWeekOverlap = rule1.double && rule2.double
@@ -353,7 +352,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
         }
       }
     }
-    
+
     return false
   }
 
@@ -381,7 +380,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
       isLocal: true // 标记为本地添加的课程
     }
     courses.value.push(newCourse)
-    
+
     // 保存本地课程到 localStorage
     saveLocalCourses()
   }
@@ -391,7 +390,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     const target = courses.value.find((c) => c.id === id)
     if (!target) return
     Object.assign(target, patch)
-    
+
     // 如果是本地课程，更新 localStorage
     if (target.isLocal) {
       saveLocalCourses()
@@ -404,7 +403,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     if (index !== -1) {
       const course = courses.value[index]
       courses.value.splice(index, 1)
-      
+
       // 如果是本地课程，更新 localStorage
       if (course.isLocal) {
         saveLocalCourses()
@@ -425,11 +424,11 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     if (!termStartDate.value || weekNo < 1) {
       return { 1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '' }
     }
-    
+
     const result = {}
     const weekStart = new Date(termStartDate.value)
     weekStart.setDate(weekStart.getDate() + (weekNo - 1) * 7)
-    
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(weekStart)
       date.setDate(weekStart.getDate() + i)
@@ -438,7 +437,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
       const day = date.getDate()
       result[i + 1] = `${month}/${day}`
     }
-    
+
     return result
   }
 

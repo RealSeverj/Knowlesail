@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import * as todoApi from '@/api/todo'
-import { 
-  STORAGE_KEYS, 
-  getItem, 
-  setItem, 
+import {
+  STORAGE_KEYS,
+  getItem,
+  setItem,
   isCacheExpired as checkCacheExpired,
-  clearCache as clearStorageCache 
+  clearCache as clearStorageCache
 } from '@/utils/storage'
 
 // priority: 1-4 对应四象限
@@ -124,10 +124,10 @@ export const useTodoStore = defineStore('todo', () => {
     try {
       const apiData = toApiFormat(payload)
       const result = await todoApi.createTodo(apiData)
-      
+
       // API 返回格式: { code, message, data: { id } }
       const todoId = result.data?.id || result.id
-      
+
       // 将新创建的 todo 添加到本地列表
       const newTodo = {
         id: todoId,
@@ -155,7 +155,7 @@ export const useTodoStore = defineStore('todo', () => {
   async function toggleTodo(id) {
     const target = todos.value.find((t) => t.id === id)
     if (!target) return
-    
+
     loading.value = true
     error.value = null
     try {
@@ -187,7 +187,7 @@ export const useTodoStore = defineStore('todo', () => {
   async function updateTodo(id, patch) {
     const target = todos.value.find((t) => t.id === id)
     if (!target) return
-    
+
     loading.value = true
     error.value = null
     try {
@@ -242,11 +242,11 @@ export const useTodoStore = defineStore('todo', () => {
     error.value = null
     try {
       const result = await todoApi.getTodoDetail(id)
-      
+
       // API 返回格式: { code, message, data: { todo } }
       const todoData = result.data?.todo || result.todo
       const todo = fromApiFormat(todoData)
-      
+
       // 更新本地列表中的对应项
       const index = todos.value.findIndex((t) => t.id === id)
       if (index !== -1) {
@@ -273,16 +273,16 @@ export const useTodoStore = defineStore('todo', () => {
    */
   async function fetchTodos(params = {}) {
     const { silent = false, ...queryParams } = params
-    
+
     // 非静默模式才显示 loading
     if (!silent) {
       loading.value = true
     }
     error.value = null
-    
+
     try {
       const result = await todoApi.getTodoList(queryParams)
-      
+
       // API 返回格式: { code, message, data: { todos: [] } }
       const todosData = result.data?.todos || result.todos || []
       const todoList = todosData.map(fromApiFormat)
@@ -307,7 +307,7 @@ export const useTodoStore = defineStore('todo', () => {
   async function initTodos() {
     const hasCachedData = todos.value && todos.value.length > 0
     const cacheExpired = isCacheExpired()
-    
+
     // 如果有缓存数据且未过期，静默刷新
     if (hasCachedData && !cacheExpired) {
       // 已有缓存数据显示，后台静默刷新
@@ -316,13 +316,13 @@ export const useTodoStore = defineStore('todo', () => {
       })
       return todos.value
     }
-    
+
     // 如果有缓存数据但已过期，先显示缓存，同时刷新（显示 loading）
     if (hasCachedData && cacheExpired) {
       // 缓存已过期，静默刷新但不阻塞
       return fetchTodos({ silent: true })
     }
-    
+
     // 无缓存数据，正常加载
     return fetchTodos()
   }

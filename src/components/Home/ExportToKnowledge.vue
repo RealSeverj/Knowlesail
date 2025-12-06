@@ -99,7 +99,7 @@ async function startExport() {
 
     // 调用后端总结接口
     const result = await summarizeConversation(conversationId)
-    
+
     // 保存总结结果
     summaryResult.value = {
       id: result.sum_id,
@@ -211,14 +211,14 @@ function navigateToEdit() {
 
   // 将选择的消息内容附加到 notes 中
   if (selectedMessageIds.value.length > 0) {
-    const messages = chatStore.currentMessages.filter(m => 
+    const messages = chatStore.currentMessages.filter((m) =>
       selectedMessageIds.value.includes(m.id)
     )
-    
+
     // 构建内容块
     const existingNotes = summaryResult.value.notes || {}
     const blocks = knowledgeStore.getBlocksFromNotes(existingNotes)
-    
+
     // 将选中的消息添加为新的内容块
     messages.forEach((msg, index) => {
       const blockKey = `block${blocks.length + index + 1}`
@@ -229,10 +229,7 @@ function navigateToEdit() {
     })
 
     // 更新 notes
-    const updatedNotes = knowledgeStore.blocksToNotesObj(
-      existingNotes.title || '对话总结',
-      blocks
-    )
+    const updatedNotes = knowledgeStore.blocksToNotesObj(existingNotes.title || '对话总结', blocks)
 
     // 更新 store 中的数据
     knowledgeStore.upsertSummary({

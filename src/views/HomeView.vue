@@ -93,7 +93,7 @@ const ensureConversationFromRoute = async () => {
   }
 
   // 如果本地已有这个会话，直接切换
-  const exists = chatStore.conversations.find(c => c.id === conversationId)
+  const exists = chatStore.conversations.find((c) => c.id === conversationId)
   if (exists) {
     chatStore.switchConversation(conversationId)
     return
@@ -154,5 +154,4 @@ watch(
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

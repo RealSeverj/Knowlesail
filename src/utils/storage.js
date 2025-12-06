@@ -11,13 +11,13 @@
 export const STORAGE_KEYS = {
   // Chat 模块
   CHAT_CONVERSATIONS: 'chat_conversations',
-  
+
   // Curriculum 模块
   CURRICULUM_COURSES: 'curriculum_courses',
   CURRICULUM_TERM: 'curriculum_term',
   CURRICULUM_LOCAL_COURSES: 'curriculum_local_courses',
   CURRICULUM_TERM_INFO: 'curriculum_term_info',
-  
+
   // Todo 模块
   TODOS_CACHE: 'todos_cache',
   TODOS_CACHE_TIME: 'todos_cache_time'
@@ -83,14 +83,14 @@ export function removeItem(key) {
  * @param {string[]} keys - 存储键名数组
  */
 export function removeItems(keys) {
-  keys.forEach(key => removeItem(key))
+  keys.forEach((key) => removeItem(key))
 }
 
 /**
  * 清除所有应用相关的存储数据
  */
 export function clearAllAppData() {
-  Object.values(STORAGE_KEYS).forEach(key => removeItem(key))
+  Object.values(STORAGE_KEYS).forEach((key) => removeItem(key))
 }
 
 // ==================== 带过期时间的缓存操作 ====================
@@ -175,13 +175,13 @@ export function debouncedSetItem(key, value, delay = 1000) {
   if (debounceTimers.has(key)) {
     clearTimeout(debounceTimers.get(key))
   }
-  
+
   // 设置新的定时器
   const timer = setTimeout(() => {
     setItem(key, value)
     debounceTimers.delete(key)
   }, delay)
-  
+
   debounceTimers.set(key, timer)
 }
 
@@ -207,7 +207,7 @@ export function flushDebouncedSetItem(key, value) {
  */
 export function createStorageManager(prefix) {
   const getFullKey = (key) => `${prefix}_${key}`
-  
+
   return {
     /**
      * 获取数据
@@ -215,56 +215,56 @@ export function createStorageManager(prefix) {
     get(key, defaultValue = null) {
       return getItem(getFullKey(key), defaultValue)
     },
-    
+
     /**
      * 保存数据
      */
     set(key, value) {
       return setItem(getFullKey(key), value)
     },
-    
+
     /**
      * 移除数据
      */
     remove(key) {
       return removeItem(getFullKey(key))
     },
-    
+
     /**
      * 防抖保存
      */
     debouncedSet(key, value, delay = 1000) {
       debouncedSetItem(getFullKey(key), value, delay)
     },
-    
+
     /**
      * 保存带时间戳的缓存
      */
     setCache(key, value) {
       setCache(getFullKey(key), value)
     },
-    
+
     /**
      * 获取缓存
      */
     getCache(key, defaultValue = null) {
       return getCache(getFullKey(key), defaultValue)
     },
-    
+
     /**
      * 检查缓存是否过期
      */
     isCacheExpired(key, expiryMs = DEFAULT_CACHE_EXPIRY_MS) {
       return isCacheExpired(getFullKey(key), expiryMs)
     },
-    
+
     /**
      * 清除缓存
      */
     clearCache(key) {
       clearCache(getFullKey(key))
     },
-    
+
     /**
      * 获取缓存并检查过期状态
      */
@@ -285,28 +285,28 @@ export const todoStorage = createStorageManager('todo')
 export default {
   // 常量
   STORAGE_KEYS,
-  
+
   // 基础操作
   getItem,
   setItem,
   removeItem,
   removeItems,
   clearAllAppData,
-  
+
   // 缓存操作
   setCache,
   getCache,
   isCacheExpired,
   clearCache,
   getCacheWithExpiry,
-  
+
   // 防抖操作
   debouncedSetItem,
   flushDebouncedSetItem,
-  
+
   // 工厂函数
   createStorageManager,
-  
+
   // 预定义管理器
   chatStorage,
   curriculumStorage,

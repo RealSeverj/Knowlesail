@@ -38,7 +38,7 @@ const hideBottomNav = computed(() => {
   flex: 1;
   overflow: hidden;
   /* 预留底部导航高度 + 安全区，防止输入框被遮挡 */
-  padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  margin-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
 /* 页面切换动画 */

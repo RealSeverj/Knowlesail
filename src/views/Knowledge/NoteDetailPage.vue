@@ -29,12 +29,12 @@ async function ensureLoaded() {
   if (summaries.value.find((s) => s.id === summaryId.value)) {
     return
   }
-  
+
   // 尝试加载整个列表
   if (!loaded.value && !loading.value) {
     await knowledgeStore.loadSummaries(listSummaries)
   }
-  
+
   // 如果列表中还是没有，单独获取详情
   if (!summaries.value.find((s) => s.id === summaryId.value)) {
     localLoading.value = true
@@ -166,12 +166,7 @@ async function generateImage(prompt) {
 
       <!-- 标签 -->
       <div v-if="tags.length" class="flex flex-wrap gap-2">
-        <var-chip
-          v-for="tag in tags"
-          :key="tag"
-          size="small"
-          class="text-xs"
-        >
+        <var-chip v-for="tag in tags" :key="tag" size="small" class="text-xs">
           {{ tag }}
         </var-chip>
       </div>

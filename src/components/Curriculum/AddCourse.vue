@@ -23,8 +23,8 @@ const form = ref({
   weekday: 1,
   startClass: 1,
   endClass: 2,
-  startWeek: "1",
-  endWeek: "16",
+  startWeek: '1',
+  endWeek: '16',
   single: true,
   double: true,
   remark: ''
@@ -96,10 +96,7 @@ async function handleSubmit() {
 
 <template>
   <div>
-    <button
-      class="icon-circle-btn"
-      @click="show = true"
-    >
+    <button class="icon-circle-btn" @click="show = true">
       <var-icon name="plus" :size="24" />
     </button>
 

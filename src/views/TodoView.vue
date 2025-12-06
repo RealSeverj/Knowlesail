@@ -109,9 +109,9 @@ const handleTouchEnd = (e) => {
 
   // 获取当前坐标 (0/1)
   // 1:(0,0), 2:(1,0), 3:(0,1), 4:(1,1)
-  let currentX = (activeQuadrant.value === 2 || activeQuadrant.value === 4) ? 1 : 0
-  let currentY = (activeQuadrant.value === 3 || activeQuadrant.value === 4) ? 1 : 0
-  
+  let currentX = activeQuadrant.value === 2 || activeQuadrant.value === 4 ? 1 : 0
+  let currentY = activeQuadrant.value === 3 || activeQuadrant.value === 4 ? 1 : 0
+
   let nextX = currentX
   let nextY = currentY
 
@@ -158,16 +158,10 @@ const handleTouchEnd = (e) => {
         <p class="mt-1 text-xs text-[var(--color-text-secondary)]">双击对应象限空白处添加代办</p>
       </div>
       <div class="flex items-center gap-2">
-        <button
-          class="icon-circle-btn"
-          @click="handleOpenSearch"
-        >
+        <button class="icon-circle-btn" @click="handleOpenSearch">
           <var-icon name="magnify" :size="24" />
         </button>
-        <button
-          class="icon-circle-btn"
-          @click="handleOpenAdd"
-        >
+        <button class="icon-circle-btn" @click="handleOpenAdd">
           <var-icon name="plus" :size="24" />
         </button>
       </div>

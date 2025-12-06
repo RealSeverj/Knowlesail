@@ -114,7 +114,7 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
   <div class="w-screen max-w-full h-full flex flex-col">
     <div class="flex items-center justify-between mb-2 px-0">
       <div class="flex items-center gap-2">
-        <var-button text round size="small" @click="handleClick(-1)" :disabled="currentWeek <= 1">
+        <var-button text round size="small" :disabled="currentWeek <= 1" @click="handleClick(-1)">
           <var-icon name="chevron-left" />
         </var-button>
         <div
@@ -124,7 +124,13 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
           {{ weekTitle }}
           <var-icon name="chevron-down" size="14" />
         </div>
-        <var-button text round size="small" @click="handleClick(1)" :disabled="currentWeek >= maxWeek">
+        <var-button
+          text
+          round
+          size="small"
+          :disabled="currentWeek >= maxWeek"
+          @click="handleClick(1)"
+        >
           <var-icon name="chevron-right" />
         </var-button>
       </div>
@@ -136,17 +142,14 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
         <div class="py-1 border-r border-border">
           <div>节次</div>
         </div>
-        <div 
-          v-for="day in weekdays" 
-          :key="day.value" 
+        <div
+          v-for="day in weekdays"
+          :key="day.value"
           class="py-1 border-l border-border transition-colors"
           :class="isToday(day.value) ? 'bg-primary/10 text-primary font-semibold' : ''"
         >
           <div>周{{ day.label }}</div>
-          <div 
-            class="text-[10px]"
-            :class="isToday(day.value) ? 'text-primary' : 'text-secondary'"
-          >
+          <div class="text-[10px]" :class="isToday(day.value) ? 'text-primary' : 'text-secondary'">
             {{ currentWeekDates[day.value] }}
           </div>
         </div>
@@ -155,10 +158,10 @@ const weekTitle = computed(() => `第 ${currentWeek.value} 周`)
       <!-- 主体：使用 var-swipe 实现滑动 -->
       <var-swipe
         ref="swipeRef"
+        v-model:active="activeIndex"
         class="flex-1 min-h-0"
         :loop="false"
         :indicator="false"
-        v-model:active="activeIndex"
         @change="handleSwipeChange"
       >
         <var-swipe-item v-for="week in maxWeek" :key="week" class="h-full">

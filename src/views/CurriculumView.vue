@@ -59,9 +59,9 @@ async function handleRefresh() {
     <div class="flex-1 px-0 pb-4 overflow-hidden">
       <PullRefresh
         v-model="refreshing"
-        @refresh="handleRefresh"
         loading-text="正在刷新课程表..."
         success-text="课程表已更新"
+        @refresh="handleRefresh"
       >
         <div class="h-full">
           <WeekView />
@@ -70,7 +70,11 @@ async function handleRefresh() {
     </div>
 
     <!-- 学期事件弹窗 -->
-    <PopFrame v-model:show="termEventsVisible" width-class="w-[90vw] max-w-md" max-height-class="max-h-[75vh]">
+    <PopFrame
+      v-model:show="termEventsVisible"
+      width-class="w-[90vw] max-w-md"
+      max-height-class="max-h-[75vh]"
+    >
       <template #header>
         <h3 class="text-lg font-semibold text-foreground">学期日历</h3>
       </template>
@@ -80,7 +84,9 @@ async function handleRefresh() {
           :key="index"
           class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50"
         >
-          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+          <div
+            class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"
+          >
             <var-icon name="calendar-month" class="text-primary" :size="18" />
           </div>
           <div class="flex-1 min-w-0">

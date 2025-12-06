@@ -9,7 +9,7 @@ export default [
     files: ['**/*.{js,mjs,jsx,vue}']
   },
   {
-    ignores: ['node_modules', 'dist', 'public']
+    ignores: ['node_modules', 'dist', 'public', 'android']
   },
 
   /**

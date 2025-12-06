@@ -10,7 +10,7 @@ import { ref } from 'vue'
  */
 export function usePullRefresh(refreshFn, options = {}) {
   const { minDelay = 500 } = options
-  
+
   const refreshing = ref(false)
   const error = ref(null)
   const lastRefreshTime = ref(null)
