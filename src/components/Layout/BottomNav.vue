@@ -44,6 +44,8 @@ const activeTab = computed({
     // 对于知识库的子路由，也高亮知识库标签
     if (route.path.startsWith('/knowledge')) {
       return 'Knowledge'
+    } else if (route.path.startsWith('/profile')) {
+      return 'Profile'
     }
     return route.name
   },
