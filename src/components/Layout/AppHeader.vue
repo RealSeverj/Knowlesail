@@ -41,12 +41,7 @@ const handleBack = () => {
     class="app-header bg-[var(--bottom-navigation-background-color)] border-b border-[var(--color-border)] py-3 px-2"
   >
     <div class="flex items-center gap-3">
-      <button
-        v-if="showBack"
-        type="button"
-        class="icon-circle-btn"
-        @click="handleBack"
-      >
+      <button v-if="showBack" type="button" class="icon-circle-btn" @click="handleBack">
         <var-icon name="chevron-left" :size="20" />
         <span class="sr-only">返回</span>
       </button>

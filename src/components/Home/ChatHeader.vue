@@ -45,21 +45,13 @@ const handleNewChat = () => {
     </div>
 
     <div class="flex items-center gap-2">
-			<ExportToKnowledge />
+      <ExportToKnowledge />
 
-      <button
-        type="button"
-        class="icon-circle-btn"
-        @click="handleNewChat"
-      >
+      <button type="button" class="icon-circle-btn" @click="handleNewChat">
         <var-icon name="plus" :size="24" />
         <span class="sr-only">新聊天</span>
       </button>
-      <button
-        type="button"
-        class="icon-circle-btn"
-        @click="handleNavigateHistory"
-      >
+      <button type="button" class="icon-circle-btn" @click="handleNavigateHistory">
         <var-icon name="menu" :size="24" />
         <span class="sr-only">查看聊天历史</span>
       </button>

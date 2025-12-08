@@ -66,7 +66,7 @@ const handleLogout = async () => {
     confirmText: '退出',
     cancelText: '取消'
   })
-  
+
   if (confirmed) {
     authStore.logout()
     router.push('/login')

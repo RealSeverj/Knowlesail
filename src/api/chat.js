@@ -6,7 +6,7 @@ function getAuthHeaders() {
   const token = localStorage.getItem('auth_token')
   const identifier = localStorage.getItem('auth_identifier')
   const cookie = localStorage.getItem('auth_cookie')
-  
+
   if (token) {
     headers.Authorization = token
   }
@@ -28,12 +28,14 @@ function getAuthHeaders() {
 // signal: AbortSignal 用于取消
 // 返回: Promise<string> 最终累计文本
 export async function sendMessageStream(
-  message, image, conversationId,
+  message,
+  image,
+  conversationId,
   { onChunk, onToolCall, onToolResult, signal } = {}
 ) {
   let accumulatedText = ''
-  const formData = new FormData();
-  formData.append('image', image);
+  const formData = new FormData()
+  formData.append('image', image)
   try {
     const response = await fetch(
       `${apiBaseURL}/api/v1/chat/sse?message=${encodeURIComponent(message)}&conversation_id=${encodeURIComponent(conversationId)}`,

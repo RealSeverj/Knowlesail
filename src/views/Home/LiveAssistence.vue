@@ -81,9 +81,7 @@ const openLastChat = () => {
 
     <!-- 底部提示 -->
     <footer class="px-6 py-4 text-center">
-      <p class="text-xs text-[var(--color-text-secondary)]">
-        AI 生成内容仅供参考，请注意甄别
-      </p>
+      <p class="text-xs text-[var(--color-text-secondary)]">AI 生成内容仅供参考，请注意甄别</p>
     </footer>
   </div>
 </template>

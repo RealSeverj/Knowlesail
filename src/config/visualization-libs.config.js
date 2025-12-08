@@ -4,7 +4,7 @@
  */
 
 export const visualizationLibs = [
-   {
+  {
     // 库的唯一标识符
     id: 'plotly',
     // 库的名称（用于显示和日志）

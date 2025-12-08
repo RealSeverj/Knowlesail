@@ -31,20 +31,20 @@ const onRefreshed = (success) => {
 const refreshCredentials = async () => {
   const stuId = JSON.parse(localStorage.getItem('user_info') || '{}')?.stu_id
   const password = localStorage.getItem('auth_password') // 需要存储密码用于自动重登录
-  
+
   if (!stuId || !password) {
     return false
   }
-  
+
   try {
     // 直接使用 axios 调用登录接口，避免循环依赖
     const res = await axios.post(`${apiBaseURL}/api/v1/user/login`, {
       stu_id: stuId,
       password
     })
-    
+
     const data = res.data?.data || res.data
-    
+
     if (data?.access_token) {
       localStorage.setItem('auth_token', data.access_token)
       localStorage.setItem('auth_identifier', data.identifier)
@@ -65,11 +65,11 @@ const performLogout = () => {
   localStorage.removeItem('auth_cookie')
   localStorage.removeItem('auth_password')
   localStorage.removeItem('user_info')
-  
+
   // 使用 toast 提示
   const toastBus = useToastBus()
   toastBus.show('登录已过期，请重新登录', { type: 'error', duration: 3000 })
-  
+
   // 跳转到登录页
   window.location.href = '/#/login'
 }
@@ -79,7 +79,7 @@ http.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token')
   const identifier = localStorage.getItem('auth_identifier')
   const cookie = localStorage.getItem('auth_cookie')
-  
+
   if (token) {
     config.headers.Authorization = token
   }
@@ -89,7 +89,7 @@ http.interceptors.request.use((config) => {
   if (cookie) {
     config.headers.Cookies = cookie
   }
-  
+
   return config
 })
 
@@ -101,16 +101,16 @@ http.interceptors.response.use(
     // 检查是否返回 50001 错误码（凭证过期）
     if (data?.code === '50001' || data?.code === 50001) {
       const originalRequest = res.config
-      
+
       // 防止重复刷新
       if (!isRefreshing) {
         isRefreshing = true
-        
+
         const refreshSuccess = await refreshCredentials()
-        
+
         isRefreshing = false
         onRefreshed(refreshSuccess)
-        
+
         if (refreshSuccess) {
           // 刷新成功，重新发起原请求
           originalRequest.headers.Authorization = localStorage.getItem('auth_token')
@@ -146,7 +146,7 @@ http.interceptors.response.use(
       error.data = data
       return Promise.reject(error)
     }
-    
+
     return data
   },
   (error) => {

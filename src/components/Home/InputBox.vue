@@ -11,10 +11,6 @@ const props = defineProps({
   expanded: {
     type: Boolean,
     default: false
-  },
-  keyboardOffset: {
-    type: Number,
-    default: 0
   }
 })
 
@@ -182,7 +178,13 @@ const handleExpand = () => {
                 <var-icon name="image-outline" :size="24" />
               </var-button>
 
-              <var-button v-if="isStreaming" type="danger" round class="send-btn" @click="handleStop">
+              <var-button
+                v-if="isStreaming"
+                type="danger"
+                round
+                class="send-btn"
+                @click="handleStop"
+              >
                 <var-icon name="window-close" :size="20" />
               </var-button>
 

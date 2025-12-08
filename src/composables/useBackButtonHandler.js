@@ -23,7 +23,7 @@ export function useBackButtonHandler(options = {}) {
   const {
     mainRouteNames = ['Home', 'Todo', 'Knowledge', 'Curriculum', 'Profile'],
     exitToastMessage = '再按一次返回键退出应用',
-    exitTimeout = 1000,
+    exitTimeout = 1000
   } = options
 
   let backPressedOnce = false
@@ -44,8 +44,7 @@ export function useBackButtonHandler(options = {}) {
 
     // 2. 再处理路由返回 / 退出应用
     const current = router.currentRoute.value
-    const isOnMainRoute =
-      current && mainRouteNames.includes(current.name)
+    const isOnMainRoute = current && mainRouteNames.includes(current.name)
 
     if (!isOnMainRoute && canGoBack) {
       router.back()

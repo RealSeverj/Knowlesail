@@ -1,9 +1,9 @@
 <template>
   <var-pull-refresh
     v-model="refreshing"
-    @refresh="handleRefresh"
     :disabled="disabled"
     class="pull-refresh-container"
+    @refresh="handleRefresh"
   >
     <template #default>
       <slot />
@@ -100,9 +100,7 @@ async function handleRefresh() {
 }
 
 .pull-refresh-container :deep(.var-pull-refresh__control) {
-  
   border-radius: 9999px;
   padding: 4px 12px;
-
 }
 </style>

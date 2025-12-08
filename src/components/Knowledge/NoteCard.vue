@@ -81,12 +81,7 @@ function handleClick() {
 
       <!-- 标签 -->
       <div v-if="tags.length" class="flex flex-wrap gap-1">
-        <var-chip
-          v-for="tag in tags.slice(0, 3)"
-          :key="tag"
-          size="mini"
-          class="text-[10px]"
-        >
+        <var-chip v-for="tag in tags.slice(0, 3)" :key="tag" size="mini" class="text-[10px]">
           {{ tag }}
         </var-chip>
         <span v-if="tags.length > 3" class="text-[10px] text-text-tertiary">

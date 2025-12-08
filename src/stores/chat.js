@@ -1,13 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { sendMessageStream, fetchConversationHistory, deleteConversation as deleteConversationApi } from '@/api/chat'
+import {
+  sendMessageStream,
+  fetchConversationHistory,
+  deleteConversation as deleteConversationApi
+} from '@/api/chat'
 import { STORAGE_KEYS, getItem, setItem, debouncedSetItem } from '@/utils/storage'
 
 // 生成 UUID
 function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0
-    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
     return v.toString(16)
   })
 }
@@ -296,7 +300,7 @@ export const useChatStore = defineStore('chat', () => {
   async function loadConversationHistory(conversationId) {
     try {
       const { messages } = await fetchConversationHistory(conversationId)
-      
+
       const conv = conversations.value.find((c) => c.id === conversationId)
       if (conv && Array.isArray(messages)) {
         // 将服务器返回的消息格式转换为本地格式
@@ -309,13 +313,14 @@ export const useChatStore = defineStore('chat', () => {
           toolCalls: []
         }))
         conv.updatedAt = new Date().toISOString()
-        
+
         // 更新会话标题（使用第一条用户消息）
-        const firstUserMsg = conv.messages.find(m => m.role === 'user')
+        const firstUserMsg = conv.messages.find((m) => m.role === 'user')
         if (firstUserMsg) {
-          conv.title = firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '')
+          conv.title =
+            firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '')
         }
-        
+
         autoSave()
       }
       return messages

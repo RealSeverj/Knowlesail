@@ -37,12 +37,12 @@ async function ensureLoaded() {
   if (summaries.value.find((s) => s.id === summaryId.value)) {
     return
   }
-  
+
   // 尝试加载整个列表
   if (!loaded.value && !loading.value) {
     await knowledgeStore.loadSummaries(listSummaries)
   }
-  
+
   // 如果列表中还是没有，单独获取详情
   if (!summaries.value.find((s) => s.id === summaryId.value)) {
     localLoading.value = true
@@ -132,10 +132,10 @@ async function openChatSelection() {
     toast.warning('此笔记没有关联的对话记录')
     return
   }
-  
+
   // 切换到关联的对话以加载消息
   chatStore.switchConversation(conversationId)
-  
+
   // 如果当前对话没有消息，尝试从后端加载
   if (!chatStore.currentMessages || chatStore.currentMessages.length === 0) {
     try {
@@ -144,19 +144,19 @@ async function openChatSelection() {
       console.error('加载对话历史失败:', e)
     }
   }
-  
+
   showChatSelection.value = true
 }
 
 // 处理聊天选择器确认
 function handleChatSelectionConfirm(selectedIds) {
   if (!selectedIds || selectedIds.length === 0) return
-  
+
   const messages = chatStore.currentMessages || []
-  const selectedMessages = messages.filter(m => selectedIds.includes(m.id))
-  
+  const selectedMessages = messages.filter((m) => selectedIds.includes(m.id))
+
   // 将选中的消息内容添加为新的内容块
-  selectedMessages.forEach(msg => {
+  selectedMessages.forEach((msg) => {
     const nextKey = `block${editState.blocks.length + 1}`
     const rolePrefix = msg.role === 'user' ? '**用户：**\n' : '**AI：**\n'
     editState.blocks.push({
@@ -165,7 +165,7 @@ function handleChatSelectionConfirm(selectedIds) {
       content: rolePrefix + (msg.content || '')
     })
   })
-  
+
   toast.success(`已添加 ${selectedMessages.length} 个内容块`)
 }
 
@@ -334,11 +334,7 @@ async function handleSave() {
               <var-icon name="message-text-outline" :size="14" class="mr-1" />
               从对话导入
             </var-button>
-            <var-button
-              type="primary"
-              size="small"
-              @click="addBlock"
-            >
+            <var-button type="primary" size="small" @click="addBlock">
               <var-icon name="plus" :size="14" class="mr-1" />
               添加内容块
             </var-button>
@@ -354,12 +350,7 @@ async function handleSave() {
             </span>
             <div class="flex items-center gap-1">
               <!-- 上移按钮 -->
-              <var-button
-                text
-                size="small"
-                :disabled="index === 0"
-                @click="moveBlockUp(index)"
-              >
+              <var-button text size="small" :disabled="index === 0" @click="moveBlockUp(index)">
                 <var-icon name="chevron-up" :size="14" />
               </var-button>
               <!-- 下移按钮 -->
@@ -372,12 +363,7 @@ async function handleSave() {
                 <var-icon name="chevron-down" :size="14" />
               </var-button>
               <!-- 删除按钮 -->
-              <var-button
-                text
-                size="small"
-                type="danger"
-                @click="removeBlock(index)"
-              >
+              <var-button text size="small" type="danger" @click="removeBlock(index)">
                 <var-icon name="delete" :size="14" />
               </var-button>
             </div>
@@ -387,17 +373,17 @@ async function handleSave() {
           <NoteEditor v-model="block.content" :block-id="block.key" class="mt-1" />
         </div>
 
-        <div v-if="editState.blocks.length === 0" class="text-center py-6 text-text-tertiary text-sm">
+        <div
+          v-if="editState.blocks.length === 0"
+          class="text-center py-6 text-text-tertiary text-sm"
+        >
           暂无内容块，点击上方按钮添加
         </div>
       </div>
     </div>
 
     <!-- 聊天记录选择器 -->
-    <ChatSelection
-      v-model:visible="showChatSelection"
-      @confirm="handleChatSelectionConfirm"
-    />
+    <ChatSelection v-model:visible="showChatSelection" @confirm="handleChatSelectionConfirm" />
   </div>
 </template>
 

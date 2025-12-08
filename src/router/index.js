@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { setupRouterGuards } from './guards'
+import { getItem } from '@/utils/storage'
+import { useAuthStore } from '@/stores/auth'
 
 // 主要页面
 import HomeView from '@/views/HomeView.vue'
@@ -30,7 +32,22 @@ import AboutPage from '@/views/Profile/AboutPage.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: (to) => {
+      // 页面名称到路径的映射
+      const pageNameToPath = {
+        Home: '/home',
+        Curriculum: '/curriculum',
+        Todo: '/todo',
+        Knowledge: '/knowledge',
+        Profile: '/profile'
+      }
+
+      // 获取偏好设置的默认页面
+      const defaultPage = getItem('pref_default_page', 'Knowledge')
+      const path = pageNameToPath[defaultPage] || '/home'
+
+      return path
+    }
   },
   // 主导航页面
   {

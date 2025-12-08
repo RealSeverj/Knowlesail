@@ -28,17 +28,14 @@ watch(
 provide('theme', theme)
 
 useBackButtonHandler({
-  mainRouteNames: ['Home', 'Todo', 'Curriculum', 'Profile', 'MyNotes'],
+  mainRouteNames: ['Home', 'Todo', 'Curriculum', 'Profile', 'MyNotes']
 })
 </script>
 
 <template>
   <ToastContainer />
   <ConfirmDialogHost />
-  <div
-    id="app"
-    class="min-h-screen app-bg text-foreground transition-colors"
-  >
+  <div id="app" class="min-h-screen app-bg text-foreground transition-colors">
     <AppLayout />
   </div>
 </template>

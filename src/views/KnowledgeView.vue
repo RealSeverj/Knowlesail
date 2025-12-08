@@ -23,7 +23,7 @@ watch(
     if (newName === 'OfficialKnowledge') newIndex = 0
     else if (newName === 'CommunityKnowledge') newIndex = 1
     else if (newName === 'MyNotes') newIndex = 2
-    
+
     if (newIndex >= 0 && activeTab.value !== newIndex) {
       isInternalChange.value = true
       activeTab.value = newIndex
@@ -39,10 +39,10 @@ watch(
 // 监听标签点击切换
 watch(activeTab, (newTab, oldTab) => {
   if (isInternalChange.value) return
-  
+
   // 同步滑动组件
   swipeRef.value?.to(newTab)
-  
+
   // 更新路由
   const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
   const targetRoute = routes[newTab]
@@ -54,17 +54,17 @@ watch(activeTab, (newTab, oldTab) => {
 // 滑动切换回调
 function onSwipeChange(index) {
   if (activeTab.value === index) return
-  
+
   isInternalChange.value = true
   activeTab.value = index
-  
+
   // 更新路由
   const routes = ['OfficialKnowledge', 'CommunityKnowledge', 'MyNotes']
   const targetRoute = routes[index]
   if (route.name !== targetRoute) {
     router.replace({ name: targetRoute })
   }
-  
+
   nextTick(() => {
     isInternalChange.value = false
   })
@@ -124,10 +124,7 @@ onMounted(() => {
         </div>
 
         <!-- 原有按钮保留，样式保持一致 -->
-        <button
-          class="icon-circle-btn"
-          @click="handleOpenAdd"
-        >
+        <button class="icon-circle-btn" @click="handleOpenAdd">
           <var-icon name="format-list-checkbox" :size="24" />
         </button>
       </div>
@@ -177,7 +174,7 @@ onMounted(() => {
 }
 
 .knowledge-swipe {
-  height: calc(100vh - 140px); /* 减去头部和标签栏高度 */
+  height: calc(100vh - 172px); /* 减去头部底部和标签栏高度 */
   overflow: hidden;
 }
 

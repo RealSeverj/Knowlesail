@@ -119,19 +119,11 @@ onMounted(async () => {
       @click="handleViewportClick"
     >
       <div v-if="hasMessages" class="mx-auto flex w-full max-w-3xl flex-col gap-4">
-        <MessageItem
-          v-for="message in messages"
-          :key="message.id"
-          :message="message"
-          @export="handleExportMessage"
-        />
+        <MessageItem v-for="message in messages" :key="message.id" :message="message" />
       </div>
 
       <div v-else class="flex h-full flex-col">
-        <QuickActions
-          class="flex-1"
-          @select="handleQuickAction"
-        />
+        <QuickActions class="flex-1" @select="handleQuickAction" />
       </div>
     </div>
   </section>

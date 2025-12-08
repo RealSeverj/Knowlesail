@@ -38,7 +38,7 @@ const messages = computed(() => chatStore.currentMessages || [])
 // 是否全选
 const isAllSelected = computed(() => {
   if (messages.value.length === 0) return false
-  return messages.value.every(m => selectedIds.value.has(m.id))
+  return messages.value.every((m) => selectedIds.value.has(m.id))
 })
 
 // 选中数量
@@ -64,7 +64,7 @@ function toggleAll() {
   if (isAllSelected.value) {
     selectedIds.value = new Set()
   } else {
-    selectedIds.value = new Set(messages.value.map(m => m.id))
+    selectedIds.value = new Set(messages.value.map((m) => m.id))
   }
 }
 
@@ -127,17 +127,12 @@ function formatTime(timestamp) {
     <div class="bg-background rounded-t-3xl max-h-[70vh] flex flex-col">
       <!-- 头部 -->
       <header class="p-4 flex items-center justify-between border-b border-[var(--color-border)]">
-        <h2 class="text-base font-semibold text-[var(--color-text-primary)]">
-          选择聊天记录
-        </h2>
+        <h2 class="text-base font-semibold text-[var(--color-text-primary)]">选择聊天记录</h2>
         <div class="flex items-center gap-3">
-          <span class="text-xs text-[var(--color-text-secondary)]">已选 {{ selectedCount }} 条</span>
-          <var-button
-            text
-            size="small"
-            class="text-primary"
-            @click="toggleAll"
+          <span class="text-xs text-[var(--color-text-secondary)]"
+            >已选 {{ selectedCount }} 条</span
           >
+          <var-button text size="small" class="text-primary" @click="toggleAll">
             {{ isAllSelected ? '取消全选' : '全选' }}
           </var-button>
           <button class="p-1 text-[var(--color-text-secondary)]" @click="handleCancel">
@@ -152,7 +147,7 @@ function formatTime(timestamp) {
           v-for="message in messages"
           :key="message.id"
           class="selection-item"
-          :class="{ 'selected': selectedIds.has(message.id) }"
+          :class="{ selected: selectedIds.has(message.id) }"
           @click="toggleMessage(message.id)"
         >
           <var-checkbox
@@ -180,15 +175,8 @@ function formatTime(timestamp) {
 
       <!-- 底部按钮 -->
       <div class="p-4 border-t border-[var(--color-border)] flex gap-3">
-        <var-button block text @click="handleCancel">
-          跳过
-        </var-button>
-        <var-button
-          block
-          type="primary"
-          :disabled="selectedCount === 0"
-          @click="handleConfirm"
-        >
+        <var-button block text @click="handleCancel"> 跳过 </var-button>
+        <var-button block type="primary" :disabled="selectedCount === 0" @click="handleConfirm">
           确认选择 ({{ selectedCount }})
         </var-button>
       </div>
