@@ -190,7 +190,7 @@ const handleNavigateHistory = () => {
                 </span>
               </div>
               <p class="text-xs text-[var(--color-text-secondary)] mt-0.5 truncate">
-                {{ nextClass.location }} · 还有 {{ nextClass.isOngoing ? '正在上课' : '即将开始' }}
+                {{ nextClass.location }} · {{ nextClass.isOngoing ? '正在上课' : '即将开始' }}
               </p>
             </div>
             <var-icon name="chevron-right" :size="18" class="ml-2 text-gray-400" />
