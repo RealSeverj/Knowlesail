@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import {
   sendMessageStream,
   fetchConversationHistory,
+  fetchConversationList,
   deleteConversation as deleteConversationApi
 } from '@/api/chat'
 import { STORAGE_KEYS, getItem, setItem, debouncedSetItem } from '@/utils/storage'
@@ -44,7 +45,8 @@ export const useChatStore = defineStore('chat', () => {
       title,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      messages: []
+      messages: [],
+      isCloudSync: false // 本地创建的会话
     }
     console.log('Creating conversation:', conversation)
     conversations.value.unshift(conversation)
@@ -55,11 +57,23 @@ export const useChatStore = defineStore('chat', () => {
 
   /**
    * 切换会话
+   * 如果是云端同步的会话且消息未加载，会自动加载消息内容
    */
-  function switchConversation(conversationId) {
+  async function switchConversation(conversationId) {
     const conv = conversations.value.find((c) => c.id === conversationId)
     if (conv) {
       currentConversationId.value = conversationId
+
+      // 如果是云端会话且需要加载消息
+      if (conv.isCloudSync && conv.needsLoad) {
+        try {
+          await loadConversationHistory(conversationId)
+          conv.needsLoad = false
+          autoSave()
+        } catch (error) {
+          console.error('加载云端会话消息失败:', error)
+        }
+      }
     }
   }
 
@@ -257,25 +271,77 @@ export const useChatStore = defineStore('chat', () => {
   // ========== 本地存储 ==========
 
   /**
-   * 从 localStorage 加载会话
+   * 从 localStorage 加载会话，并与云端列表合并
+   * 策略：本地已有的会话保持不变，云端独有的会话作为占位添加（标记为云端同步）
    */
-  function loadConversations() {
+  async function loadConversations() {
     try {
+      // 1. 先加载本地存储的会话
       const saved = getItem(STORAGE_KEYS.CHAT_CONVERSATIONS)
       if (saved && Array.isArray(saved)) {
         conversations.value = saved
+      }
 
-        if (conversations.value.length > 0) {
-          currentConversationId.value = conversations.value[0].id
-        } else {
-          createConversation()
-        }
+      // 2. 尝试从云端获取对话列表并合并
+      try {
+        await mergeCloudConversations()
+      } catch (cloudError) {
+        console.warn('获取云端对话列表失败，仅使用本地数据:', cloudError)
+      }
+
+      // 3. 设置当前会话
+      if (conversations.value.length > 0) {
+        currentConversationId.value = conversations.value[0].id
       } else {
         createConversation()
       }
     } catch (error) {
       console.error('加载会话失败:', error)
       createConversation()
+    }
+  }
+
+  /**
+   * 从云端获取对话列表并与本地合并
+   * 本地已有的不覆盖，云端独有的添加为占位会话
+   */
+  async function mergeCloudConversations() {
+    const cloudList = await fetchConversationList()
+
+    if (!Array.isArray(cloudList) || cloudList.length === 0) {
+      return
+    }
+
+    // 获取本地已有的会话 ID 集合
+    const localIds = new Set(conversations.value.map((c) => c.id))
+
+    // 筛选出云端独有的会话
+    const cloudOnlyConversations = cloudList
+      .filter((cloud) => !localIds.has(cloud.id))
+      .map((cloud) => ({
+        id: cloud.id,
+        title: cloud.title || '未命名对话',
+        // 云端返回的是时间戳（毫秒），转换为 ISO 字符串
+        createdAt: cloud.created_at ? new Date(cloud.created_at).toISOString() : new Date().toISOString(),
+        updatedAt: cloud.updated_at ? new Date(cloud.updated_at).toISOString() : new Date().toISOString(),
+        messages: [], // 消息需要点击时再加载
+        isCloudSync: true, // 标记为云端同步
+        cloudSyncTime: null, // 实际内容加载后设置
+        needsLoad: true // 标记需要加载消息内容
+      }))
+
+    if (cloudOnlyConversations.length > 0) {
+      // 将云端独有的会话添加到列表末尾
+      conversations.value.push(...cloudOnlyConversations)
+
+      // 按更新时间排序（最新的在前）
+      conversations.value.sort((a, b) => {
+        const timeA = new Date(a.updatedAt).getTime()
+        const timeB = new Date(b.updatedAt).getTime()
+        return timeB - timeA
+      })
+
+      autoSave()
     }
   }
 
@@ -296,27 +362,37 @@ export const useChatStore = defineStore('chat', () => {
   /**
    * 从服务器加载指定会话的历史消息
    * @param {string} conversationId - 会话ID
+   * @param {boolean} markAsCloudSync - 是否标记为云端同步的会话（默认 true）
    */
-  async function loadConversationHistory(conversationId) {
+  async function loadConversationHistory(conversationId, markAsCloudSync = true) {
     try {
       const { messages } = await fetchConversationHistory(conversationId)
 
       const conv = conversations.value.find((c) => c.id === conversationId)
       if (conv && Array.isArray(messages)) {
-        // 将服务器返回的消息格式转换为本地格式
-        conv.messages = messages.map((msg, index) => ({
-          id: `${conversationId}-${index}-${Date.now()}`,
-          role: msg.role,
-          content: msg.content,
-          timestamp: new Date().toISOString(),
-          streaming: false,
-          toolCalls: []
-        }))
+        // 将服务器返回的消息格式转换为本地格式，过滤掉没有内容的消息
+        conv.messages = messages
+          .filter((msg) => msg.content !== undefined && msg.content !== null)
+          .map((msg, index) => ({
+            id: `${conversationId}-${index}-${Date.now()}`,
+            role: msg.role || 'assistant',
+            content: msg.content,
+            timestamp: new Date().toISOString(),
+            streaming: false,
+            toolCalls: [],
+            isCloudSync: markAsCloudSync // 标记消息来源
+          }))
         conv.updatedAt = new Date().toISOString()
+
+        // 标记会话为云端同步
+        if (markAsCloudSync) {
+          conv.isCloudSync = true
+          conv.cloudSyncTime = new Date().toISOString()
+        }
 
         // 更新会话标题（使用第一条用户消息）
         const firstUserMsg = conv.messages.find((m) => m.role === 'user')
-        if (firstUserMsg) {
+        if (firstUserMsg && firstUserMsg.content) {
           conv.title =
             firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '')
         }
@@ -357,6 +433,7 @@ export const useChatStore = defineStore('chat', () => {
     // 本地存储
     loadConversations,
     saveConversations,
-    loadConversationHistory
+    loadConversationHistory,
+    mergeCloudConversations
   }
 })

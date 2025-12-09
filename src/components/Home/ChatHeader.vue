@@ -22,6 +22,11 @@ const subtitle = computed(() => {
   return date.toLocaleString()
 })
 
+// 是否为云端同步的会话
+const isCloudSync = computed(() => {
+  return chatStore.currentConversation?.isCloudSync === true
+})
+
 const handleNavigateHistory = () => {
   router.push({ name: 'ChatHistory' })
 }
@@ -35,9 +40,18 @@ const handleNewChat = () => {
   <header class="chat-header flex items-center justify-between px-4 pb-2 pt-4">
     <div class="flex min-w-0 items-center gap-3">
       <div class="flex min-w-0 flex-col">
-        <span class="text-xl font-semibold text-[var(--color-text-primary)]">
-          {{ title }}
-        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-semibold text-[var(--color-text-primary)]">
+            {{ title }}
+          </span>
+          <span
+            v-if="isCloudSync"
+            class="cloud-sync-badge inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+          >
+            <var-icon name="cloud-outline" :size="12" />
+            云端同步
+          </span>
+        </div>
         <span class="mt-1 text-xs text-[var(--color-text-secondary)]">
           {{ subtitle }}
         </span>

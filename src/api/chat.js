@@ -226,3 +226,27 @@ export async function deleteConversation(conversationId) {
 
   return result
 }
+
+// ========== 获取云端对话列表 ==========
+// 获取存储在云端的所有对话列表
+export async function fetchConversationList() {
+  const res = await fetch(`${apiBaseURL}/api/v1/conversation/list`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders()
+    }
+  })
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch conversation list: ${res.status}`)
+  }
+
+  const result = await res.json()
+  if (result.code !== '10000') {
+    throw new Error(result.message || 'Failed to fetch conversation list')
+  }
+
+  // 返回对话列表，若为空则返回空数组
+  return result.data?.conversations || []
+}

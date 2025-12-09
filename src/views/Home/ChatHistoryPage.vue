@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/Layout/AppHeader.vue'
 import { useChatStore } from '@/stores/chat'
@@ -12,6 +12,7 @@ const { confirm } = useConfirm()
 const toast = useToast()
 
 const conversations = computed(() => chatStore.conversations || [])
+const loadingConversationId = ref(null) // 正在加载的会话ID
 
 // 页面加载时确保会话数据已从 localStorage 加载
 onMounted(() => {
@@ -24,8 +25,24 @@ const handleBack = () => {
   router.push({ name: 'Home' })
 }
 
-const handleSelect = (conversationId) => {
-  chatStore.switchConversation(conversationId)
+const handleSelect = async (conversationId) => {
+  const conv = conversations.value.find((c) => c.id === conversationId)
+  
+  // 如果是需要加载的云端会话，显示加载状态
+  if (conv?.isCloudSync && conv?.needsLoad) {
+    loadingConversationId.value = conversationId
+    try {
+      await chatStore.switchConversation(conversationId)
+    } catch (error) {
+      toast.error('加载会话失败')
+      loadingConversationId.value = null
+      return
+    }
+    loadingConversationId.value = null
+  } else {
+    await chatStore.switchConversation(conversationId)
+  }
+  
   router.push({ name: 'Chat', params: { conversationId } })
 }
 
@@ -41,6 +58,10 @@ const handleDelete = async (conversationId) => {
 }
 
 const getPreview = (conversation) => {
+  // 云端会话且需要加载时，显示提示
+  if (conversation?.isCloudSync && conversation?.needsLoad) {
+    return '点击加载云端消息...'
+  }
   if (!conversation?.messages?.length) return '暂无消息'
   const last = conversation.messages[conversation.messages.length - 1]
   return last.content.slice(0, 50) + (last.content.length > 50 ? '…' : '')
@@ -84,12 +105,28 @@ const formatTimestamp = (value) => {
             <button
               type="button"
               class="flex w-full items-center justify-between rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-left shadow-sm transition hover:shadow-md"
+              :class="{ 'opacity-60': loadingConversationId === conversation.id }"
+              :disabled="loadingConversationId === conversation.id"
               @click="handleSelect(conversation.id)"
             >
               <div class="flex-1 w-full overflow-hidden">
                 <div class="flex items-center gap-2">
+                  <!-- 加载中显示 loading 图标 -->
+                  <var-icon
+                    v-if="loadingConversationId === conversation.id"
+                    name="loading"
+                    :size="16"
+                    class="animate-spin text-[var(--color-primary)]"
+                  />
                   <span class="truncate text-base font-semibold text-[var(--color-text-primary)]">
                     {{ conversation.title || '未命名对话' }}
+                  </span>
+                  <span
+                    v-if="conversation.isCloudSync"
+                    class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                  >
+                    <var-icon name="cloud-outline" :size="10" />
+                    云端
                   </span>
                   <span
                     v-if="conversation.id === chatStore.currentConversationId"

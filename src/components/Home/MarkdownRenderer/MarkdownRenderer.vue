@@ -11,7 +11,7 @@ const theme = inject('theme')
 const toast = useToast()
 
 const props = defineProps({
-  content: { type: String, required: true },
+  content: { type: String, default: '' },
   generateImage: { type: Function, required: true },
   messageId: { type: String, required: true },
   streaming: { type: Boolean, default: false },
@@ -22,7 +22,8 @@ const props = defineProps({
 const emits = defineEmits(['updateHeight'])
 
 const processedContent = computed(() => {
-  return props.content.replace(/<htmath>/g, '\n```htmath\n').replace(/<\/htmath>/g, '\n```')
+  const raw = props.content || ''
+  return raw.replace(/<htmath>/g, '\n```htmath\n').replace(/<\/htmath>/g, '\n```')
 })
 
 // 自定义内置渲染

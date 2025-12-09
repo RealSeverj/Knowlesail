@@ -105,7 +105,9 @@ const ensureConversationFromRoute = async () => {
     title: '加载中...',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    messages: []
+    messages: [],
+    isCloudSync: true, // 标记为云端同步的会话
+    cloudSyncTime: null // 实际同步时间在加载成功后设置
   }
   chatStore.conversations.unshift(newConv)
   chatStore.currentConversationId = conversationId
