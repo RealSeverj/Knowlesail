@@ -91,3 +91,32 @@ export async function html2png(element, width = 768) {
     return null
   }
 }
+
+/**
+ * 模拟流式文本输出
+ * @param {String} text - 要输出的文本
+ * @param {Function} onUpdate - 更新回调函数，接收当前文本
+ * @param {Number} [speed=20] - 输出速度（毫秒）
+ * @returns {Promise} 完成输出的Promise
+ */
+export function simulateStreamOutput(text, onUpdate, speed = 20) {
+  return new Promise((resolve) => {
+    let index = 0
+    const totalLength = text.length
+
+    const streamInterval = setInterval(() => {
+      // 每次输出的字符数（随机 1-5 个字符，模拟真实打字效果）
+      const chunkSize = Math.floor(Math.random() * 5) + 1
+      const nextIndex = Math.min(index + chunkSize, totalLength)
+
+      const currentText = text.slice(0, nextIndex)
+      onUpdate(currentText)
+      index = nextIndex
+
+      if (index >= totalLength) {
+        clearInterval(streamInterval)
+        resolve()
+      }
+    }, speed)
+  })
+}

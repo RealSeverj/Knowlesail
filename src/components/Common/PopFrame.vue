@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
+import { registerBackInterceptor, unregisterBackInterceptor } from '../../composables/useBackButtonHandler'
 
 const props = defineProps({
   /** 是否显示弹窗 */
@@ -59,6 +60,30 @@ const handleOverlayClick = () => {
 const handleClose = () => {
   visible.value = false
 }
+
+// 返回键拦截器
+let interceptorFn
+
+watch(() => props.show, (newVal) => {
+  if (newVal) {
+    interceptorFn = () => {
+      visible.value = false
+      return true
+    }
+    registerBackInterceptor(interceptorFn)
+  } else {
+    if (interceptorFn) {
+      unregisterBackInterceptor(interceptorFn)
+      interceptorFn = null
+    }
+  }
+})
+
+onBeforeUnmount(() => {
+  if (interceptorFn) {
+    unregisterBackInterceptor(interceptorFn)
+  }
+})
 </script>
 
 <template>

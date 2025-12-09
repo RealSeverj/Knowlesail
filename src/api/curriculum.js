@@ -31,6 +31,14 @@ export function getCurrentTerm() {
 }
 
 /**
+ * 获取今日日程汇报
+ * @returns {Promise<Object>} 日程汇报数据
+ */
+export function getDailySchedule() {
+  return http.get('/api/v1/schedule/daily')
+}
+
+/**
  * 获取课程列表
  * @param {Object} options - 请求选项
  * @param {string} options.term - 学期代码，默认自动计算
