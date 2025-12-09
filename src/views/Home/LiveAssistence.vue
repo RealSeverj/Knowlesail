@@ -109,30 +109,10 @@ const handleNavigateHistory = () => {
 
 <template>
   <div class="flex flex-col h-full relative overflow-hidden bg-gradient-to-b from-transparent to-white/30 dark:to-slate-900/30">
-    <!-- 顶部标题区 -->
-    <header class="flex items-center justify-between px-6 pt-8 pb-4 z-10">
-      <div class="flex-1 min-w-0">
-        <h1 class="text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">学海智航</h1>
-        <p class="mt-1 text-sm font-medium text-[var(--color-text-secondary)] opacity-80">
-          {{ dateInfo.month }}月{{ dateInfo.day }}日 {{ dateInfo.weekDay }}
-        </p>
-      </div>
-      <button 
-        type="button" 
-        class="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md shadow-sm active:scale-95 transition-transform" 
-        style="background-color: color-mix(in srgb, var(--color-surface), transparent 50%)"
-        @click="handleNavigateHistory"
-        v-ripple
-      >
-        <var-icon name="menu" :size="22" color="var(--color-text-primary)" />
-      </button>
-    </header>
-
     <!-- 主内容区 -->
     <main class="flex-1 px-5 pb-6 overflow-y-auto no-scrollbar flex flex-col z-10">
-      
       <!-- Logo & Slogan -->
-      <section class="flex-1 flex flex-col items-center justify-center min-h-[200px] -mt-10">
+      <section class="flex-1 flex flex-col items-center justify-center min-h-[200px] mt-4">
         <div class="relative mb-6">
           <div class="absolute inset-0 blur-3xl rounded-full" style="background-color: color-mix(in srgb, var(--color-primary), transparent 80%)"></div>
           <img src="/icon.png" alt="Logo" class="relative w-36 h-36 object-contain drop-shadow-xl animate-float" />
@@ -185,7 +165,7 @@ const handleNavigateHistory = () => {
       </section>
 
       <!-- 智能概览面板 -->
-      <section class="backdrop-blur-xl rounded-2xl p-1 shadow-lg border"
+      <section class="backdrop-blur-xl rounded-2xl p-1 border"
                style="background-color: color-mix(in srgb, var(--color-surface), transparent 30%); border-color: color-mix(in srgb, var(--color-border), transparent 80%)">
         <div class="flex flex-col">
           
@@ -277,6 +257,12 @@ const handleNavigateHistory = () => {
         </div>
       </section>
     </main>
+
+    <!-- 顶部导航按钮 -->
+    <button type="button" class="icon-circle-btn fixed-btn" @click="handleNavigateHistory">
+      <var-icon name="menu" :size="24" />
+      <span class="sr-only">查看聊天历史</span>
+    </button>
 
     <!-- 每日日程弹窗 -->
     <PopFrame
@@ -376,5 +362,12 @@ const handleNavigateHistory = () => {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+.fixed-btn {
+  position: fixed;
+  top: calc(20px + env(safe-area-inset-top));
+  right: 20px;
+  z-index: 20;
 }
 </style>

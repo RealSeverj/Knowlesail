@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/Layout/AppHeader.vue'
+import PullRefresh from '@/components/Common/PullRefresh.vue'
 import { useChatStore } from '@/stores/chat'
 import { useConfirm } from '@/composables/useConfirm'
 import { useToast } from '@/composables/useToast'
@@ -10,6 +11,22 @@ const router = useRouter()
 const chatStore = useChatStore()
 const { confirm } = useConfirm()
 const toast = useToast()
+
+// 下拉刷新状态
+const refreshing = ref(false)
+
+// 下拉刷新：从云端拉取会话列表
+async function onRefresh() {
+  try {
+    await chatStore.mergeCloudConversations()
+    toast.success('会话列表已更新')
+  } catch (error) {
+    console.error('刷新会话列表失败:', error)
+    toast.error('刷新失败，请稍后重试')
+  } finally {
+    refreshing.value = false
+  }
+}
 
 const conversations = computed(() => chatStore.conversations || [])
 const loadingConversationId = ref(null) // 正在加载的会话ID
@@ -86,76 +103,80 @@ const formatTimestamp = (value) => {
         @back="handleBack"
       />
 
-      <div class="flex-1 overflow-y-auto px-4 pb-6">
-        <div
-          v-if="conversations.length === 0"
-          class="flex h-full flex-col items-center justify-center gap-4 text-center text-[var(--color-text-secondary)]"
-        >
-          <div class="rounded-full bg-[var(--color-surface)] p-6 text-[var(--color-primary)]">
-            <var-icon name="comment-text-outline" :size="48" />
-          </div>
-          <div>
-            <p class="text-base font-semibold text-[var(--color-text-primary)]">暂无历史会话</p>
-            <p class="mt-1 text-sm">发起一次新聊天后会在此展示</p>
-          </div>
-        </div>
-
-        <ul v-else class="space-y-3">
-          <li v-for="conversation in conversations" :key="conversation.id">
-            <button
-              type="button"
-              class="flex w-full items-center justify-between rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-left shadow-sm transition hover:shadow-md"
-              :class="{ 'opacity-60': loadingConversationId === conversation.id }"
-              :disabled="loadingConversationId === conversation.id"
-              @click="handleSelect(conversation.id)"
+      <div class="flex-1 overflow-y-auto">
+        <PullRefresh v-model="refreshing" @refresh="onRefresh">
+          <div class="px-4 pb-6 min-h-full">
+            <div
+              v-if="conversations.length === 0"
+              class="flex h-full flex-col items-center justify-center gap-4 text-center text-[var(--color-text-secondary)] pt-20"
             >
-              <div class="flex-1 w-full overflow-hidden">
-                <div class="flex items-center gap-2">
-                  <!-- 加载中显示 loading 图标 -->
-                  <var-icon
-                    v-if="loadingConversationId === conversation.id"
-                    name="loading"
-                    :size="16"
-                    class="animate-spin text-[var(--color-primary)]"
-                  />
-                  <span class="truncate text-base font-semibold text-[var(--color-text-primary)]">
-                    {{ conversation.title || '未命名对话' }}
-                  </span>
-                  <span
-                    v-if="conversation.isCloudSync"
-                    class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-                  >
-                    <var-icon name="cloud-outline" :size="10" />
-                    云端
-                  </span>
-                  <span
-                    v-if="conversation.id === chatStore.currentConversationId"
-                    class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)]"
-                  >
-                    当前
-                  </span>
-                </div>
-                <p
-                  class="mt-1 truncate text-sm text-[var(--color-text-secondary)] whitespace-nowrap overflow-hidden text-ellipsis"
-                >
-                  {{ getPreview(conversation) }}
-                </p>
-                <p class="mt-2 text-xs text-[var(--color-text-secondary)]">
-                  更新于 {{ formatTimestamp(conversation.updatedAt) }}
-                </p>
+              <div class="rounded-full bg-[var(--color-surface)] p-6 text-[var(--color-primary)]">
+                <var-icon name="comment-text-outline" :size="48" />
               </div>
+              <div>
+                <p class="text-base font-semibold text-[var(--color-text-primary)]">暂无历史会话</p>
+                <p class="mt-1 text-sm">发起一次新聊天后会在此展示</p>
+              </div>
+            </div>
 
-              <var-button
-                text
-                type="danger"
-                class="ml-3 shrink-0 text-sm"
-                @click.stop="handleDelete(conversation.id)"
-              >
-                <var-icon name="delete" :size="18" />
-              </var-button>
-            </button>
-          </li>
-        </ul>
+            <ul v-else class="space-y-3">
+              <li v-for="conversation in conversations" :key="conversation.id">
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-left shadow-sm transition hover:shadow-md"
+                  :class="{ 'opacity-60': loadingConversationId === conversation.id }"
+                  :disabled="loadingConversationId === conversation.id"
+                  @click="handleSelect(conversation.id)"
+                >
+                  <div class="flex-1 w-full overflow-hidden">
+                    <div class="flex items-center gap-2">
+                      <!-- 加载中显示 loading 图标 -->
+                      <var-icon
+                        v-if="loadingConversationId === conversation.id"
+                        name="loading"
+                        :size="16"
+                        class="animate-spin text-[var(--color-primary)]"
+                      />
+                      <span class="truncate text-base font-semibold text-[var(--color-text-primary)]">
+                        {{ conversation.title || '未命名对话' }}
+                      </span>
+                      <span
+                        v-if="conversation.isCloudSync"
+                        class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                      >
+                        <var-icon name="cloud-outline" :size="10" />
+                        云端
+                      </span>
+                      <span
+                        v-if="conversation.id === chatStore.currentConversationId"
+                        class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)]"
+                      >
+                        当前
+                      </span>
+                    </div>
+                    <p
+                      class="mt-1 truncate text-sm text-[var(--color-text-secondary)] whitespace-nowrap overflow-hidden text-ellipsis"
+                    >
+                      {{ getPreview(conversation) }}
+                    </p>
+                    <p class="mt-2 text-xs text-[var(--color-text-secondary)]">
+                      更新于 {{ formatTimestamp(conversation.updatedAt) }}
+                    </p>
+                  </div>
+
+                  <var-button
+                    text
+                    type="danger"
+                    class="ml-3 shrink-0 text-sm"
+                    @click.stop="handleDelete(conversation.id)"
+                  >
+                    <var-icon name="delete" :size="18" />
+                  </var-button>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </PullRefresh>
       </div>
     </section>
   </div>

@@ -73,9 +73,9 @@ const handleLogin = async () => {
     <!-- Logo 和标题区域 -->
     <div class="flex flex-col items-center mb-12">
       <div
-        class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6"
+        class="w-20 h-20 flex items-center justify-center mb-6"
       >
-        <var-icon name="sail-boat" :size="40" color="#fff" />
+        <img src="/icon.png" alt="Logo" width="80" height="80" />
       </div>
       <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">学海智航</h1>
       <p class="text-sm text-slate-500 dark:text-slate-400">智能学习助手平台</p>
@@ -125,7 +125,7 @@ const handleLogin = async () => {
     </div>
 
     <!-- 底部信息 -->
-    <div class="mt-auto pt-8 text-center">
+    <div class="mt-auto pt-8 pb-12 text-center">
       <p class="text-xs text-slate-400 dark:text-slate-500">
         登录即表示同意《用户协议》和《隐私政策》
       </p>
