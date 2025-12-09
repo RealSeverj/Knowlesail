@@ -90,7 +90,7 @@ async function generateImage(prompt) {
 </script>
 
 <template>
-  <div class="note-detail-page min-h-screen bg-background flex flex-col">
+  <div class="note-detail-page h-full bg-background flex flex-col">
     <!-- 顶部栏：返回 + 标题 + 作者信息 -->
     <div
       class="flex items-center px-4 py-3 border-b border-border/60 bg-surface/80 backdrop-blur z-10"
@@ -228,10 +228,4 @@ async function generateImage(prompt) {
 </template>
 
 <style scoped>
-.note-detail-page {
-  background-color: var(--color-background);
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 56px;
-}
 </style>

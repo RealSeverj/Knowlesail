@@ -93,7 +93,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="knowledge-view min-h-screen">
+  <div class="knowledge-view h-full flex flex-col">
     <header class="flex items-center justify-between px-4 pb-2 pt-4">
       <div class="flex-1 min-w-0">
         <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">知识库</h1>
