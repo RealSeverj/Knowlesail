@@ -49,7 +49,7 @@ const handleNewChat = () => {
           <span class="truncate">{{ subtitle }}</span>
           <span
             v-if="isCloudSync"
-            class="cloud-sync-badge inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0"
+            class="cloud-sync-badge inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0"
           >
             <var-icon name="cloud-outline" :size="12" />
             云端同步
