@@ -100,33 +100,21 @@ onMounted(() => {
         <p class="mt-1 text-xs text-[var(--color-text-secondary)]">在此查看你的笔记</p>
       </div>
       <div class="flex items-center gap-2 ml-3">
-        <!-- 搜索按钮 + 输入框 -->
+        <!-- 保留搜索图标并优化搜索框高度 -->
         <div
-          class="flex items-center gap-2 bg-surface rounded-full shadow-sm px-2 py-1 transition-all duration-200"
-          :class="searchOpen ? 'w-56' : 'w-9 justify-center'"
+          class="flex items-center gap-2 bg-surface rounded-full shadow-sm px-2 h-9 w-42"
         >
-          <button
-            class="flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface-variant transition-colors"
-            @click="toggleSearch"
-          >
+          <span class="flex h-7 w-7 items-center justify-center rounded-full">
             <var-icon name="magnify" :size="20" />
-          </button>
-          <transition name="fade-width">
-            <input
-              v-if="searchOpen"
-              v-model="searchKeyword"
-              type="search"
-              class="flex-1 bg-transparent text-xs text-[var(--color-text-primary)] outline-none placeholder-[var(--color-text-secondary)]"
-              placeholder="搜索官方、社区或我的笔记"
-              @keyup.enter.prevent="handleSearchSubmit"
-            />
-          </transition>
+          </span>
+          <input
+            v-model="searchKeyword"
+            type="search"
+            class="flex-1 h-7 bg-transparent text-xs text-[var(--color-text-primary)] outline-none placeholder-[var(--color-text-secondary)]"
+            placeholder="搜索你的笔记"
+            @keyup.enter.prevent="handleSearchSubmit"
+          />
         </div>
-
-        <!-- 原有按钮保留，样式保持一致 -->
-        <button class="icon-circle-btn" @click="handleOpenAdd">
-          <var-icon name="format-list-checkbox" :size="24" />
-        </button>
       </div>
     </header>
     <!-- 顶部标签导航 -->
@@ -136,31 +124,44 @@ onMounted(() => {
       <var-tab>我的笔记</var-tab>
     </var-tabs>
 
-    <!-- 滑动内容区域 -->
-    <var-swipe
-      ref="swipeRef"
-      class="knowledge-swipe"
-      :touchable="true"
-      :indicator="false"
-      :loop="false"
-      @change="onSwipeChange"
-    >
-      <var-swipe-item class="swipe-item">
-        <div class="p-4">
-          <OfficialPage />
-        </div>
-      </var-swipe-item>
-      <var-swipe-item class="swipe-item">
-        <div class="p-4">
-          <CommunityPage />
-        </div>
-      </var-swipe-item>
-      <var-swipe-item class="swipe-item">
-        <div class="p-4">
-          <MyNotesPage />
-        </div>
-      </var-swipe-item>
-    </var-swipe>
+    <!-- 子路由区域：用于展示搜索结果等子页面 -->
+    <router-view v-slot="{ Component, route }">
+      <!-- 当为搜索路由时，直接展示搜索结果组件 -->
+      <component
+        :is="Component"
+        v-if="route.name === 'KnowledgeSearch'"
+        class="flex-1 overflow-y-auto"
+      />
+
+      <!-- 默认知识库主内容：标签 + 滑动页 -->
+      <template v-else>
+        <!-- 滑动内容区域 -->
+        <var-swipe
+          ref="swipeRef"
+          class="knowledge-swipe"
+          :touchable="true"
+          :indicator="false"
+          :loop="false"
+          @change="onSwipeChange"
+        >
+          <var-swipe-item class="swipe-item">
+            <div class="p-4">
+              <OfficialPage />
+            </div>
+          </var-swipe-item>
+          <var-swipe-item class="swipe-item">
+            <div class="p-4">
+              <CommunityPage />
+            </div>
+          </var-swipe-item>
+          <var-swipe-item class="swipe-item">
+            <div class="p-4">
+              <MyNotesPage />
+            </div>
+          </var-swipe-item>
+        </var-swipe>
+      </template>
+    </router-view>
   </div>
 </template>
 

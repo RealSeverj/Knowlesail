@@ -310,7 +310,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
         // 更新当前学期
         if (term) {
           currentTerm.value = term
-          localStorage.setItem(STORAGE_KEYS.CURRICULUM_TERM, term)
+          setItem(STORAGE_KEYS.CURRICULUM_TERM, term)
         }
 
         // 保存到 localStorage

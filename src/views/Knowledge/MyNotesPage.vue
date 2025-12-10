@@ -34,9 +34,6 @@ function handleNoteClick(note) {
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
         <p class="text-xs text-secondary">当前共 {{ notes.length }} 条笔记</p>
       </div>
-      <var-button type="primary" round>
-        <var-icon name="plus" :size="16" />
-      </var-button>
     </div>
 
     <div v-if="notes.length" class="space-y-2">
@@ -45,11 +42,7 @@ function handleNoteClick(note) {
     <div v-else class="text-center py-12">
       <var-icon name="notebook" :size="48" color="var(--color-primary)" class="mb-3" />
       <h3 class="text-base font-medium text-foreground mb-2">暂无笔记</h3>
-      <p class="text-secondary text-xs mb-4">点击右上角“新建笔记”开始记录你的第一条学习收获</p>
-      <var-button type="primary" round size="small">
-        <var-icon name="plus" :size="16" class="mr-1" />
-        新建笔记
-      </var-button>
+      <p class="text-secondary text-xs mb-4">前往对话界面右上角生成你的第一条学习收获</p>
     </div>
   </div>
 </template>

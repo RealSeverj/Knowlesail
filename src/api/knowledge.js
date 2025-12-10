@@ -1,35 +1,6 @@
 import { http } from './axios-config'
 
 /**
- * 搜索知识库内容
- * @param {string} keyword 搜索关键字
- * @returns {Promise<{ items: Array }>} 搜索结果
- */
-export function searchKnowledge(keyword) {
-  const trimmed = keyword.trim()
-
-  // TODO: 接入后端搜索接口，当前仍使用 mock
-  const mockResults = [
-    {
-      id: '4b4b0a0a-5ff6-445c-b7fe-4f09a7e1f4d1',
-      type: 'summary',
-      title: '问好范例',
-      snippet: '用户与助手进行了初步的问候互动，助手主动提供帮助选项……',
-      source: '我的笔记',
-      highlight: trimmed
-    }
-  ]
-
-  const filtered = mockResults.filter((item) =>
-    trimmed ? item.title.includes(trimmed) || item.snippet.includes(trimmed) : true
-  )
-
-  return Promise.resolve({
-    items: filtered
-  })
-}
-
-/**
  * 获取对话总结（AI 总结）
  * POST /api/v1/conversation/summarize
  * @param {string} conversationId 对话 ID

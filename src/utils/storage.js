@@ -1,3 +1,5 @@
+import { Capacitor } from "@capacitor/core"
+
 /**
  * 本地存储工具函数
  * 提供统一的 localStorage 操作接口，支持：
@@ -6,7 +8,6 @@
  * - 带过期时间的缓存
  * - 防抖保存
  */
-
 // ==================== 存储键名常量 ====================
 export const STORAGE_KEYS = {
   // Chat 模块

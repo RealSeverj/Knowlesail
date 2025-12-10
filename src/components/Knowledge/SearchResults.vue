@@ -1,10 +1,11 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { searchKnowledge } from '@/api/knowledge'
+import { useKnowledgeStore } from '@/stores/knowledge'
 
 const route = useRoute()
 const router = useRouter()
+const knowledgeStore = useKnowledgeStore()
 
 const loading = ref(false)
 const error = ref('')
@@ -12,16 +13,63 @@ const items = ref([])
 const keyword = ref(route.query.q || '')
 
 async function doSearch() {
-  const q = String(keyword.value || '').trim()
+  const q = String(keyword.value || '').trim().toLowerCase()
   if (!q) {
     items.value = []
     return
   }
+
   loading.value = true
   error.value = ''
+
   try {
-    const res = await searchKnowledge(q)
-    items.value = res.items || []
+    const allSummaries = Array.isArray(knowledgeStore.summaries)
+      ? knowledgeStore.summaries
+      : []
+
+    // 在本地 summaries 中做简单全文搜索（标题 + 各个内容块 + summary_text）
+    const matched = allSummaries.filter((s) => {
+      const notes = s.notes || {}
+      const title = String(notes.title || '').toLowerCase()
+      const summaryText = String(s.summary_text || '').toLowerCase()
+
+      let blocksText = ''
+      let i = 1
+      while (notes[`block${i}`] !== undefined) {
+        blocksText += `\n${String(notes[`block${i}`])}`
+        i++
+      }
+      blocksText = blocksText.toLowerCase()
+
+      return title.includes(q) || summaryText.includes(q) || blocksText.includes(q)
+    })
+
+    // 映射为用于展示的 item 结构
+    items.value = matched.map((raw) => {
+      const notes = raw.notes || {}
+
+      const title = notes.title || raw.summary_text || '未命名笔记'
+
+      let snippetSource = ''
+      if (notes.block1) {
+        snippetSource = String(notes.block1)
+      } else if (raw.summary_text) {
+        snippetSource = String(raw.summary_text)
+      } else {
+        snippetSource = ''
+      }
+
+      const cleaned = snippetSource.replace(/[#>*`\-]/g, '').trim()
+      const snippet = cleaned.slice(0, 80)
+
+      return {
+        id: raw.id,
+        type: 'note',
+        source: '我的笔记',
+        title,
+        snippet
+      }
+    })
   } catch (e) {
     console.error(e)
     error.value = '搜索失败，请稍后重试'
@@ -51,7 +99,7 @@ function handleItemClick(item) {
 </script>
 
 <template>
-  <div class="ks-search-results">
+  <div class="ks-search-results px-4 pt-4">
     <div class="flex items-center justify-between mb-3">
       <div class="flex-1 min-w-0">
         <p class="text-xs text-text-secondary truncate">
