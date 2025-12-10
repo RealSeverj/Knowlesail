@@ -14,7 +14,8 @@ const nextId = () => {
 export function useLocalNotifications() {
   async function requestPermission() {
     if (!Capacitor.isNativePlatform()) {
-      errorMessage.value = '当前在浏览器环境，无法测试原生本地通知，请在 Android 真机或模拟器上测试。'
+      errorMessage.value =
+        '当前在浏览器环境，无法测试原生本地通知，请在 Android 真机或模拟器上测试。'
       console.warn(errorMessage.value)
       return false
     }
@@ -56,10 +57,10 @@ export function useLocalNotifications() {
           title,
           body,
           schedule: {
-            at: new Date(time),
-          },
-        },
-      ],
+            at: new Date(time)
+          }
+        }
+      ]
     })
 
     console.log('已安排本地通知:', { id, title, body, at: new Date(time) })
@@ -82,11 +83,11 @@ export function useLocalNotifications() {
             every: 'day',
             on: {
               hour,
-              minute,
-            },
-          },
-        },
-      ],
+              minute
+            }
+          }
+        }
+      ]
     })
 
     console.log('已安排每日重复通知:', { id, title, body, hour, minute })
@@ -99,7 +100,7 @@ export function useLocalNotifications() {
     return scheduleNotificationAt({
       title: '本地提醒',
       body: `这是 ${seconds} 秒后触发的本地通知`,
-      at,
+      at
     })
   }
 
@@ -109,6 +110,6 @@ export function useLocalNotifications() {
     requestPermission,
     scheduleNotificationAt,
     scheduleDailyAt,
-    scheduleNotificationInSeconds,
+    scheduleNotificationInSeconds
   }
 }

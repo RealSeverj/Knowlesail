@@ -123,11 +123,11 @@ onMounted(() => {
     </var-tabs>
 
     <!-- 子路由区域：用于展示搜索结果等子页面 -->
-    <router-view v-slot="{ Component, route }">
+    <router-view v-slot="{ Component, route: slotRoute }">
       <!-- 当为搜索路由时，直接展示搜索结果组件 -->
       <component
         :is="Component"
-        v-if="route.name === 'KnowledgeSearch'"
+        v-if="slotRoute.name === 'KnowledgeSearch'"
         class="flex-1 overflow-y-auto"
       />
 

@@ -111,7 +111,7 @@ const selfCodeXRender = {
           :key="imgProps.key"
           :src="imgProps.src"
           :alt="imgProps.alt"
-          onerror="this.classList.add('error');"
+          onerror="this.classList.add('error')"
         />
       </template>
     </XMarkdown>

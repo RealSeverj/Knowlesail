@@ -321,8 +321,12 @@ export const useChatStore = defineStore('chat', () => {
         id: cloud.id,
         title: cloud.title || '未命名对话',
         // 云端返回的是时间戳（毫秒），转换为 ISO 字符串
-        createdAt: cloud.created_at ? new Date(cloud.created_at).toISOString() : new Date().toISOString(),
-        updatedAt: cloud.updated_at ? new Date(cloud.updated_at).toISOString() : new Date().toISOString(),
+        createdAt: cloud.created_at
+          ? new Date(cloud.created_at).toISOString()
+          : new Date().toISOString(),
+        updatedAt: cloud.updated_at
+          ? new Date(cloud.updated_at).toISOString()
+          : new Date().toISOString(),
         messages: [], // 消息需要点击时再加载
         isCloudSync: true, // 标记为云端同步
         cloudSyncTime: null, // 实际内容加载后设置

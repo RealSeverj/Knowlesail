@@ -110,7 +110,9 @@ const goBack = () => {
       <section
         class="flex items-start gap-3 rounded-2xl bg-blue-50/80 p-4 backdrop-blur dark:bg-blue-500/10"
       >
-        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20">
+        <div
+          class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20"
+        >
           <var-icon name="information-outline" :size="18" color="var(--color-primary)" />
         </div>
         <div>

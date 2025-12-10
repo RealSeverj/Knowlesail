@@ -1,4 +1,4 @@
-import { Capacitor } from "@capacitor/core"
+import { Capacitor } from '@capacitor/core'
 
 /**
  * 本地存储工具函数
