@@ -87,7 +87,11 @@
   --bottom-navigation-border-color: var(--color-border);
   --bottom-navigation-item-inactive-color: #646566;
   --bottom-navigation-item-active-color: var(--color-primary);
-  --bottom-navigation-item-active-background-color: var(--color-surface-variant);
+  --bottom-navigation-item-active-background-color: color-mix(
+    in srgb,
+    var(--color-surface-variant) 75%,
+    transparent 25%
+  );
   --bottom-navigation-item-icon-size: 24px;
   --bottom-navigation-item-font-size: 12px;
 }

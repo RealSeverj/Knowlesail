@@ -20,10 +20,23 @@ const background = computed({
   }
 })
 
+const normalizeBgImage = (val) => {
+  const trimmed = (val || '').trim()
+  if (!trimmed) return ''
+  if (/^url\(/i.test(trimmed)) return trimmed
+  // wrap plain URL/dataURL into url() for CSS background-image
+  return `url("${trimmed.replace(/"/g, '\\"')}")`
+}
+
 const bgImage = computed({
-  get: () => theme.value?.backgroundImage || '',
+  // 展示时去掉包裹的 url()，输入时再封装
+  get: () => {
+    const raw = theme.value?.backgroundImage || ''
+    const match = raw.match(/^url\(["']?(.*?)["']?\)$/i)
+    return match ? match[1] : raw
+  },
   set: (val) => {
-    updateCustomTheme({ backgroundImage: val })
+    updateCustomTheme({ backgroundImage: normalizeBgImage(val) })
   }
 })
 
@@ -44,6 +57,37 @@ const bgBlur = computed({
     updateCustomTheme({ bgBlur: safe })
   }
 })
+
+const handleLocalImageUpload = async (event) => {
+  const file = event?.target?.files?.[0]
+  if (!file) return
+
+  // 简单大小限制，避免 localStorage 存过大的 dataURL
+  const MAX_SIZE = 2 * 1024 * 1024 // 2MB
+  if (file.size > MAX_SIZE) {
+    window.alert('图片体积较大，请选择 2MB 以内的图片')
+    event.target.value = ''
+    return
+  }
+
+  const readAsDataURL = (f) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = (err) => reject(err)
+      reader.readAsDataURL(f)
+    })
+
+  try {
+    const dataUrl = await readAsDataURL(file)
+    updateCustomTheme({ backgroundImage: normalizeBgImage(dataUrl) })
+  } catch (err) {
+    console.error('读取本地图片失败', err)
+    window.alert('读取图片失败，请重试')
+  } finally {
+    event.target.value = ''
+  }
+}
 </script>
 
 <template>
@@ -90,8 +134,14 @@ const bgBlur = computed({
         class="w-full rounded border px-2 py-1 text-xs border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/60"
         placeholder="如 https://xxx/xxx.jpg，不填则使用纯色背景"
       />
+      <div class="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+        <label class="file-button">
+          选择本地图片
+          <input type="file" accept="image/*" class="file-input" @change="handleLocalImageUpload" />
+        </label>
+      </div>
       <p class="text-[11px] text-slate-400 dark:text-slate-500">
-        建议使用尺寸较大的图片（如 1920x1080），以保证不同设备下效果。
+        本地文件建议 2MB 以内，或使用可跨域的 URL 地址。
       </p>
     </div>
 
@@ -139,5 +189,36 @@ const bgBlur = computed({
     </p>
   </div>
 </template>
+<style scoped>
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: color-mix(in srgb, var(--color-surface, #f8fafc) 70%, transparent 30%);
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
 
-<style scoped></style>
+.file-button:hover {
+  background: color-mix(in srgb, var(--color-surface-variant, #e5e7eb) 70%, transparent 30%);
+  border-color: var(--color-border, #e5e7eb);
+}
+
+.file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+</style>
