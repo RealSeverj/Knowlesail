@@ -44,31 +44,34 @@ const handleNewChat = () => {
           <span class="text-xl font-semibold text-[var(--color-text-primary)]">
             {{ title }}
           </span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
+          <span class="truncate">{{ subtitle }}</span>
           <span
             v-if="isCloudSync"
-            class="cloud-sync-badge inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+            class="cloud-sync-badge inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0"
           >
             <var-icon name="cloud-outline" :size="12" />
             云端同步
           </span>
         </div>
-        <span class="mt-1 text-xs text-[var(--color-text-secondary)]">
-          {{ subtitle }}
-        </span>
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <ExportToKnowledge />
-
-      <button type="button" class="icon-circle-btn" @click="handleNewChat">
-        <var-icon name="plus" :size="24" />
-        <span class="sr-only">新聊天</span>
-      </button>
-      <button type="button" class="icon-circle-btn" @click="handleNavigateHistory">
-        <var-icon name="menu" :size="24" />
-        <span class="sr-only">查看聊天历史</span>
-      </button>
+    <div class="flex flex-col items-end gap-1">
+      <div class="flex items-center gap-2">
+        <button type="button" class="icon-circle-btn" @click="handleNewChat">
+          <var-icon name="plus" :size="24" />
+          <span class="sr-only">新聊天</span>
+        </button>
+        <button type="button" class="icon-circle-btn" @click="handleNavigateHistory">
+          <var-icon name="menu" :size="24" />
+          <span class="sr-only">查看聊天历史</span>
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <ExportToKnowledge />
+      </div>
     </div>
   </header>
 </template>

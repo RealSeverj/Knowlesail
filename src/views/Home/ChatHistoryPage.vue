@@ -44,7 +44,7 @@ const handleBack = () => {
 
 const handleSelect = async (conversationId) => {
   const conv = conversations.value.find((c) => c.id === conversationId)
-  
+
   // 如果是需要加载的云端会话，显示加载状态
   if (conv?.isCloudSync && conv?.needsLoad) {
     loadingConversationId.value = conversationId
@@ -59,7 +59,7 @@ const handleSelect = async (conversationId) => {
   } else {
     await chatStore.switchConversation(conversationId)
   }
-  
+
   router.push({ name: 'Chat', params: { conversationId } })
 }
 
@@ -137,19 +137,21 @@ const formatTimestamp = (value) => {
                         :size="16"
                         class="animate-spin text-[var(--color-primary)]"
                       />
-                      <span class="truncate text-base font-semibold text-[var(--color-text-primary)]">
+                      <span
+                        class="truncate text-base font-semibold text-[var(--color-text-primary)] min-w-[140px]"
+                      >
                         {{ conversation.title || '未命名对话' }}
                       </span>
                       <span
                         v-if="conversation.isCloudSync"
-                        class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                        class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0 ml-auto"
                       >
                         <var-icon name="cloud-outline" :size="10" />
                         云端
                       </span>
                       <span
                         v-if="conversation.id === chatStore.currentConversationId"
-                        class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)]"
+                        class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)] shrink-0"
                       >
                         当前
                       </span>
