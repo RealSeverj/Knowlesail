@@ -123,84 +123,140 @@ const handleNavigateHistory = () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full relative overflow-hidden bg-gradient-to-b from-transparent to-white/30 dark:to-slate-900/30">
+  <div
+    class="flex flex-col h-full relative overflow-hidden bg-gradient-to-b from-transparent to-white/30 dark:to-slate-900/30"
+  >
     <!-- 主内容区 -->
     <main class="flex-1 px-5 pb-6 overflow-y-auto no-scrollbar flex flex-col z-10">
       <!-- Logo & Slogan -->
       <section class="flex-1 flex flex-col items-center justify-center min-h-[200px] mt-4">
         <div class="relative mb-6">
-          <div class="absolute inset-0 blur-3xl rounded-full" style="background-color: color-mix(in srgb, var(--color-primary), transparent 80%)"></div>
-          <img src="/icon.png" alt="Logo" class="relative w-36 h-36 object-contain drop-shadow-xl animate-float" />
+          <div
+            class="absolute inset-0 blur-3xl rounded-full"
+            style="background-color: color-mix(in srgb, var(--color-primary), transparent 80%)"
+          ></div>
+          <img
+            src="/icon.png"
+            alt="Logo"
+            class="relative w-36 h-36 object-contain drop-shadow-xl animate-float"
+          />
         </div>
         <h2 class="text-xl font-bold text-[var(--color-text-primary)] mb-2">有什么可以帮你的？</h2>
-        <p class="text-[var(--color-text-secondary)] text-sm opacity-80">解答问题 · 整理笔记 · 规划学习</p>
+        <p class="text-[var(--color-text-secondary)] text-sm opacity-80">
+          解答问题 · 整理笔记 · 规划学习
+        </p>
       </section>
 
       <!-- 快捷操作卡片 -->
       <section class="grid grid-cols-2 gap-4 mb-6">
         <button
-          class="relative flex flex-col p-4 rounded-2xl transition-all duration-200 backdrop-blur-md shadow-sm hover:shadow-md active:scale-[0.98] border group"
-          style="background-color: color-mix(in srgb, var(--color-surface), transparent 40%); border-color: color-mix(in srgb, var(--color-border), transparent 80%)"
-          @click="startNewChat"
           v-ripple
+          class="relative flex flex-col items-center p-4 rounded-2xl transition-all duration-200 backdrop-blur-md shadow-sm hover:shadow-md active:scale-[0.98] border group"
+          style="
+            background-color: color-mix(in srgb, var(--color-surface), transparent 40%);
+            border-color: color-mix(in srgb, var(--color-border), transparent 80%);
+          "
+          @click="startNewChat"
         >
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors"
-               style="background-color: color-mix(in srgb, var(--color-primary), transparent 90%); color: var(--color-primary)">
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors"
+            style="
+              background-color: color-mix(in srgb, var(--color-primary), transparent 90%);
+              color: var(--color-primary);
+            "
+          >
             <var-icon name="message-processing-outline" :size="24" />
           </div>
-          <div class="text-left">
-            <span class="block text-base font-bold text-[var(--color-text-primary)]">开启新对话</span>
-            <span class="block text-xs text-[var(--color-text-secondary)] mt-0.5">探索无限可能</span>
+          <div class="text-center">
+            <span class="block text-base font-bold text-[var(--color-text-primary)]"
+              >开启新对话</span
+            >
+            <span class="block text-xs text-[var(--color-text-secondary)] mt-0.5"
+              >探索无限可能</span
+            >
           </div>
-          <var-icon name="arrow-right" :size="16" class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-text-tertiary)]" />
+          <var-icon
+            name="arrow-right"
+            :size="16"
+            class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-text-tertiary)]"
+          />
         </button>
 
         <button
           v-if="hasLastConversation"
-          class="relative flex flex-col p-4 rounded-2xl transition-all duration-200 backdrop-blur-md shadow-sm hover:shadow-md active:scale-[0.98] border group"
-          style="background-color: color-mix(in srgb, var(--color-surface), transparent 30%); border-color: color-mix(in srgb, var(--color-border), transparent 80%)"
-          @click="openLastChat"
           v-ripple
+          class="relative flex flex-col items-center p-4 rounded-2xl transition-all duration-200 backdrop-blur-md shadow-sm hover:shadow-md active:scale-[0.98] border group"
+          style="
+            background-color: color-mix(in srgb, var(--color-surface), transparent 30%);
+            border-color: color-mix(in srgb, var(--color-border), transparent 80%);
+          "
+          @click="openLastChat"
         >
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors"
-               style="background-color: color-mix(in srgb, var(--color-info), transparent 90%); color: var(--color-info)">
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors"
+            style="
+              background-color: color-mix(in srgb, var(--color-info), transparent 90%);
+              color: var(--color-info);
+            "
+          >
             <var-icon name="history" :size="24" />
           </div>
-          <div class="text-left">
+          <div class="text-center">
             <span class="block text-base font-bold text-[var(--color-text-primary)]">继续对话</span>
-            <span class="block text-xs text-[var(--color-text-secondary)] mt-0.5">回到上次话题</span>
+            <span class="block text-xs text-[var(--color-text-secondary)] mt-0.5"
+              >回到上次话题</span
+            >
           </div>
         </button>
-        
+
         <!-- 占位，保持布局平衡如果只有一个按钮 -->
-        <div v-else class="relative flex flex-col p-4 rounded-2xl transition-all duration-200 bg-transparent shadow-none border-dashed border-2 opacity-50 items-center justify-center"
-             style="border-color: var(--color-border)">
-           <span class="text-xs text-[var(--color-text-tertiary)]">暂无历史记录</span>
+        <div
+          v-else
+          class="relative flex flex-col p-4 rounded-2xl transition-all duration-200 bg-transparent shadow-none border-dashed border-2 opacity-50 items-center justify-center"
+          style="border-color: var(--color-border)"
+        >
+          <span class="text-xs text-[var(--color-text-tertiary)]">暂无历史记录</span>
         </div>
       </section>
 
       <!-- 智能概览面板 -->
-      <section class="backdrop-blur-xl rounded-2xl p-1 border"
-               style="background-color: color-mix(in srgb, var(--color-surface), transparent 30%); border-color: color-mix(in srgb, var(--color-border), transparent 80%)">
+      <section
+        class="backdrop-blur-xl rounded-2xl p-1 border"
+        style="
+          background-color: color-mix(in srgb, var(--color-surface), transparent 30%);
+          border-color: color-mix(in srgb, var(--color-border), transparent 80%);
+        "
+      >
         <div class="flex flex-col">
-          
           <!-- 下一节课 -->
-          <button 
+          <button
             v-if="nextClass"
+            v-ripple
             class="w-full flex items-center p-3 transition-colors rounded-xl hover:bg-white/50 dark:hover:bg-white/5 active:bg-white/80 dark:active:bg-white/10 border-b last:border-b-0"
             style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"
             @click="goToCurriculum"
-            v-ripple
           >
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                 style="background-color: color-mix(in srgb, var(--color-warning), transparent 90%); color: var(--color-warning)">
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="
+                background-color: color-mix(in srgb, var(--color-warning), transparent 90%);
+                color: var(--color-warning);
+              "
+            >
               <var-icon name="notebook" :size="20" />
             </div>
             <div class="flex-1 min-w-0 text-left ml-3">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-bold text-[var(--color-text-primary)] truncate">{{ nextClass.name }}</span>
-                <span class="text-xs font-medium px-1.5 py-0.5 rounded"
-                      style="color: var(--color-warning); background-color: color-mix(in srgb, var(--color-warning), transparent 90%)">
+                <span class="text-sm font-bold text-[var(--color-text-primary)] truncate">{{
+                  nextClass.name
+                }}</span>
+                <span
+                  class="text-xs font-medium px-1.5 py-0.5 rounded"
+                  style="
+                    color: var(--color-warning);
+                    background-color: color-mix(in srgb, var(--color-warning), transparent 90%);
+                  "
+                >
                   {{ nextClass.startTimeStr }}
                 </span>
               </div>
@@ -210,35 +266,57 @@ const handleNavigateHistory = () => {
             </div>
             <var-icon name="chevron-right" :size="18" class="ml-2 text-gray-400" />
           </button>
-          <div v-else-if="curriculumStore.initialized" 
-               class="w-full flex items-center p-3 transition-colors rounded-xl opacity-60 border-b last:border-b-0"
-               style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)">
-             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style="background-color: color-mix(in srgb, var(--color-text-tertiary), transparent 90%); color: var(--color-text-tertiary)">
+          <div
+            v-else-if="curriculumStore.initialized"
+            class="w-full flex items-center p-3 transition-colors rounded-xl opacity-60 border-b last:border-b-0"
+            style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="
+                background-color: color-mix(in srgb, var(--color-text-tertiary), transparent 90%);
+                color: var(--color-text-tertiary);
+              "
+            >
               <var-icon name="bell-outline" :size="20" />
             </div>
             <div class="flex-1 ml-3 text-left">
-              <span class="text-sm font-medium text-[var(--color-text-primary)]">今日课程已结束</span>
+              <span class="text-sm font-medium text-[var(--color-text-primary)]"
+                >今日课程已结束</span
+              >
             </div>
           </div>
 
           <!-- 待办事项 -->
-          <button 
+          <button
             v-if="nearestTodo"
+            v-ripple
             class="w-full flex items-center p-3 transition-colors rounded-xl hover:bg-white/50 dark:hover:bg-white/5 active:bg-white/80 dark:active:bg-white/10 border-b last:border-b-0"
             style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"
             @click="goToTodo"
-            v-ripple
           >
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                 style="background-color: color-mix(in srgb, var(--color-success), transparent 90%); color: var(--color-success)">
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="
+                background-color: color-mix(in srgb, var(--color-success), transparent 90%);
+                color: var(--color-success);
+              "
+            >
               <var-icon name="checkbox-marked-circle-outline" :size="20" />
             </div>
             <div class="flex-1 min-w-0 text-left ml-3">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-bold text-[var(--color-text-primary)] truncate">{{ nearestTodo.title }}</span>
-                <span class="text-xs font-medium px-1.5 py-0.5 rounded"
-                      :style="nearestTodo.isUrgent ? 'color: var(--color-error); background-color: color-mix(in srgb, var(--color-error), transparent 90%)' : 'color: var(--color-success); background-color: color-mix(in srgb, var(--color-success), transparent 90%)'">
+                <span class="text-sm font-bold text-[var(--color-text-primary)] truncate">{{
+                  nearestTodo.title
+                }}</span>
+                <span
+                  class="text-xs font-medium px-1.5 py-0.5 rounded"
+                  :style="
+                    nearestTodo.isUrgent
+                      ? 'color: var(--color-error); background-color: color-mix(in srgb, var(--color-error), transparent 90%)'
+                      : 'color: var(--color-success); background-color: color-mix(in srgb, var(--color-success), transparent 90%)'
+                  "
+                >
                   {{ nearestTodo.timeLeftStr }}
                 </span>
               </div>
@@ -250,14 +328,19 @@ const handleNavigateHistory = () => {
           </button>
 
           <!-- 今日日程 -->
-          <button 
+          <button
+            v-ripple
             class="w-full flex items-center p-3 transition-colors rounded-xl hover:bg-white/50 dark:hover:bg-white/5 active:bg-white/80 dark:active:bg-white/10 border-b last:border-b-0"
             style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"
             @click="fetchDailySchedule"
-            v-ripple
           >
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                 style="background-color: color-mix(in srgb, var(--color-primary), transparent 90%); color: var(--color-primary)">
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="
+                background-color: color-mix(in srgb, var(--color-primary), transparent 90%);
+                color: var(--color-primary);
+              "
+            >
               <var-icon name="calendar-month-outline" :size="20" />
             </div>
             <div class="flex-1 min-w-0 text-left ml-3">
@@ -268,7 +351,6 @@ const handleNavigateHistory = () => {
             </div>
             <var-icon name="chevron-right" :size="18" class="ml-2 text-gray-400" />
           </button>
-
         </div>
       </section>
     </main>
@@ -289,8 +371,10 @@ const handleNavigateHistory = () => {
     >
       <template #header>
         <div class="flex items-center gap-2">
-          <div class="flex items-center justify-center w-8 h-8 rounded-lg"
-               style="background-color: color-mix(in srgb, var(--color-primary), transparent 90%)">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg"
+            style="background-color: color-mix(in srgb, var(--color-primary), transparent 90%)"
+          >
             <var-icon name="calendar-month" :size="18" color="var(--color-primary)" />
           </div>
           <div>
@@ -312,8 +396,10 @@ const handleNavigateHistory = () => {
 
         <!-- 错误状态 -->
         <div v-else-if="scheduleError" class="flex flex-col items-center justify-center py-12">
-          <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-               style="background-color: color-mix(in srgb, var(--color-error), transparent 90%)">
+          <div
+            class="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+            style="background-color: color-mix(in srgb, var(--color-error), transparent 90%)"
+          >
             <var-icon name="alert-circle-outline" :size="32" color="var(--color-error)" />
           </div>
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">获取日程失败，请稍后重试</p>
@@ -358,16 +444,19 @@ const handleNavigateHistory = () => {
 }
 
 @keyframes blink {
-  0%, 50% {
+  0%,
+  50% {
     opacity: 1;
   }
-  51%, 100% {
+  51%,
+  100% {
     opacity: 0;
   }
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
