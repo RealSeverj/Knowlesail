@@ -200,7 +200,7 @@ initTheme()
         <var-cell icon="bell-outline" title="课前提醒与内容推送">
           <template #description>
             <span class="text-xs text-slate-500 dark:text-slate-400">
-              上课前自动推送相关提醒与资料
+              自动推送相关提醒与资料
             </span>
           </template>
           <template #extra>

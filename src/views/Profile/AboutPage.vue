@@ -12,7 +12,7 @@ import AppHeader from '@/components/Layout/AppHeader.vue'
       <div class="text-center py-12">
         <var-icon name="information" :size="48" color="var(--color-primary)" class="mb-3" />
         <h2 class="text-xl font-semibold text-foreground mb-2">Knowlesail</h2>
-        <p class="text-secondary text-sm mb-4">学海智航 v1.0.0</p>
+        <p class="text-secondary text-sm mb-4">学海智航 v1.5.0</p>
         <p class="text-tertiary text-xs">智能学习助手平台</p>
       </div>
     </main>
