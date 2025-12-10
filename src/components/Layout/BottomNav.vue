@@ -41,13 +41,8 @@ const navItems = [
 // 可写的 computed，用于与底部导航的 v-model 交互
 const activeTab = computed({
   get() {
-    // 对于知识库的子路由，也高亮知识库标签
-    if (route.path.startsWith('/knowledge')) {
-      return 'Knowledge'
-    } else if (route.path.startsWith('/profile')) {
-      return 'Profile'
-    }
-    return route.name
+    const matched = [...route.matched].reverse().find((record) => record.meta?.tab)
+    return matched?.meta.tab || 'Home'
   },
   set(val) {
     const target = navItems.find((n) => n.name === val)

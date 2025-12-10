@@ -54,62 +54,62 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: LiveAssistence,
-    meta: { requiresAuth: true, title: '智能助手' }
+    meta: { requiresAuth: true, title: '智能助手', tab: 'Home' }
   },
   {
     path: '/home/chat/:conversationId',
     name: 'Chat',
     component: HomeView,
-    meta: { requiresAuth: true, title: '智能助手' }
+    meta: { requiresAuth: true, title: '智能助手', tab: 'Home' }
   },
   {
     path: '/home/history',
     name: 'ChatHistory',
     component: ChatHistoryPage,
-    meta: { requiresAuth: true, title: '聊天历史' }
+    meta: { requiresAuth: true, title: '聊天历史', tab: 'Home' }
   },
   {
     path: '/curriculum',
     name: 'Curriculum',
     component: CurriculumView,
-    meta: { requiresAuth: true, title: '课程表' }
+    meta: { requiresAuth: true, title: '课程表', tab: 'Curriculum' }
   },
   {
     path: '/todo',
     name: 'Todo',
     component: TodoView,
-    meta: { requiresAuth: true, title: '待办事项' }
+    meta: { requiresAuth: true, title: '待办事项', tab: 'Todo' }
   },
   {
     path: '/knowledge',
     name: 'Knowledge',
     component: KnowledgeView,
-    meta: { requiresAuth: true, title: '知识库' },
+    meta: { requiresAuth: true, title: '知识库', tab: 'Knowledge' },
     redirect: '/knowledge/my-notes',
     children: [
       {
         path: 'official',
         name: 'OfficialKnowledge',
         component: OfficialPage,
-        meta: { title: '官方知识库' }
+        meta: { title: '官方知识库', tab: 'Knowledge' }
       },
       {
         path: 'community',
         name: 'CommunityKnowledge',
         component: CommunityPage,
-        meta: { title: '社区共建' }
+        meta: { title: '社区共建', tab: 'Knowledge' }
       },
       {
         path: 'my-notes',
         name: 'MyNotes',
         component: MyNotesPage,
-        meta: { title: '我的笔记' }
+        meta: { title: '我的笔记', tab: 'Knowledge' }
       },
       {
         path: 'search',
         name: 'KnowledgeSearch',
         component: SearchResults,
-        meta: { title: '搜索结果' }
+        meta: { title: '搜索结果', tab: 'Knowledge' }
       }
     ]
   },
@@ -118,19 +118,19 @@ const routes = [
     path: '/note/:id',
     name: 'NoteDetail',
     component: NoteDetailPage,
-    meta: { requiresAuth: true, title: '笔记详情' }
+    meta: { requiresAuth: true, title: '笔记详情', tab: 'Knowledge' }
   },
   {
     path: '/note/:id/edit',
     name: 'NoteEdit',
     component: NoteEditPage,
-    meta: { requiresAuth: true, title: '编辑笔记' }
+    meta: { requiresAuth: true, title: '编辑笔记', tab: 'Knowledge' }
   },
   {
     path: '/profile',
     name: 'Profile',
     component: ProfileView,
-    meta: { requiresAuth: true, title: '个人中心' }
+    meta: { requiresAuth: true, title: '个人中心', tab: 'Profile' }
   },
   // 认证页面
   {
@@ -150,19 +150,19 @@ const routes = [
     path: '/profile/edit',
     name: 'ProfileEdit',
     component: ProfileEdit,
-    meta: { requiresAuth: true, title: '编辑资料' }
+    meta: { requiresAuth: true, title: '编辑资料', tab: 'Profile' }
   },
   {
     path: '/profile/preferences',
     name: 'PreferenceSettings',
     component: PreferenceSettings,
-    meta: { requiresAuth: true, title: '偏好设置' }
+    meta: { requiresAuth: true, title: '偏好设置', tab: 'Profile' }
   },
   {
     path: '/profile/about',
     name: 'About',
     component: AboutPage,
-    meta: { title: '关于' }
+    meta: { title: '关于', tab: 'Profile' }
   }
 ]
 
