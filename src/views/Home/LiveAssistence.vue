@@ -11,11 +11,13 @@ import { getNearestTodo } from '@/utils/todo'
 import { simulateStreamOutput } from '@/utils/common'
 import PopFrame from '@/components/Common/PopFrame.vue'
 import MarkdownRenderer from '@/components/Home/MarkdownRenderer/MarkdownRenderer.vue'
+import { useProfileStore } from '@/stores'
 
 const router = useRouter()
 const chatStore = useChatStore()
 const curriculumStore = useCurriculumStore()
 const todoStore = useTodoStore()
+const profileStore = useProfileStore()
 
 // 最近的一个对话
 const lastConversation = computed(() => chatStore.conversations[0] || null)
@@ -337,6 +339,7 @@ const handleNavigateHistory = () => {
 
           <!-- 今日日程 -->
           <button
+            v-if="profileStore.preferences.personalizedRecommend"
             v-ripple
             class="w-full flex items-center p-3 transition-colors rounded-xl hover:bg-white/50 dark:hover:bg-white/5 active:bg-white/80 dark:active:bg-white/10 border-b last:border-b-0"
             style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"

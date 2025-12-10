@@ -101,9 +101,7 @@ onMounted(() => {
       </div>
       <div class="flex items-center gap-2 ml-3">
         <!-- 保留搜索图标并优化搜索框高度 -->
-        <div
-          class="flex items-center gap-2 bg-surface rounded-full shadow-sm px-2 h-9 w-42"
-        >
+        <div class="flex items-center gap-2 bg-surface rounded-full shadow-sm px-2 h-9 w-42">
           <span class="flex h-7 w-7 items-center justify-center rounded-full">
             <var-icon name="magnify" :size="20" />
           </span>
@@ -167,8 +165,7 @@ onMounted(() => {
 
 <style scoped>
 .knowledge-tabs {
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background-color: transparent;
   position: sticky;
   top: 0;
   z-index: 10;
