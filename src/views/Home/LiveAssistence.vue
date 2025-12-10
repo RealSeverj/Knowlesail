@@ -8,11 +8,6 @@ import { getDailySchedule } from '@/api/curriculum'
 import { getCurrentDateInfo } from '@/utils/date'
 import { getNextClass } from '@/utils/curriculum'
 import { getNearestTodo } from '@/utils/todo'
-import {
-  scheduleNextClassReminder,
-  scheduleNearestTodoReminder,
-  scheduleDailyScheduleReminder,
-} from '@/utils/notification'
 import { simulateStreamOutput } from '@/utils/common'
 import PopFrame from '@/components/Common/PopFrame.vue'
 import MarkdownRenderer from '@/components/Home/MarkdownRenderer/MarkdownRenderer.vue'
@@ -48,17 +43,6 @@ const nearestTodo = computed(() => getNearestTodo(todoStore))
 onMounted(async () => {
   if (!curriculumStore.initialized) await curriculumStore.initCourses()
   if (!todoStore.initialized) await todoStore.initTodos()
-
-  // 课程和待办初始化完成后，根据当前数据安排本地提醒
-  if (nextClass.value) {
-    scheduleNextClassReminder(nextClass.value)
-  }
-  if (nearestTodo.value) {
-    scheduleNearestTodoReminder(nearestTodo.value)
-  }
-
-  // 每天早上 8 点的今日日程提醒
-  scheduleDailyScheduleReminder()
 })
 
 const goToCurriculum = () => router.push({ name: 'Curriculum' })

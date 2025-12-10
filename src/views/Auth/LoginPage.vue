@@ -68,7 +68,7 @@ const handleLogin = async () => {
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 flex flex-col px-8 pt-20 pb-8"
+    class="min-h-screen flex flex-col px-8 pt-20 pb-8"
   >
     <!-- Logo 和标题区域 -->
     <div class="flex flex-col items-center mb-12">

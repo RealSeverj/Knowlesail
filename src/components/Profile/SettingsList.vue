@@ -14,7 +14,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['open-preference', 'open-about', 'open-custom-theme'])
+const emit = defineEmits([
+  'open-preference',
+  'open-about',
+  'open-custom-theme',
+  'update:preferences',
+])
 
 const { theme, initTheme, setTheme } = useTheme()
 
@@ -71,6 +76,13 @@ const handleLogout = async () => {
     authStore.logout()
     router.push('/login')
   }
+}
+
+const toggleAutoCourseReminder = (value) => {
+  emit('update:preferences', {
+    ...props.preferences,
+    autoCourseReminder: value,
+  })
 }
 
 initTheme()
@@ -204,7 +216,10 @@ initTheme()
             </span>
           </template>
           <template #extra>
-            <var-switch :model-value="preferences.autoCourseReminder" readonly />
+            <var-switch
+              :model-value="preferences.autoCourseReminder"
+              @update:model-value="toggleAutoCourseReminder"
+            />
           </template>
         </var-cell>
       </div>

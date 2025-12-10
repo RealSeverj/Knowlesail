@@ -40,6 +40,11 @@ const openCustomTheme = () => {
 const closeCustomTheme = () => {
   showCustomThemeDialog.value = false
 }
+
+// 更新偏好设置（包括课前提醒与内容推送开关）
+const handleUpdatePreferences = (nextPreferences) => {
+  profileStore.updatePreferences(nextPreferences)
+}
 </script>
 
 <template>
@@ -64,6 +69,7 @@ const closeCustomTheme = () => {
           @open-preference="goToPreferenceSettings"
           @open-about="goToAbout"
           @open-custom-theme="openCustomTheme"
+          @update:preferences="handleUpdatePreferences"
         />
       </section>
 
