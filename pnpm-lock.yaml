@@ -38,6 +38,9 @@ importers:
       '@capacitor/screen-orientation':
         specifier: ^7.0.2
         version: 7.0.3(@capacitor/core@7.4.4)
+      '@capacitor/splash-screen':
+        specifier: ^7.0.4
+        version: 7.0.4(@capacitor/core@7.4.4)
       '@capacitor/status-bar':
         specifier: ^7.0.3
         version: 7.0.4(@capacitor/core@7.4.4)
@@ -356,6 +359,11 @@ packages:
 
   '@capacitor/screen-orientation@7.0.3':
     resolution: {integrity: sha512-AJzXKh3ks69l1PMwBTQ4pb7DTRDlHui688JeFVymQFXg6jb2Y4rHs276ioPm8rQxmS4Svnln8oCS5Xz2hJ9WFg==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/splash-screen@7.0.4':
+    resolution: {integrity: sha512-Tv2nepaHJBew2opuF5cHI7nhTAKdWuHxQFhUT6pIS9zfbUGNBEOOQLF4459DfabwRorLN16/DPo3Xk4qNnCRtw==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -4267,6 +4275,10 @@ snapshots:
       '@capacitor/core': 7.4.4
 
   '@capacitor/screen-orientation@7.0.3(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
+
+  '@capacitor/splash-screen@7.0.4(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
 

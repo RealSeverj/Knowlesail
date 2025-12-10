@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, provide, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
-import { useBackButtonHandler } from './composables/useBackButtonHandler'
+import { useBackButtonHandler } from '@/composables/useBackButtonHandler'
 import { applyStatusBarTheme } from '@/composables/useStatusBar'
 import { useProfileStore } from '@/stores/profile'
 import {
@@ -18,12 +18,15 @@ import AppLayout from '@/components/Layout/AppLayout.vue'
 import ToastContainer from '@/components/ToastContainer.vue'
 import ConfirmDialogHost from '@/components/ConfirmDialog.vue'
 
+import { SplashScreen } from '@capacitor/splash-screen';
+
 const { theme, initTheme } = useTheme()
 const profileStore = useProfileStore()
 const curriculumStore = useCurriculumStore()
 const todoStore = useTodoStore()
 
 onMounted(async () => {
+  await SplashScreen.hide();
   await initTheme()
   await applyStatusBarTheme(theme.value)
 
@@ -42,6 +45,7 @@ onMounted(async () => {
   } else {
     await cancelAllCourseRelatedNotifications()
   }
+  await applyStatusBarTheme(theme.value)
 })
 
 // 监听主题配置变化，动态同步原生状态栏样式
