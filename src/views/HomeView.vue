@@ -149,7 +149,7 @@ watch(
       />
     </div>
     <InputBox
-      :expanded="inputExpanded"
+      v-model="inputExpanded"
       @request-expand="handleRequestExpand"
       @request-collapse="handleRequestCollapse"
     />

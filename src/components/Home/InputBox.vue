@@ -4,20 +4,17 @@ import { useChatStore } from '@/stores/chat'
 import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 
-const { keyboardOffset } = useKeyboardOffset()
+const keyboardOffset = useKeyboardOffset()
 const finalOffset = computed(() => (keyboardOffset.value ? keyboardOffset.value + 12 : 80))
 
-const props = defineProps({
-  expanded: {
-    type: Boolean,
-    default: false
-  }
+const expanded = defineModel({
+  type: Boolean,
+  default: false
 })
 
 const emit = defineEmits(['request-expand', 'request-collapse'])
 
 const chatStore = useChatStore()
-const expanded = computed(() => props.expanded)
 
 const textareaRows = ref(1)
 const inputText = ref('')
@@ -125,7 +122,7 @@ const handleExpand = () => {
 </script>
 
 <template>
-  <div class="floating-input-layer">
+  <div class="floating-input-layer" @focusout="expanded = false" @click="expanded = true">
     <div
       class="morph-shell"
       :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
