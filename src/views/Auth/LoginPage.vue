@@ -26,10 +26,7 @@ const handleLogin = async () => {
 
     // axios 响应拦截器已返回 res.data，所以 res 就是后端返回的 JSON
     // 后端返回格式: { data: { identifier, cookie, access_token } }
-    console.log('登录响应:', res)
     const data = res.data || res
-    console.log('解析后的登录数据:', data)
-
     const userInfo = {
       id: data.identifier,
       stu_id: stuId.value
@@ -41,8 +38,6 @@ const handleLogin = async () => {
       identifier: data.identifier,
       cookie: data.cookie
     }
-
-    console.log('认证凭证:', authCredentials)
 
     if (!authCredentials.access_token) {
       toast.error('登录失败：服务器未返回有效 token')

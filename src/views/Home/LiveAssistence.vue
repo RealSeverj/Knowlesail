@@ -68,7 +68,6 @@ const fetchDailySchedule = async () => {
 
   try {
     const res = await getDailySchedule()
-    console.log('每日日程响应:', res)
     if (res.code === '10000' && res.data?.schedule) {
       fullScheduleContent.value = res.data.schedule
       scheduleLoading.value = false

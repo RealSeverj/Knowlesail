@@ -48,7 +48,6 @@ export const useChatStore = defineStore('chat', () => {
       messages: [],
       isCloudSync: false // 本地创建的会话
     }
-    console.log('Creating conversation:', conversation)
     conversations.value.unshift(conversation)
     currentConversationId.value = conversation.id
     autoSave()

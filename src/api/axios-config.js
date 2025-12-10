@@ -97,7 +97,6 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   async (res) => {
     const data = res.data
-    console.log('API Response:', data)
     // 检查是否返回 50001 错误码（凭证过期）
     if (data?.code === '50001' || data?.code === 50001) {
       const originalRequest = res.config
