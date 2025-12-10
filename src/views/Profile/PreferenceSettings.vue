@@ -8,7 +8,7 @@ const router = useRouter()
 const toast = useToast()
 
 // 偏好设置数据
-const defaultPage = ref(getItem('pref_default_page', 'Knowledge'))
+const defaultPage = ref(getItem('pref_default_page', 'Home'))
 
 // 页面选项
 const pageOptions = [

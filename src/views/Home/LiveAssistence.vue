@@ -310,6 +310,31 @@ const handleNavigateHistory = () => {
             <var-icon name="chevron-right" :size="18" class="ml-2 text-gray-400" />
           </button>
 
+          <!-- 无待办时的占位 -->
+          <div
+            v-else
+            class="w-full flex items-center p-3 rounded-xl border-b last:border-b-0 opacity-60"
+            style="border-color: color-mix(in srgb, var(--color-border), transparent 50%)"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style="
+                background-color: color-mix(in srgb, var(--color-text-tertiary), transparent 90%);
+                color: var(--color-text-tertiary);
+              "
+            >
+              <var-icon name="checkbox-blank-circle-outline" :size="20" />
+            </div>
+            <div class="flex-1 min-w-0 text-left ml-3">
+              <span class="text-sm font-medium text-[var(--color-text-primary)]">
+                当前暂无待办
+              </span>
+              <p class="text-xs text-[var(--color-text-secondary)] mt-0.5">
+                可以在待办页面添加新的任务
+              </p>
+            </div>
+          </div>
+
           <!-- 今日日程 -->
           <button
             v-ripple
