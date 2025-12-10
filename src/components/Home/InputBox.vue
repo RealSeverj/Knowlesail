@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
@@ -11,8 +11,6 @@ const expanded = defineModel({
   type: Boolean,
   default: false
 })
-
-const emit = defineEmits(['request-expand', 'request-collapse'])
 
 const chatStore = useChatStore()
 
@@ -116,14 +114,49 @@ const handleVoiceInput = () => {
   console.info('语音输入占位: 待接入语音识别能力')
 }
 
+// 自动聚焦输入框 + 外部点击折叠
+const inputRef = ref(null)
+const shellRef = ref(null)
+let removeOutsideListener = null
+
 const handleExpand = () => {
-  emit('request-expand')
+  expanded.value = true
 }
+
+watch(expanded, async (val) => {
+  if (val) {
+    await nextTick()
+    inputRef.value?.focus?.()
+
+    const handleOutside = (event) => {
+      const shell = shellRef.value
+      if (!shell) return
+      if (!shell.contains(event.target)) {
+        expanded.value = false
+      }
+    }
+    document.addEventListener('pointerdown', handleOutside)
+    removeOutsideListener = () => document.removeEventListener('pointerdown', handleOutside)
+  } else {
+    if (removeOutsideListener) {
+      removeOutsideListener()
+      removeOutsideListener = null
+    }
+    inputText.value = ''
+    textareaRows.value = 1
+    selectedImage.value = null
+  }
+})
+
+onBeforeUnmount(() => {
+  if (removeOutsideListener) removeOutsideListener()
+})
 </script>
 
 <template>
-  <div class="floating-input-layer" @focusout="expanded = false" @click="expanded = true">
+  <div class="floating-input-layer">
     <div
+      ref="shellRef"
       class="morph-shell"
       :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
       :style="{ bottom: finalOffset + 'px' }"
@@ -154,6 +187,7 @@ const handleExpand = () => {
           <!-- 底部输入区域 -->
           <div class="input-row">
             <var-input
+              ref="inputRef"
               v-model="inputText"
               placeholder="Shift + Enter 换行，Enter 发送"
               textarea

@@ -11,7 +11,6 @@ const router = useRouter()
 const chatStore = useChatStore()
 
 const inputExpanded = ref(false)
-const autoPinned = ref(false)
 const lastBottomState = ref(false)
 
 const handleBottomStateChange = (atBottom) => {
@@ -20,59 +19,20 @@ const handleBottomStateChange = (atBottom) => {
   if (chatStore.isStreaming) return
 
   // 只在从「非底部」进入「底部」的一瞬间自动展开
-  if (atBottom && !autoPinned.value && !inputExpanded.value) {
-    expandInput(true)
-    return
+  if (atBottom && !inputExpanded.value) {
+    inputExpanded.value = true
   }
-}
-
-const expandInput = (isAuto = false) => {
-  inputExpanded.value = true
-  autoPinned.value = isAuto
-}
-
-const collapseInput = () => {
-  if (chatStore.isStreaming) return
-  inputExpanded.value = false
-  autoPinned.value = false
-}
-
-const handleRequestExpand = () => {
-  expandInput(false)
-}
-
-const handleRequestCollapse = () => {
-  collapseInput()
 }
 
 watch(
   () => chatStore.isStreaming,
   (streaming) => {
     if (streaming) {
-      expandInput(true)
+      inputExpanded.value = true
       return
     }
   }
 )
-
-const handleViewportExpand = () => {
-  // 若当前是自动展开，则点击聊天区域不改变状态
-  if (autoPinned.value) return
-
-  if (inputExpanded.value) {
-    collapseInput()
-  } else {
-    expandInput(false)
-  }
-}
-
-const handleLeaveBottomByScroll = () => {
-  if (chatStore.isStreaming) return
-  // 只对「自动展开」的输入框执行自动收起
-  if (autoPinned.value && inputExpanded.value) {
-    collapseInput()
-  }
-}
 
 // ========== 路由会话同步 ==========
 /**
@@ -144,15 +104,10 @@ watch(
       <ChatInterface
         class="flex-1 min-h-0"
         @bottom-state-change="handleBottomStateChange"
-        @request-input-expand="handleViewportExpand"
-        @leave-bottom-by-scroll="handleLeaveBottomByScroll"
+        @leave-bottom-by-scroll="inputExpanded = false"
       />
     </div>
-    <InputBox
-      v-model="inputExpanded"
-      @request-expand="handleRequestExpand"
-      @request-collapse="handleRequestCollapse"
-    />
+    <InputBox v-model="inputExpanded" />
   </div>
 </template>
 
