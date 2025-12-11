@@ -103,10 +103,6 @@ onMounted(async () => {
     await chatStore.loadConversations()
   }
   scrollToBottom()
-  nextTick(() => {
-    updateBottomState()
-    emit('bottom-state-change', isNearBottom.value)
-  })
 })
 </script>
 

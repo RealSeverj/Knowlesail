@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     identifier.value = authCredentials.identifier
     cookie.value = authCredentials.cookie
     user.value = userInfo
-    
+
     localStorage.setItem('auth_token', authCredentials.access_token)
     localStorage.setItem('auth_identifier', authCredentials.identifier)
     localStorage.setItem('auth_cookie', authCredentials.cookie)

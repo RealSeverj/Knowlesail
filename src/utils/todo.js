@@ -8,7 +8,7 @@
 export function getNearestTodo(todoStore) {
   if (!todoStore.initialized) return null
 
-  const incompleteTodos = todoStore.todos.filter(t => !t.completed && t.deadline)
+  const incompleteTodos = todoStore.todos.filter((t) => !t.completed && t.deadline)
   if (incompleteTodos.length === 0) return null
 
   const sorted = incompleteTodos.sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
@@ -18,7 +18,8 @@ export function getNearestTodo(todoStore) {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  let timeLeftStr = '', isUrgent = false
+  let timeLeftStr = '',
+    isUrgent = false
   if (diffMs < 0) {
     timeLeftStr = '已过期'
     isUrgent = true

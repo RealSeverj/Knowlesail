@@ -1,13 +1,17 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { Capacitor } from '@capacitor/core'
+
+const keyboardOffset = ref(0)
+let showListener = null
+let hideListener = null
 
 export function useKeyboardOffset() {
-  const keyboardOffset = ref(0)
-  let showListener
-  let hideListener
-  let viewportListener
+  if (!Capacitor.isNativePlatform()) {
+    console.warn('[notification] 当前在浏览器环境，无法使用键盘高度监听')
+    return keyboardOffset
+  }
 
   onMounted(async () => {
-    // 优先尝试使用 Capacitor Keyboard（原生移动端）
     let keyboardInitialized = false
 
     try {
@@ -22,25 +26,8 @@ export function useKeyboardOffset() {
         keyboardInitialized = true
       }
     } catch (e) {
-      // Keyboard 插件不可用或加载失败，自动降级
-      console.warn('Keyboard plugin not available, using visualViewport API:', e.message)
-    }
-
-    // 如果 Keyboard 初始化失败，降级使用 visualViewport API（Web 环境）
-    if (!keyboardInitialized && window.visualViewport) {
-      const handleViewportChange = () => {
-        const keyboardHeight = Math.max(0, window.innerHeight - window.visualViewport.height)
-        keyboardOffset.value = keyboardHeight
-      }
-
-      window.visualViewport.addEventListener('resize', handleViewportChange)
-      window.visualViewport.addEventListener('scroll', handleViewportChange)
-
-      // 保存清理函数供卸载时使用
-      viewportListener = () => {
-        window.visualViewport.removeEventListener('resize', handleViewportChange)
-        window.visualViewport.removeEventListener('scroll', handleViewportChange)
-      }
+      console.warn('Keyboard plugin not available', e.message)
+      return keyboardOffset
     }
   })
 
@@ -52,13 +39,7 @@ export function useKeyboardOffset() {
     if (hideListener && typeof hideListener.remove === 'function') {
       hideListener.remove()
     }
-    // 清理 visualViewport 监听器
-    if (viewportListener && typeof viewportListener === 'function') {
-      viewportListener()
-    }
   })
 
-  return {
-    keyboardOffset
-  }
+  return keyboardOffset
 }

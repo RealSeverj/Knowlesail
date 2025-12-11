@@ -18,7 +18,7 @@ const emit = defineEmits([
   'open-preference',
   'open-about',
   'open-custom-theme',
-  'update:preferences',
+  'update:preferences'
 ])
 
 const { theme, initTheme, setTheme } = useTheme()
@@ -81,7 +81,14 @@ const handleLogout = async () => {
 const toggleAutoCourseReminder = (value) => {
   emit('update:preferences', {
     ...props.preferences,
-    autoCourseReminder: value,
+    autoCourseReminder: value
+  })
+}
+
+const togglePersonalizedRecommend = (value) => {
+  emit('update:preferences', {
+    ...props.preferences,
+    personalizedRecommend: value
   })
 }
 
@@ -205,15 +212,16 @@ initTheme()
             </span>
           </template>
           <template #extra>
-            <var-switch :model-value="preferences.personalizedRecommend" readonly />
+            <var-switch
+              :model-value="preferences.personalizedRecommend"
+              @update:model-value="togglePersonalizedRecommend"
+            />
           </template>
         </var-cell>
 
         <var-cell icon="bell-outline" title="课前提醒与内容推送">
           <template #description>
-            <span class="text-xs text-slate-500 dark:text-slate-400">
-              自动推送相关提醒与资料
-            </span>
+            <span class="text-xs text-slate-500 dark:text-slate-400"> 自动推送相关提醒与资料 </span>
           </template>
           <template #extra>
             <var-switch

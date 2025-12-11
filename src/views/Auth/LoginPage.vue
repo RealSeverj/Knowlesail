@@ -62,14 +62,10 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div
-    class="min-h-screen flex flex-col px-8 pt-20 pb-8"
-  >
+  <div class="min-h-screen flex flex-col px-8 pt-20 pb-8">
     <!-- Logo 和标题区域 -->
     <div class="flex flex-col items-center mb-12">
-      <div
-        class="w-20 h-20 flex items-center justify-center mb-6"
-      >
+      <div class="w-20 h-20 flex items-center justify-center mb-6">
         <img src="/icon.png" alt="Logo" width="80" height="80" />
       </div>
       <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">学海智航</h1>

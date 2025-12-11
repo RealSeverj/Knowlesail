@@ -8,7 +8,7 @@ import {
   scheduleNextClassReminder,
   scheduleNearestTodoReminder,
   scheduleDailyScheduleReminder,
-  cancelAllCourseRelatedNotifications,
+  cancelAllCourseRelatedNotifications
 } from '@/utils/notification'
 import { useCurriculumStore } from '@/stores/curriculum'
 import { useTodoStore } from '@/stores/todo'

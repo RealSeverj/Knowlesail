@@ -34,7 +34,7 @@ const buttonText = computed(() => {
     case 'exists':
       return '前往知识库查看'
     case 'select':
-      return '选择需要附带的聊天块'
+      return '选择附带聊天块'
     case 'ready':
       return '前往笔记编辑'
     default:

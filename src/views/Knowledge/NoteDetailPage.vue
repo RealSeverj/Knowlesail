@@ -227,5 +227,4 @@ async function generateImage(prompt) {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

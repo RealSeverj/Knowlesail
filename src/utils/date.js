@@ -20,12 +20,22 @@ export function getCurrentDateInfo() {
  */
 export function formatEndTime(endClass) {
   const classEndTimeMinutes = {
-    1: 9 * 60 + 5, 2: 10 * 60, 3: 11 * 60 + 5, 4: 12 * 60,
-    5: 14 * 60 + 45, 6: 15 * 60 + 40, 7: 16 * 60 + 35, 8: 17 * 60 + 30,
-    9: 19 * 60 + 45, 10: 20 * 60 + 40, 11: 21 * 60 + 35
+    1: 9 * 60 + 5,
+    2: 10 * 60,
+    3: 11 * 60 + 5,
+    4: 12 * 60,
+    5: 14 * 60 + 45,
+    6: 15 * 60 + 40,
+    7: 16 * 60 + 35,
+    8: 17 * 60 + 30,
+    9: 19 * 60 + 45,
+    10: 20 * 60 + 40,
+    11: 21 * 60 + 35
   }
 
   const m = classEndTimeMinutes[endClass]
   if (!m) return ''
-  return `${Math.floor(m / 60).toString().padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
+  return `${Math.floor(m / 60)
+    .toString()
+    .padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
 }

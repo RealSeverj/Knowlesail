@@ -37,29 +37,28 @@ const handleNewChat = () => {
 </script>
 
 <template>
-  <header class="chat-header flex items-center justify-between px-4 pb-2 pt-4">
-    <div class="flex min-w-0 items-center gap-3">
-      <div class="flex min-w-0 flex-col">
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-semibold text-[var(--color-text-primary)]">
-            {{ title }}
-          </span>
-        </div>
-        <div class="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-          <span class="truncate">{{ subtitle }}</span>
-          <span
-            v-if="isCloudSync"
-            class="cloud-sync-badge inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0"
-          >
-            <var-icon name="cloud-outline" :size="12" />
-            云端同步
-          </span>
-        </div>
-      </div>
+  <header class="chat-header flex flex-col gap-2 px-4 pb-2 pt-4">
+    <!-- 第一行：标题 + 云端同步（右侧） -->
+    <div class="flex items-center justify-between min-w-0 gap-3">
+      <span class="text-xl font-semibold text-[var(--color-text-primary)] truncate">
+        {{ title }}
+      </span>
+      <span
+        v-if="isCloudSync"
+        class="cloud-sync-badge inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shrink-0"
+      >
+        <var-icon name="cloud-outline" :size="12" />
+        云端同步
+      </span>
     </div>
 
-    <div class="flex flex-col items-end gap-1">
+    <!-- 第二行：左侧时间，右侧操作按钮 -->
+    <div
+      class="flex items-center justify-between min-w-0 gap-3 text-xs text-[var(--color-text-secondary)]"
+    >
+      <span class="truncate">{{ subtitle }}</span>
       <div class="flex items-center gap-2">
+        <ExportToKnowledge />
         <button type="button" class="icon-circle-btn" @click="handleNewChat">
           <var-icon name="plus" :size="24" />
           <span class="sr-only">新聊天</span>
@@ -68,9 +67,6 @@ const handleNewChat = () => {
           <var-icon name="menu" :size="24" />
           <span class="sr-only">查看聊天历史</span>
         </button>
-      </div>
-      <div class="flex items-center gap-2">
-        <ExportToKnowledge />
       </div>
     </div>
   </header>

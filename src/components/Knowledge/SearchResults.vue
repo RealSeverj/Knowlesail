@@ -13,7 +13,9 @@ const items = ref([])
 const keyword = ref(route.query.q || '')
 
 async function doSearch() {
-  const q = String(keyword.value || '').trim().toLowerCase()
+  const q = String(keyword.value || '')
+    .trim()
+    .toLowerCase()
   if (!q) {
     items.value = []
     return
@@ -23,9 +25,7 @@ async function doSearch() {
   error.value = ''
 
   try {
-    const allSummaries = Array.isArray(knowledgeStore.summaries)
-      ? knowledgeStore.summaries
-      : []
+    const allSummaries = Array.isArray(knowledgeStore.summaries) ? knowledgeStore.summaries : []
 
     // 在本地 summaries 中做简单全文搜索（标题 + 各个内容块 + summary_text）
     const matched = allSummaries.filter((s) => {
@@ -59,7 +59,7 @@ async function doSearch() {
         snippetSource = ''
       }
 
-      const cleaned = snippetSource.replace(/[#>*`\-]/g, '').trim()
+      const cleaned = snippetSource.replace(/[#>*`-]/g, '').trim()
       const snippet = cleaned.slice(0, 80)
 
       return {
