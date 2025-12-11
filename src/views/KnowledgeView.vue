@@ -143,19 +143,17 @@ onMounted(() => {
           @change="onSwipeChange"
         >
           <var-swipe-item class="swipe-item">
-            <div class="p-4">
+            <div class="h-full overflow-y-auto p-4">
               <OfficialPage />
             </div>
           </var-swipe-item>
           <var-swipe-item class="swipe-item">
-            <div class="p-4">
+            <div class="h-full overflow-y-auto p-4">
               <CommunityPage />
             </div>
           </var-swipe-item>
           <var-swipe-item class="swipe-item">
-            <div class="p-4">
-              <MyNotesPage />
-            </div>
+            <MyNotesPage class="h-full overflow-y-auto p-4" />
           </var-swipe-item>
         </var-swipe>
       </template>
@@ -178,9 +176,7 @@ onMounted(() => {
 
 .swipe-item {
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .fade-width-enter-active,

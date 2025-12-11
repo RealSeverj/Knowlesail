@@ -6,6 +6,7 @@ import PullRefresh from '@/components/Common/PullRefresh.vue'
 import { useChatStore } from '@/stores/chat'
 import { useConfirm } from '@/composables/useConfirm'
 import { useToast } from '@/composables/useToast'
+import { useRouteScroll } from '@/composables/useRouteScroll'
 
 const router = useRouter()
 const chatStore = useChatStore()
@@ -14,6 +15,17 @@ const toast = useToast()
 
 // 下拉刷新状态
 const refreshing = ref(false)
+
+// 容器元素，用于记录和恢复滚动位置
+const containerRef = ref(null)
+
+// 启用通用路由滚动记忆
+// PullRefresh 组件内部才是真正的滚动容器，通过 getScrollElement 获取
+const scrollElementRef = computed(() => {
+  return containerRef.value?.getScrollElement?.() || containerRef.value
+})
+
+const { restore } = useRouteScroll(scrollElementRef)
 
 // 下拉刷新：从云端拉取会话列表
 async function onRefresh() {
@@ -32,10 +44,12 @@ const conversations = computed(() => chatStore.conversations || [])
 const loadingConversationId = ref(null) // 正在加载的会话ID
 
 // 页面加载时确保会话数据已从 localStorage 加载
-onMounted(() => {
+onMounted(async () => {
   if (chatStore.conversations.length === 0) {
-    chatStore.loadConversations()
+    await chatStore.loadConversations()
   }
+  // 数据加载完成后，再次尝试恢复滚动位置
+  setTimeout(() => restore(), 100)
 })
 
 const handleBack = () => {
@@ -103,8 +117,8 @@ const formatTimestamp = (value) => {
         @back="handleBack"
       />
 
-      <div class="flex-1 overflow-y-auto">
-        <PullRefresh v-model="refreshing" @refresh="onRefresh">
+      <div class="flex-1 overflow-hidden">
+        <PullRefresh ref="containerRef" v-model="refreshing" @refresh="onRefresh">
           <div class="px-4 pb-6 min-h-full">
             <div
               v-if="conversations.length === 0"

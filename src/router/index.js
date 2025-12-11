@@ -29,6 +29,9 @@ import ProfileEdit from '@/views/Profile/ProfileEdit.vue'
 import PreferenceSettings from '@/views/Profile/PreferenceSettings.vue'
 import AboutPage from '@/views/Profile/AboutPage.vue'
 
+// 路由级滚动位置缓存：按路由 name 或 fullPath 存储
+export const routeScrollPositions = new Map()
+
 const routes = [
   {
     path: '/',

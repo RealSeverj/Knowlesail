@@ -1,5 +1,6 @@
 <template>
   <var-pull-refresh
+    ref="pullRefreshRef"
     v-model="refreshing"
     :disabled="disabled"
     class="pull-refresh-container"
@@ -36,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 const props = defineProps({
   // 是否禁用下拉刷新
@@ -74,6 +75,15 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'refresh'])
 
 const refreshing = ref(props.modelValue)
+const pullRefreshRef = ref(null)
+
+// 暴露内部容器元素给父组件
+defineExpose({
+  getScrollElement: () => {
+    // Varlet PullRefresh 组件本身就是滚动容器，或者它的根元素是
+    return pullRefreshRef.value?.$el || pullRefreshRef.value
+  }
+})
 
 // 同步外部 modelValue
 watch(

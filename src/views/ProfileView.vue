@@ -7,9 +7,16 @@ import SettingsList from '@/components/Profile/SettingsList.vue'
 import DataDisplay from '@/components/Profile/DataDisplay.vue'
 import ThemeSwitch from '@/components/Profile/ThemeSwitch.vue'
 import PopFrame from '@/components/Common/PopFrame.vue'
+import { useRouteScroll } from '@/composables/useRouteScroll'
 
 const router = useRouter()
 const profileStore = useProfileStore()
+
+// 容器元素，用于记录和恢复滚动位置
+const containerRef = ref(null)
+
+// 启用通用路由滚动记忆
+useRouteScroll(containerRef)
 
 // 页面加载时获取用户信息
 onMounted(() => {
@@ -48,7 +55,7 @@ const handleUpdatePreferences = (nextPreferences) => {
 </script>
 
 <template>
-  <div class="profile-view px-4 pb-4 pt-4">
+  <div ref="containerRef" class="profile-view px-4 pb-4 pt-4">
     <div class="mx-auto flex max-w-screen-sm flex-col gap-4">
       <!-- 顶部用户信息 -->
       <section class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-slate-800/80">

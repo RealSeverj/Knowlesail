@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useKnowledgeStore } from '@/stores/knowledge'
 import { listSummaries } from '@/api/knowledge'
 import NoteCard from '@/components/Knowledge/NoteCard.vue'
+import { useRouteScroll } from '@/composables/useRouteScroll'
 
 const router = useRouter()
 const knowledgeStore = useKnowledgeStore()
@@ -12,14 +13,20 @@ const { summaries, loaded, loading } = storeToRefs(knowledgeStore)
 
 const notes = computed(() => summaries.value || [])
 
+// 用于记录和恢复列表容器滚动位置
+const containerRef = ref(null)
+
+// 启用通用路由滚动记忆
+const { restore } = useRouteScroll(containerRef)
+
 async function ensureLoaded() {
   if (!loaded.value && !loading.value) {
     await knowledgeStore.loadSummaries(listSummaries)
   }
 }
 
-onMounted(() => {
-  ensureLoaded()
+onMounted(async () => {
+  await ensureLoaded()
 })
 
 function handleNoteClick(note) {
@@ -28,7 +35,7 @@ function handleNoteClick(note) {
 </script>
 
 <template>
-  <div class="px-1 py-2">
+  <div ref="containerRef" class="px-4 py-4">
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
