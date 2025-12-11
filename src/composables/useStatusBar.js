@@ -12,7 +12,7 @@ export async function applyStatusBarTheme(themeConfig) {
     await StatusBar.setStyle({
       style: isDark ? Style.Dark : Style.Light
     })
-
+  
     await StatusBar.setOverlaysWebView({ overlay: false })
 
   } catch (e) {

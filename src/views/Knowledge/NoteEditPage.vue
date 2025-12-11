@@ -230,7 +230,7 @@ async function handleSave() {
 </script>
 
 <template>
-  <div class="note-edit-page h-full bg-background flex flex-col">
+  <div class="note-edit-page h-full flex flex-col">
     <!-- 顶部栏 -->
     <div
       class="flex items-center px-4 py-3 border-b border-border/60 bg-surface/80 backdrop-blur z-10"

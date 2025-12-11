@@ -26,10 +26,11 @@ const curriculumStore = useCurriculumStore()
 const todoStore = useTodoStore()
 
 onMounted(async () => {
-  await SplashScreen.hide();
   await initTheme()
+  
+  // 1. 尝试预先应用样式（为了体验，如果成功最好）
   await applyStatusBarTheme(theme.value)
-
+  
   // 初始化课程和待办数据（用于后续通知调度）
   if (!curriculumStore.initialized) await curriculumStore.initCourses()
   if (!todoStore.initialized) await todoStore.initTodos()
@@ -45,7 +46,15 @@ onMounted(async () => {
   } else {
     await cancelAllCourseRelatedNotifications()
   }
-  await applyStatusBarTheme(theme.value)
+  
+  // 2. 隐藏启动页
+  await SplashScreen.hide();
+
+  // 3. 【关键修复】在启动页隐藏后，再次强制刷新状态栏样式
+  // 延时一小段时间确保 View 层次结构和 Window 焦点已完全稳定
+  setTimeout(async () => {
+    await applyStatusBarTheme(theme.value)
+  }, 500)
 })
 
 // 监听主题配置变化，动态同步原生状态栏样式

@@ -84,7 +84,7 @@ const toggleActions = () => {
       "
       @click.stop="handleToggle"
     >
-      <var-icon v-if="props.todo.completed" name="check" :size="14" color="#fff" />
+      <var-icon v-if="props.todo.completed" name="check" :size="14" color="#0DBC79" />
     </button>
 
     <div class="flex-1">
