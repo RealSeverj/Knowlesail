@@ -28,7 +28,7 @@ function handleNoteClick(note) {
 </script>
 
 <template>
-  <div class="px-2 py-4">
+  <div class="px-1 py-2">
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="text-xl font-semibold text-foreground mb-1">我的笔记</h2>
