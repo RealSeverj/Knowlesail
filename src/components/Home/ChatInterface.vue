@@ -20,6 +20,9 @@ const isStreaming = computed(() => chatStore.isStreaming)
 const hasMessages = computed(() => messages.value.length > 0)
 const lastMessageContent = computed(() => messages.value[messages.value.length - 1]?.content || '')
 
+const autoScrollEnabled = ref(true)
+let autoScrollTimer = null
+
 const updateBottomState = () => {
   const el = viewportRef.value
   if (!el) return
@@ -34,14 +37,11 @@ const updateBottomState = () => {
 }
 
 const scrollToBottom = (opts = { animated: true }) => {
+  if (!autoScrollEnabled.value) return
   nextTick(() => {
     const el = viewportRef.value
     if (el) {
-      if (opts.animated) {
-        el.scrollTop = el.scrollHeight
-      } else {
-        el.scrollTop = el.scrollHeight
-      }
+      el.scrollTop = el.scrollHeight
     }
   })
 }
@@ -59,6 +59,15 @@ const handleScroll = () => {
   if (direction === 'up' && !isNearBottom.value) {
     emit('leave-bottom-by-scroll')
   }
+
+  // 用户主动滑动时禁用自动滚动，2秒后恢复
+  autoScrollEnabled.value = false
+  if (autoScrollTimer) clearTimeout(autoScrollTimer)
+  autoScrollTimer = setTimeout(() => {
+    autoScrollEnabled.value = true
+    // 若滑动结束后已到底部，立即滚动到底
+    if (isNearBottom.value) scrollToBottom()
+  }, 2000)
 }
 
 const handleQuickAction = (action) => {
@@ -129,5 +138,6 @@ onMounted(async () => {
 .chat-viewport {
   /* 固定底部留白，预留输入框展开后的空间 */
   padding-bottom: 180px;
+  scroll-behavior: smooth;
 }
 </style>

@@ -16,8 +16,6 @@ const lastBottomState = ref(false)
 const handleBottomStateChange = (atBottom) => {
   lastBottomState.value = atBottom
 
-  if (chatStore.isStreaming) return
-
   // 只在从「非底部」进入「底部」的一瞬间自动展开
   if (atBottom && !inputExpanded.value) {
     inputExpanded.value = true

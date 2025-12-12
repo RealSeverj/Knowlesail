@@ -161,13 +161,7 @@ onBeforeUnmount(() => {
       :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
       :style="{ bottom: finalOffset + 'px' }"
     >
-      <button
-        v-if="!expanded"
-        type="button"
-        class="morph-trigger"
-        :disabled="isStreaming"
-        @click="handleExpand"
-      >
+      <button v-if="!expanded" type="button" class="morph-trigger" @click="handleExpand">
         <var-icon name="chat-processing" :size="28" />
         <span class="sr-only">展开输入框</span>
       </button>
@@ -267,10 +261,6 @@ onBeforeUnmount(() => {
     padding 0.3s ease,
     box-shadow 0.3s ease,
     transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.morph-shell.is-streaming:not(.is-expanded) {
-  opacity: 0.85;
 }
 
 .morph-shell.is-expanded {

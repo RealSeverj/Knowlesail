@@ -58,10 +58,12 @@ export const useLibraryCache = () => {
         state.enabledLibs = new Set(
           visualizationLibs.filter((lib) => lib.enabled).map((lib) => lib.id)
         )
+        saveSettings()
       }
 
       // 检查缓存状态
       await updateCacheStates()
+      await downloadAllEnabledLibs(false)
       state.initialized = true
     } catch (error) {
       console.error('初始化库管理器失败:', error)
@@ -83,13 +85,24 @@ export const useLibraryCache = () => {
   }
 
   // 切换库的启用状态
-  function toggleLibrary(libId, enabled) {
-    if (enabled) state.enabledLibs.add(libId)
-    else state.enabledLibs.delete(libId)
-    saveSettings()
-
+  async function toggleLibrary(libId, enabled) {
     const lib = visualizationLibs.find((l) => l.id === libId)
-    if (lib) toast.success(`${lib.name} 已${enabled ? '启用' : '禁用'}`)
+    if (!lib) return
+
+    try {
+      if (enabled) {
+        await downloadLibrary(lib.id)
+        state.enabledLibs.add(libId)
+      } else {
+        await deleteLibraryCache(lib.id)
+        state.enabledLibs.delete(libId)
+      }
+      toast.success(`${lib.name} 已${enabled ? '启用' : '禁用'}`)
+    } catch (error) {
+      toast.error(`${lib.name} 操作失败: ${error.message || error}`)
+    }
+
+    saveSettings()
   }
 
   // 更新所有库的缓存状态
@@ -270,9 +283,12 @@ export const useLibraryCache = () => {
   }
 
   // 下载所有启用的库
-  async function downloadAllEnabledLibs() {
+  async function downloadAllEnabledLibs(showMsg = true) {
     const enabledLibIds = Array.from(state.enabledLibs)
-    if (enabledLibIds.length === 0) return toast.info('没有启用的库需要下载')
+    if (enabledLibIds.length === 0) {
+      if (showMsg) toast.info('没有启用的库需要下载')
+      return
+    }
 
     // 过滤已缓存的库，避免重复下载
     const unCachedLibIds = enabledLibIds.filter((id) => {
@@ -280,14 +296,12 @@ export const useLibraryCache = () => {
       return !cacheState?.cached && !cacheState?.isDownloading
     })
 
-    if (unCachedLibIds.length === 0) return toast.success('所有启用的库已缓存完成')
-
+    if (unCachedLibIds.length === 0) {
+      if (showMsg) toast.success('所有启用的库已缓存完成')
+      return
+    }
     // 显示总进度提示
     const total = unCachedLibIds.length
-    const progressToast = toast.loading(`正在下载（0/${total}）...`, {
-      duration: 0, // 不自动关闭
-      forbidClick: true // 禁止点击关闭
-    })
 
     try {
       // 限制并发下载（避免请求拥堵）
@@ -308,7 +322,7 @@ export const useLibraryCache = () => {
 
         // 更新已完成数量和进度提示
         completed += batch.length
-        progressToast.message = `正在下载（${completed}/${total}）...`
+        if (showMsg) toast.info(`正在下载（${completed}/${total}）...`)
       }
 
       // 统计结果
@@ -318,19 +332,18 @@ export const useLibraryCache = () => {
         .filter((r) => r.status !== 'fulfilled' || !r.value.result)
         .map((r) => r.value?.id || '未知库')
 
-      // 关闭进度提示，显示最终结果
-      progressToast.close()
-      if (failed === 0) {
-        toast.success(`所有 ${success} 个库下载完成`)
-      } else {
-        toast.warning(
-          `${success} 个库下载成功，${failed} 个失败\n` + `失败库ID: ${failedIds.join(', ')}`,
-          { duration: 6000 } // 延长显示时间
-        )
+      if (showMsg) {
+        if (failed === 0) {
+          toast.success(`所有 ${success} 个库下载完成`)
+        } else {
+          toast.warning(
+            `${success} 个库下载成功，${failed} 个失败\n` + `失败库ID: ${failedIds.join(', ')}`,
+            { duration: 6000 } // 延长显示时间
+          )
+        }
       }
     } catch (error) {
-      progressToast.close()
-      toast.error(`下载任务异常终止: ${error.message}`)
+      if (showMsg) toast.error(`下载任务异常终止: ${error.message}`)
     }
   }
 
