@@ -10,7 +10,9 @@ export const visualizationLibs = [
     // 库的名称（用于显示和日志）
     name: 'Plotly',
     // CDN 地址 —— 已改为新的 jsDelivr 源
-    url: 'https://cdn.jsdelivr.net/npm/plotly.js-dist-min@3.30.0/plotly.min.js',
+    url: 'https://cdn.jsdelivr.net/npm/plotly.js-dist-min@3.3.0/plotly.min.js',
+    // 库功能简介
+    description: '交互式图表库，支持 2D/3D、统计、地图等可视化',
     // 全局变量名（加载后在 window 对象上的属性名）
     globalName: 'Plotly',
     // 默认启用状态（仅在首次使用时有效，之后由用户设置控制）
@@ -26,7 +28,7 @@ export const visualizationLibs = [
     // 优先级（数字越小优先级越高，影响加载顺序）
     priority: 1,
     // 版本号（和新的 URL 版本保持一致）
-    version: '3.30.0',
+    version: '3.3.0',
     // 依赖的其他库（按 id 引用）
     dependencies: [],
     // 加载超时时间（毫秒）
@@ -40,6 +42,7 @@ export const visualizationLibs = [
     id: 'd3',
     name: 'D3.js',
     url: 'https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js',
+    description: '数据驱动文档的底层可视化工具集，用于构建自定义图表',
     globalName: 'd3',
     enabled: false, // 默认禁用
     patterns: [
@@ -55,6 +58,7 @@ export const visualizationLibs = [
     id: 'chartjs',
     name: 'Chart.js',
     url: 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js',
+    description: '轻量级常用图表库，适合快速绘制线/柱/饼等基础图表',
     globalName: 'Chart',
     enabled: false, // 默认禁用
     patterns: [
@@ -70,6 +74,7 @@ export const visualizationLibs = [
     id: 'threejs',
     name: 'Three.js',
     url: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+    description: 'WebGL 封装的 3D 渲染库，用于创建三维场景与动画',
     globalName: 'THREE',
     enabled: false, // 默认禁用
     patterns: [
@@ -85,6 +90,7 @@ export const visualizationLibs = [
     id: 'leaflet',
     name: 'Leaflet',
     url: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+    description: '轻量级交互式地图库，支持瓦片、标注与地理要素',
     globalName: 'L',
     enabled: false, // 默认禁用
     patterns: [
@@ -100,6 +106,7 @@ export const visualizationLibs = [
     id: 'mermaid',
     name: 'Mermaid',
     url: 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js',
+    description: '用文本生成流程图、时序图等结构化图表的渲染库',
     globalName: 'mermaid',
     enabled: false, // 默认禁用
     patterns: [

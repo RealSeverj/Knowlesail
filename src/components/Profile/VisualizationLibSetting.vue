@@ -8,8 +8,9 @@ onMounted(() => {
   initialize()
 })
 
-const handleToggle = (lib) => {
-  toggleLibrary(lib.id, !lib.enabled)
+const handleToggle = async (lib, value, change) => {
+  await toggleLibrary(lib.id, value)
+  change(value)
 }
 </script>
 
@@ -33,7 +34,6 @@ const handleToggle = (lib) => {
             ? 'bg-blue-50 ring-2 ring-blue-500/30 dark:bg-blue-500/10'
             : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-700/60 dark:hover:bg-slate-700'
         ]"
-        @click="handleToggle(lib)"
       >
         <div
           class="flex h-10 w-10 items-center justify-center rounded-full"
@@ -73,18 +73,15 @@ const handleToggle = (lib) => {
           <p class="text-xs text-slate-500 dark:text-slate-400">
             v{{ lib.version }}
             <span v-if="lib.cacheSize"> · {{ (lib.cacheSize / 1024).toFixed(1) }}KB</span>
+            <span class="ml-3">{{ lib.description }}</span>
           </p>
         </div>
 
-        <div
-          class="relative h-6 w-11 rounded-full transition-colors duration-200"
-          :class="lib.enabled ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'"
-        >
-          <div
-            class="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform duration-200"
-            :class="lib.enabled ? 'translate-x-5' : 'translate-x-0'"
-          ></div>
-        </div>
+        <var-switch
+          v-model="lib.enabled"
+          lazy-change
+          @before-change="(value, change) => handleToggle(lib, value, change)"
+        />
       </button>
     </div>
   </section>
