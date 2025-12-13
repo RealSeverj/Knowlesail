@@ -2,7 +2,6 @@
 import { onMounted, provide, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { useBackButtonHandler } from '@/composables/useBackButtonHandler'
-import { applyStatusBarTheme } from '@/composables/useStatusBar'
 import { useProfileStore } from '@/stores/profile'
 import {
   scheduleNextClassReminder,
@@ -20,6 +19,7 @@ import ConfirmDialogHost from '@/components/ConfirmDialog.vue'
 
 import { SplashScreen } from '@capacitor/splash-screen'
 import { useLibraryCache } from '@/composables/useLibraryCache'
+import { applyStatusBarTheme } from '@/composables/useStatusBar'
 
 const { theme, initTheme } = useTheme()
 const profileStore = useProfileStore()
@@ -28,9 +28,7 @@ const todoStore = useTodoStore()
 const { initialize } = useLibraryCache()
 
 onMounted(async () => {
-  await initTheme()
-
-  // 1. 尝试预先应用样式（为了体验，如果成功最好）
+  initTheme()
   await applyStatusBarTheme(theme.value)
 
   // 初始化课程和待办数据（用于后续通知调度）
@@ -49,20 +47,18 @@ onMounted(async () => {
     await cancelAllCourseRelatedNotifications()
   }
 
-  // 2. 隐藏启动页
+  // 隐藏启动页
   await SplashScreen.hide()
 
-  // 3. 【关键修复】在启动页隐藏后，再次强制刷新状态栏样式
-  // 延时一小段时间确保 View 层次结构和 Window 焦点已完全稳定
-  setTimeout(async () => {
-    await applyStatusBarTheme(theme.value)
-  }, 500)
-
-  // 4. 初始化可视化库
+  // 初始化可视化库
   initialize()
+
+  // 再次确保状态栏主题应用成功
+  setTimeout(() => {
+    applyStatusBarTheme(theme.value)
+  }, 500)
 })
 
-// 监听主题配置变化，动态同步原生状态栏样式
 watch(
   theme,
   async (newTheme) => {
@@ -102,7 +98,7 @@ useBackButtonHandler({
 <template>
   <ToastContainer />
   <ConfirmDialogHost />
-  <div id="app" class="min-h-screen app-bg text-foreground transition-colors">
+  <div id="app" class="min-h-screen app-bg text-foreground transition-colors safe-area-bottom">
     <AppLayout />
   </div>
 </template>

@@ -165,7 +165,8 @@ const formatTimestamp = (value) => {
                       </span>
                       <span
                         v-if="conversation.id === chatStore.currentConversationId"
-                        class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)] shrink-0 ml-auto"
+                        class="rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs text-[var(--color-primary)] shrink-0"
+                        :class="{ 'ml-auto': !conversation.isCloudSync }"
                       >
                         当前
                       </span>

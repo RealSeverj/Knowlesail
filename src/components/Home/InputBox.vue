@@ -1,11 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
-import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
-
-const keyboardOffset = useKeyboardOffset()
-const finalOffset = computed(() => (keyboardOffset.value ? keyboardOffset.value + 12 : 80))
 
 const expanded = defineModel({
   type: Boolean,
@@ -123,18 +119,18 @@ const handleExpand = () => {
   expanded.value = true
 }
 
+const handleOutside = (event) => {
+  const shell = shellRef.value
+  if (!shell) return
+  if (!shell.contains(event.target)) expanded.value = false
+}
+
 watch(expanded, async (val) => {
   if (val) {
     await nextTick()
     inputRef.value?.focus?.()
 
-    const handleOutside = (event) => {
-      const shell = shellRef.value
-      if (!shell) return
-      if (!shell.contains(event.target)) {
-        expanded.value = false
-      }
-    }
+    if (removeOutsideListener) removeOutsideListener()
     document.addEventListener('pointerdown', handleOutside)
     removeOutsideListener = () => document.removeEventListener('pointerdown', handleOutside)
   } else {
@@ -142,9 +138,6 @@ watch(expanded, async (val) => {
       removeOutsideListener()
       removeOutsideListener = null
     }
-    inputText.value = ''
-    textareaRows.value = 1
-    selectedImage.value = null
   }
 })
 
@@ -155,12 +148,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="floating-input-layer">
-    <div
-      ref="shellRef"
-      class="morph-shell"
-      :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
-      :style="{ bottom: finalOffset + 'px' }"
-    >
+    <div ref="shellRef" class="morph-shell" :class="{ 'is-expanded': expanded }">
       <button v-if="!expanded" type="button" class="morph-trigger" @click="handleExpand">
         <var-icon name="chat-processing" :size="28" />
         <span class="sr-only">展开输入框</span>
@@ -241,6 +229,7 @@ onBeforeUnmount(() => {
 
 .morph-shell {
   position: absolute;
+  bottom: 80px;
   right: 24px;
   width: 64px;
   max-height: 64px;

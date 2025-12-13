@@ -13,24 +13,14 @@ const chatStore = useChatStore()
 const inputExpanded = ref(false)
 const lastBottomState = ref(false)
 
-const handleBottomStateChange = (atBottom) => {
+const handleBottomStateChange = ({ atBottom, checkExpand }) => {
   lastBottomState.value = atBottom
 
-  // 只在从「非底部」进入「底部」的一瞬间自动展开
-  if (atBottom && !inputExpanded.value) {
+  // 仅在用户触发的滚动到底部时自动展开，程序性滚动不触发
+  if (atBottom && checkExpand && !inputExpanded.value) {
     inputExpanded.value = true
   }
 }
-
-watch(
-  () => chatStore.isStreaming,
-  (streaming) => {
-    if (streaming) {
-      inputExpanded.value = true
-      return
-    }
-  }
-)
 
 // ========== 路由会话同步 ==========
 /**

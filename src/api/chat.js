@@ -56,6 +56,50 @@ export async function sendMessageStream(
 
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
+    let lineBuffer = ''
+
+    const processSSELine = (rawLine) => {
+      const trimmed = rawLine.trim()
+      if (!trimmed.startsWith('data: ')) return
+      const dataStr = trimmed.substring(6)
+      try {
+        const data = JSON.parse(dataStr)
+
+        // 1) 普通文本增量
+        if (data.text) {
+          accumulatedText += data.text
+          if (onChunk) {
+            onChunk(data.text, accumulatedText)
+          }
+        }
+
+        // 2) MCP 工具调用提示
+        if (Array.isArray(data.tool_calls) && data.tool_calls.length > 0) {
+          const toolNames = data.tool_calls
+            .map((tc) => tc?.function?.name || tc?.custom?.name || tc?.type || '工具')
+            .filter(Boolean)
+          if (onToolCall) {
+            onToolCall(toolNames)
+          }
+        }
+
+        // 3) MCP 工具返回结果
+        if (data.result) {
+          const raw =
+            typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2)
+          const resultStr = decodeEscapedNewlines(raw)
+          accumulatedText += resultStr
+          if (onToolResult) {
+            onToolResult(resultStr, accumulatedText)
+          }
+          if (onChunk) {
+            onChunk(resultStr, accumulatedText)
+          }
+        }
+      } catch (e) {
+        console.warn('解析 JSON 失败:', dataStr, e)
+      }
+    }
 
     while (true) {
       const { done, value } = await reader.read()
@@ -63,50 +107,17 @@ export async function sendMessageStream(
       if (done) break
 
       const chunk = decoder.decode(value, { stream: true })
-      const lines = chunk.split('\n')
+      lineBuffer += chunk
+      const lines = lineBuffer.split(/\r?\n/)
+      lineBuffer = lines.pop()
 
       for (const line of lines) {
-        if (line.trim().startsWith('data: ')) {
-          const dataStr = line.trim().substring(6)
-          try {
-            const data = JSON.parse(dataStr)
-
-            // 1) 普通文本增量
-            if (data.text) {
-              accumulatedText += data.text
-              if (onChunk) {
-                onChunk(data.text, accumulatedText)
-              }
-            }
-
-            // 2) MCP 工具调用提示
-            if (Array.isArray(data.tool_calls) && data.tool_calls.length > 0) {
-              const toolNames = data.tool_calls
-                .map((tc) => tc?.function?.name || tc?.custom?.name || tc?.type || '工具')
-                .filter(Boolean)
-              if (onToolCall) {
-                onToolCall(toolNames)
-              }
-            }
-
-            // 3) MCP 工具返回结果
-            if (data.result) {
-              const raw =
-                typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2)
-              const resultStr = decodeEscapedNewlines(raw)
-              accumulatedText += resultStr
-              if (onToolResult) {
-                onToolResult(resultStr, accumulatedText)
-              }
-              if (onChunk) {
-                onChunk(resultStr, accumulatedText)
-              }
-            }
-          } catch (e) {
-            console.warn('解析 JSON 失败:', dataStr, e)
-          }
-        }
+        processSSELine(line)
       }
+    }
+
+    if (lineBuffer.trim()) {
+      processSSELine(lineBuffer)
     }
 
     return accumulatedText

@@ -39,7 +39,7 @@ const goBack = () => {
       </section>
 
       <!-- 默认打开页面设置 -->
-      <DefaultPageSetting :defaultPage="defaultPage" @selectPage="handleSelect" />
+      <DefaultPageSetting :default-page="defaultPage" @select-page="handleSelect" />
 
       <!-- 可视化库设置 -->
       <VisualizationLibSetting />

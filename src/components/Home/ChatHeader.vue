@@ -7,8 +7,6 @@ import ExportToKnowledge from '@/components/Home/ExportToKnowledge.vue'
 const router = useRouter()
 const chatStore = useChatStore()
 
-const selectedMessageIds = ref([])
-
 const title = computed(() => {
   const fallback = '新对话'
   const value = chatStore.currentConversation?.title
