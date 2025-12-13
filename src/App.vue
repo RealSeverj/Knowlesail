@@ -2,7 +2,6 @@
 import { onMounted, provide, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { useBackButtonHandler } from '@/composables/useBackButtonHandler'
-import { applyStatusBarTheme } from '@/composables/useStatusBar'
 import { useProfileStore } from '@/stores/profile'
 import {
   scheduleNextClassReminder,
@@ -30,9 +29,6 @@ const { initialize } = useLibraryCache()
 onMounted(async () => {
   initTheme()
 
-  // 1. 尝试预先应用样式（为了体验，如果成功最好）
-  await applyStatusBarTheme(theme.value)
-
   // 初始化课程和待办数据（用于后续通知调度）
   if (!curriculumStore.initialized) await curriculumStore.initCourses()
   if (!todoStore.initialized) await todoStore.initTodos()
@@ -49,27 +45,12 @@ onMounted(async () => {
     await cancelAllCourseRelatedNotifications()
   }
 
-  // 2. 隐藏启动页
+  // 隐藏启动页
   await SplashScreen.hide()
 
-  // 3. 在启动页隐藏后，再次强制刷新状态栏样式
-  setTimeout(() => {
-    applyStatusBarTheme(theme.value)
-  }, 1000)
-
-  // 4. 初始化可视化库
+  // 初始化可视化库
   initialize()
 })
-
-// 监听主题配置变化，动态同步原生状态栏样式
-watch(
-  theme,
-  async (newTheme) => {
-    if (!newTheme) return
-    await applyStatusBarTheme(newTheme)
-  },
-  { deep: true }
-)
 
 // 监听用户偏好中课前提醒开关，打开时重新安排，关闭时清空相关通知队列
 watch(

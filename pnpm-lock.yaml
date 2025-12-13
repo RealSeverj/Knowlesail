@@ -17,6 +17,9 @@ importers:
       '@awesome-cordova-plugins/core':
         specifier: ^8.1.0
         version: 8.1.0(rxjs@7.8.2)
+      '@capacitor-community/safe-area':
+        specifier: 7.0.0-beta.6
+        version: 7.0.0-beta.6(@capacitor/core@7.4.4)
       '@capacitor/android':
         specifier: ^7.4.4
         version: 7.4.4(@capacitor/core@7.4.4)
@@ -41,9 +44,6 @@ importers:
       '@capacitor/splash-screen':
         specifier: ^7.0.4
         version: 7.0.4(@capacitor/core@7.4.4)
-      '@capacitor/status-bar':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@7.4.4)
       '@tiptap/markdown':
         specifier: ^3.11.0
         version: 3.13.0(@tiptap/core@3.13.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
@@ -314,6 +314,11 @@ packages:
     resolution: {integrity: sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==}
     engines: {node: '>=6.9.0'}
 
+  '@capacitor-community/safe-area@7.0.0-beta.6':
+    resolution: {integrity: sha512-ctuxjeE2a+KF5pqkvZfOU9P+7Tnx95Ns7k5ega7he0VvzHEGnqFe+HSbrE6hHAJ0TyphzclrPMFLcU2diHXRvA==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
   '@capacitor/android@7.4.4':
     resolution: {integrity: sha512-y8knfV1JXNrd6XZZLZireGT+EBCN0lvOo+HZ/s7L8LkrPBu4nY5UZn0Wxz4yOezItEII9rqYJSHsS5fMJG9gdw==}
     peerDependencies:
@@ -366,11 +371,6 @@ packages:
     resolution: {integrity: sha512-Tv2nepaHJBew2opuF5cHI7nhTAKdWuHxQFhUT6pIS9zfbUGNBEOOQLF4459DfabwRorLN16/DPo3Xk4qNnCRtw==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
-
-  '@capacitor/status-bar@8.0.0':
-    resolution: {integrity: sha512-aIj3bc7z8lfPgOen8HlrBrkfnxpFnh21OCx6jCUx4Mvv+B6eEkUQ49b32DOddgVfr+igRHLX2SYi7duqIsNDXg==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -4211,6 +4211,10 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
+  '@capacitor-community/safe-area@7.0.0-beta.6(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
+
   '@capacitor/android@7.4.4(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
@@ -4306,10 +4310,6 @@ snapshots:
       '@capacitor/core': 7.4.4
 
   '@capacitor/splash-screen@7.0.4(@capacitor/core@7.4.4)':
-    dependencies:
-      '@capacitor/core': 7.4.4
-
-  '@capacitor/status-bar@8.0.0(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
 
