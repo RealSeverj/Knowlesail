@@ -52,17 +52,12 @@ onMounted(async () => {
 
   // 初始化可视化库
   initialize()
-})
 
-// 监听主题配置变化，动态同步原生状态栏样式
-watch(
-  theme,
-  async (newTheme) => {
-    if (!newTheme) return
-    await applyStatusBarTheme(newTheme)
-  },
-  { deep: true }
-)
+  // 再次确保状态栏主题应用成功
+  setTimeout(() => {
+    applyStatusBarTheme(theme.value)
+  }, 500)
+})
 
 // 监听用户偏好中课前提醒开关，打开时重新安排，关闭时清空相关通知队列
 watch(
