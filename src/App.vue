@@ -19,6 +19,7 @@ import ConfirmDialogHost from '@/components/ConfirmDialog.vue'
 
 import { SplashScreen } from '@capacitor/splash-screen'
 import { useLibraryCache } from '@/composables/useLibraryCache'
+import { applyStatusBarTheme } from '@/composables/useStatusBar'
 
 const { theme, initTheme } = useTheme()
 const profileStore = useProfileStore()
@@ -28,6 +29,7 @@ const { initialize } = useLibraryCache()
 
 onMounted(async () => {
   initTheme()
+  await applyStatusBarTheme(theme.value)
 
   // 初始化课程和待办数据（用于后续通知调度）
   if (!curriculumStore.initialized) await curriculumStore.initCourses()
@@ -51,6 +53,16 @@ onMounted(async () => {
   // 初始化可视化库
   initialize()
 })
+
+// 监听主题配置变化，动态同步原生状态栏样式
+watch(
+  theme,
+  async (newTheme) => {
+    if (!newTheme) return
+    await applyStatusBarTheme(newTheme)
+  },
+  { deep: true }
+)
 
 // 监听用户偏好中课前提醒开关，打开时重新安排，关闭时清空相关通知队列
 watch(
