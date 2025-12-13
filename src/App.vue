@@ -28,7 +28,7 @@ const todoStore = useTodoStore()
 const { initialize } = useLibraryCache()
 
 onMounted(async () => {
-  await initTheme()
+  initTheme()
 
   // 1. 尝试预先应用样式（为了体验，如果成功最好）
   await applyStatusBarTheme(theme.value)
@@ -52,11 +52,10 @@ onMounted(async () => {
   // 2. 隐藏启动页
   await SplashScreen.hide()
 
-  // 3. 【关键修复】在启动页隐藏后，再次强制刷新状态栏样式
-  // 延时一小段时间确保 View 层次结构和 Window 焦点已完全稳定
-  setTimeout(async () => {
-    await applyStatusBarTheme(theme.value)
-  }, 500)
+  // 3. 在启动页隐藏后，再次强制刷新状态栏样式
+  setTimeout(() => {
+    applyStatusBarTheme(theme.value)
+  }, 1000)
 
   // 4. 初始化可视化库
   initialize()
@@ -102,7 +101,7 @@ useBackButtonHandler({
 <template>
   <ToastContainer />
   <ConfirmDialogHost />
-  <div id="app" class="min-h-screen app-bg text-foreground transition-colors">
+  <div id="app" class="min-h-screen app-bg text-foreground transition-colors safe-area-bottom">
     <AppLayout />
   </div>
 </template>

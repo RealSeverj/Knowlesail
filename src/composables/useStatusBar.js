@@ -12,9 +12,8 @@ export async function applyStatusBarTheme(themeConfig) {
     await StatusBar.setStyle({
       style: isDark ? Style.Dark : Style.Light
     })
-  
-    await StatusBar.setOverlaysWebView({ overlay: false })
 
+    await StatusBar.setOverlaysWebView({ overlay: false })
   } catch (e) {
     console.warn('[status-bar] failed to apply status bar theme', e)
   }
