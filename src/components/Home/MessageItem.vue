@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import MarkdownRenderer from './MarkdownRenderer/MarkdownRenderer.vue'
 import ExportToKnowledge from './ExportToKnowledge.vue'
 import ChatSelection from './ChatSelection.vue'
@@ -109,6 +109,14 @@ function openImagePreview() {
 function closeImagePreview() {
   showImagePreview.value = false
 }
+
+// 解析是 base64 的图片 URL，若缺少 data: 前缀则补齐
+function getImageSrc(imageUrl) {
+  if (!imageUrl) return ''
+  if (imageUrl.startsWith('data:')) return imageUrl
+  if (imageUrl.startsWith('http')) return imageUrl
+  return `data:image/png;base64,${imageUrl}`
+}
 </script>
 
 <template>
@@ -152,7 +160,22 @@ function closeImagePreview() {
           v-if="message.role === 'user'"
           class="message-bubble inline-block max-w-[85%] px-4 py-3 rounded-xl text-text-primary text-[15px] whitespace-pre-wrap transition-colors"
         >
-          {{ message.content }}
+          <template v-if="typeof message.content === 'string'">
+            <p>{{ message.content }}</p>
+          </template>
+          <template v-else>
+            <p v-for="(item, index) in message.content" :key="index">
+              <template v-if="item.type === 'text'">{{ item.text }}</template>
+              <template v-else-if="item.type === 'image_url'">
+                <img
+                  :src="getImageSrc(item.image_url?.url)"
+                  alt="图片"
+                  class="inline-block max-w-full rounded-md"
+                />
+              </template>
+              <template v-else>【未知内容】</template>
+            </p>
+          </template>
         </div>
 
         <!-- 用户发送的图片 -->
