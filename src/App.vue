@@ -59,6 +59,15 @@ onMounted(async () => {
   }, 500)
 })
 
+watch(
+  theme,
+  async (newTheme) => {
+    if (!newTheme) return
+    await applyStatusBarTheme(newTheme)
+  },
+  { deep: true }
+)
+
 // 监听用户偏好中课前提醒开关，打开时重新安排，关闭时清空相关通知队列
 watch(
   () => profileStore.preferences?.autoCourseReminder,
