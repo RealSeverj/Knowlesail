@@ -123,18 +123,18 @@ const handleExpand = () => {
   expanded.value = true
 }
 
+const handleOutside = (event) => {
+  const shell = shellRef.value
+  if (!shell) return
+  if (!shell.contains(event.target)) expanded.value = false
+}
+
 watch(expanded, async (val) => {
   if (val) {
     await nextTick()
     inputRef.value?.focus?.()
 
-    const handleOutside = (event) => {
-      const shell = shellRef.value
-      if (!shell) return
-      if (!shell.contains(event.target)) {
-        expanded.value = false
-      }
-    }
+    if (removeOutsideListener) removeOutsideListener()
     document.addEventListener('pointerdown', handleOutside)
     removeOutsideListener = () => document.removeEventListener('pointerdown', handleOutside)
   } else {
@@ -142,9 +142,6 @@ watch(expanded, async (val) => {
       removeOutsideListener()
       removeOutsideListener = null
     }
-    inputText.value = ''
-    textareaRows.value = 1
-    selectedImage.value = null
   }
 })
 

@@ -10,9 +10,7 @@ const emit = defineEmits(['bottom-state-change', 'request-input-expand', 'leave-
 
 const viewportRef = ref(null)
 const isNearBottom = ref(true)
-const bottomThreshold = 4
-// 固定底部留白，预留输入框展开后的空间，避免内容跳动
-const FIXED_BOTTOM_PADDING = 180
+const bottomThreshold = 56 + 4 // 预留底部导航栏
 const lastScrollTop = ref(0)
 
 const messages = computed(() => chatStore.currentMessages || [])
@@ -21,9 +19,11 @@ const hasMessages = computed(() => messages.value.length > 0)
 const lastMessageContent = computed(() => messages.value[messages.value.length - 1]?.content || '')
 
 const autoScrollEnabled = ref(true)
+const isProgrammaticScroll = ref(false)
 let autoScrollTimer = null
+let programmaticScrollTimer = null
 
-const updateBottomState = () => {
+const updateBottomState = (checkExpand = true) => {
   const el = viewportRef.value
   if (!el) return
 
@@ -32,21 +32,27 @@ const updateBottomState = () => {
 
   if (atBottom !== isNearBottom.value) {
     isNearBottom.value = atBottom
-    emit('bottom-state-change', atBottom)
+    emit('bottom-state-change', { atBottom, checkExpand })
   }
 }
 
-const scrollToBottom = (opts = { animated: true }) => {
+const scrollToBottom = () => {
   if (!autoScrollEnabled.value) return
   nextTick(() => {
     const el = viewportRef.value
     if (el) {
+      isProgrammaticScroll.value = true
       el.scrollTop = el.scrollHeight
+      if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer)
+      programmaticScrollTimer = setTimeout(() => {
+        isProgrammaticScroll.value = false
+        programmaticScrollTimer = null
+      }, 300)
     }
   })
 }
 
-const handleScroll = () => {
+const handleScroll = (event) => {
   const el = viewportRef.value
   if (!el) return
 
@@ -54,7 +60,8 @@ const handleScroll = () => {
   const direction = current < lastScrollTop.value ? 'up' : 'down'
   lastScrollTop.value = current
 
-  updateBottomState()
+  const checkExpand = event?.isTrusted && !isProgrammaticScroll.value
+  updateBottomState(checkExpand)
 
   if (direction === 'up' && !isNearBottom.value) {
     emit('leave-bottom-by-scroll')
@@ -74,26 +81,6 @@ const handleQuickAction = (action) => {
   chatStore.sendMessage(action.preset || action.title)
 }
 
-const handleViewportClick = (event) => {
-  const element = event.target instanceof Element ? event.target : null
-  if (
-    element &&
-    element.closest(
-      'button, a, input, textarea, [role="button"], .var-button, .var-input, [data-prevent-input-trigger]'
-    )
-  ) {
-    return
-  }
-  emit('request-input-expand')
-}
-
-watch(
-  () => messages.value.length,
-  () => {
-    scrollToBottom()
-  }
-)
-
 watch(
   () => lastMessageContent.value,
   throttle(() => {
@@ -101,6 +88,7 @@ watch(
   }, 80)
 )
 
+// 监听流式传输状态变化，确保结束时滚动到底部
 watch(isStreaming, (active) => {
   if (!active) {
     scrollToBottom()
@@ -121,7 +109,6 @@ onMounted(async () => {
       ref="viewportRef"
       class="overflow-y-auto min-h-0 flex-1 px-2 py-6 chat-viewport"
       @scroll="handleScroll"
-      @click="handleViewportClick"
     >
       <div v-if="hasMessages" class="mx-auto flex w-full max-w-3xl flex-col gap-4">
         <MessageItem v-for="message in messages" :key="message.id" :message="message" />
