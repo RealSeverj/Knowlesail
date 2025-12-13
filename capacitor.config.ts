@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli'
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.hachimi.knowlesail',
@@ -10,12 +10,9 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200,
-      launchAutoHide: true
-    },
-    Keyboard: {
-      resizeOnFullScreen: false
+      launchAutoHide: true,
     }
   }
-}
+};
 
-export default config
+export default config;

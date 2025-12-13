@@ -19,7 +19,6 @@
   "dependencies": {
     "@awesome-cordova-plugins/calendar": "^8.1.0",
     "@awesome-cordova-plugins/core": "^8.1.0",
-    "@capacitor-community/safe-area": "7.0.0-beta.6",
     "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
     "@capacitor/camera": "^7.0.2",
@@ -28,6 +27,7 @@
     "@capacitor/local-notifications": "^7.0.4",
     "@capacitor/screen-orientation": "^7.0.2",
     "@capacitor/splash-screen": "^7.0.4",
+    "@capacitor/status-bar": "^8.0.0",
     "@tiptap/markdown": "^3.11.0",
     "@tiptap/starter-kit": "^3.11.0",
     "@tiptap/vue-3": "^3.11.0",

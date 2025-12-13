@@ -2,9 +2,6 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/.pnpm/@capacitor+android@7.4.4_@capacitor+core@7.4.4/node_modules/@capacitor/android/capacitor')
 
-include ':capacitor-community-safe-area'
-project(':capacitor-community-safe-area').projectDir = new File('../node_modules/.pnpm/@capacitor-community+safe-a_fcf7229acfea7a74d6c53826d1f762e6/node_modules/@capacitor-community/safe-area/android')
-
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/.pnpm/@capacitor+app@7.1.1_@capacitor+core@7.4.4/node_modules/@capacitor/app/android')
 
@@ -22,3 +19,6 @@ project(':capacitor-screen-orientation').projectDir = new File('../node_modules/
 
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../node_modules/.pnpm/@capacitor+splash-screen@7.0.4_@capacitor+core@7.4.4/node_modules/@capacitor/splash-screen/android')
+
+include ':capacitor-status-bar'
+project(':capacitor-status-bar').projectDir = new File('../node_modules/.pnpm/@capacitor+status-bar@8.0.0_@capacitor+core@7.4.4/node_modules/@capacitor/status-bar/android')

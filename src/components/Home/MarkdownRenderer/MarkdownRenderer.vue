@@ -217,7 +217,6 @@ const selfCodeXRender = {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     background-color: transparent;
-    border: 1px solid var(--color-border);
 
     th,
     td {
@@ -232,7 +231,7 @@ const selfCodeXRender = {
     }
 
     tr {
-      background-color: transparent !important;
+      background-color: transparent;
     }
   }
 

@@ -187,10 +187,6 @@ const iframeStyle = computed(() => {
   background-color: #fff;
 }
 
-img {
-  border-radius: 0 0 10px 10px;
-}
-
 /* iframe 加载动画 */
 .loading {
   width: fit-content;

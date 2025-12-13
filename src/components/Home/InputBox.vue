@@ -1,7 +1,11 @@
 <script setup>
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chat'
+import { useKeyboardOffset } from '@/composables/useKeyboardOffset'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+
+const keyboardOffset = useKeyboardOffset()
+const finalOffset = computed(() => (keyboardOffset.value ? keyboardOffset.value + 12 : 80))
 
 const expanded = defineModel({
   type: Boolean,
@@ -148,7 +152,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="floating-input-layer">
-    <div ref="shellRef" class="morph-shell" :class="{ 'is-expanded': expanded }">
+    <div
+      ref="shellRef"
+      class="morph-shell"
+      :class="{ 'is-expanded': expanded, 'is-streaming': isStreaming }"
+      :style="{ bottom: finalOffset + 'px' }"
+    >
       <button v-if="!expanded" type="button" class="morph-trigger" @click="handleExpand">
         <var-icon name="chat-processing" :size="28" />
         <span class="sr-only">展开输入框</span>
@@ -229,7 +238,6 @@ onBeforeUnmount(() => {
 
 .morph-shell {
   position: absolute;
-  bottom: 80px;
   right: 24px;
   width: 64px;
   max-height: 64px;

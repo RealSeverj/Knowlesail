@@ -12,7 +12,7 @@ const props = defineProps({
     <Transition name="slide-right">
       <div v-if="isFullScreen" class="full-screen-viewer">
         <div class="content">
-          <div class="header">
+          <div class="header mt-8">
             <var-icon name="chevron-left" @click="isFullScreen = false" />
             <div class="title">可视化面板</div>
             <var-icon name="refresh" />

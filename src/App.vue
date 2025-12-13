@@ -2,6 +2,7 @@
 import { onMounted, provide, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { useBackButtonHandler } from '@/composables/useBackButtonHandler'
+import { applyStatusBarTheme } from '@/composables/useStatusBar'
 import { useProfileStore } from '@/stores/profile'
 import {
   scheduleNextClassReminder,
@@ -19,7 +20,6 @@ import ConfirmDialogHost from '@/components/ConfirmDialog.vue'
 
 import { SplashScreen } from '@capacitor/splash-screen'
 import { useLibraryCache } from '@/composables/useLibraryCache'
-import { applyStatusBarTheme } from '@/composables/useStatusBar'
 
 const { theme, initTheme } = useTheme()
 const profileStore = useProfileStore()
@@ -29,6 +29,8 @@ const { initialize } = useLibraryCache()
 
 onMounted(async () => {
   initTheme()
+
+  // 1. 尝试预先应用样式（为了体验，如果成功最好）
   await applyStatusBarTheme(theme.value)
 
   // 初始化课程和待办数据（用于后续通知调度）
@@ -47,18 +49,19 @@ onMounted(async () => {
     await cancelAllCourseRelatedNotifications()
   }
 
-  // 隐藏启动页
+  // 2. 隐藏启动页
   await SplashScreen.hide()
 
-  // 初始化可视化库
-  initialize()
-
-  // 再次确保状态栏主题应用成功
+  // 3. 在启动页隐藏后，再次强制刷新状态栏样式
   setTimeout(() => {
     applyStatusBarTheme(theme.value)
-  }, 500)
+  }, 1000)
+
+  // 4. 初始化可视化库
+  initialize()
 })
 
+// 监听主题配置变化，动态同步原生状态栏样式
 watch(
   theme,
   async (newTheme) => {
